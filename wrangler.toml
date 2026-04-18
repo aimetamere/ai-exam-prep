@@ -1,13 +1,21 @@
-# Cloudflare Pages — this repo
+# Cloudflare — static Vite app
 #
-# Git integration (dashboard):
-#   • Build command:        npm ci && npm run build
-#   • Build output directory: frontend/dist
-#   • Root directory:       /  (repository root)
-#   • Environment:          Node 20+ (see .node-version)
+# ── Cloudflare PAGES (recommended for this repo) ───────────────────────────
+# In the Pages project → Settings → Builds:
+#   Build command:          npm run build
+#   Build output directory: frontend/dist
+#   Root directory:         /   (repo root)
+# Leave "Deploy command" EMPTY — Pages uploads frontend/dist automatically.
+# Do NOT paste `npx wrangler pages deploy ...` into the build command.
 #
-# CLI deploy (after authenticating: npx wrangler login):
-#   npm run build && npx wrangler pages deploy frontend/dist --project-name=ai-exam-prep
+# ── CLI (manual deploy) ─────────────────────────────────────────────────────
+#   npm run build && npx wrangler pages deploy frontend/dist --project-name=YOUR_PROJECT
+#
+# ── If your host runs `npx wrangler deploy` after build (Workers-style) ────
+# The [assets] block tells Wrangler where the built static files are (after `npm run build`).
 
 name = "ai-exam-prep"
 compatibility_date = "2025-01-01"
+
+[assets]
+directory = "./frontend/dist"
