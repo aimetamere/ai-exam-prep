@@ -12,10 +12,13 @@
 #   npm run build && npx wrangler pages deploy frontend/dist --project-name=YOUR_PROJECT
 #
 # ── If your host runs `npx wrangler deploy` after build (Workers-style) ────
-# The [assets] block tells Wrangler where the built static files are (after `npm run build`).
+# Do NOT use frontend/public/_redirects with a `/* → /index.html` rule here — Workers
+# validates that as an infinite loop. Use `not_found_handling` below instead.
 
 name = "ai-exam-prep"
 compatibility_date = "2025-01-01"
 
 [assets]
 directory = "./frontend/dist"
+# SPA fallback for client-side routes (replaces Pages-style _redirects)
+not_found_handling = "single-page-application"
