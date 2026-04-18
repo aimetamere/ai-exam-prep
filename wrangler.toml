@@ -1,0 +1,13 @@
+# Cloudflare Pages — this repo
+#
+# Git integration (dashboard):
+#   • Build command:        npm ci && npm run build
+#   • Build output directory: frontend/dist
+#   • Root directory:       /  (repository root)
+#   • Environment:          Node 20+ (see .node-version)
+#
+# CLI deploy (after authenticating: npx wrangler login):
+#   npm run build && npx wrangler pages deploy frontend/dist --project-name=ai-exam-prep
+
+name = "ai-exam-prep"
+compatibility_date = "2025-01-01"
