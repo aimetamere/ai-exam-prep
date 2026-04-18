@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Build / cache
+frontend/dist/
+*.local
+.DS_Store
+
+# Env & secrets
+.env
+.env.*
+
+# Logs
+*.log
+npm-debug.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp

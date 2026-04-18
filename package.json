@@ -1,0 +1,21 @@
+{
+  "name": "ai-class",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mobile quiz/exam prep frontend",
+  "scripts": {
+    "generate:questions": "node --experimental-strip-types scripts/generate-question-bank.ts",
+    "dev": "vite frontend --host",
+    "build": "npm run generate:questions && vite build frontend",
+    "preview": "vite preview --host"
+  },
+  "dependencies": {
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.12"
+  }
+}
