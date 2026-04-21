@@ -113,12 +113,20 @@ function parseDefinitionFlashcards(markdown: string): Flashcard[] {
   const flush = () => {
     if (term && answerBuffer.length > 0) {
       runningNumber += 1;
-      const answer = answerBuffer.join("\n").trim();
+      const rawAnswer = answerBuffer.join("\n").trim();
+      const normalizedTerm = term.trim();
+      const answerStartsWithTerm = new RegExp(
+        `^\\*\\*?\\s*${normalizedTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*\\*\\*?\\s*[—:-]`,
+        "i",
+      ).test(rawAnswer);
+      const answer = answerStartsWithTerm
+        ? rawAnswer
+        : `**${normalizedTerm}** — ${rawAnswer}`;
       cards.push({
         id: `def-${runningNumber}`,
         cardNumber: runningNumber,
         section: currentSection,
-        question: term.trim(),
+        question: normalizedTerm,
         answer,
       });
     }

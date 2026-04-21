@@ -207,9 +207,8 @@ body {
 
 .card-face--back {
   transform: rotateY(180deg);
-  background:
-    linear-gradient(135deg, var(--brand), var(--brand-2));
-  color: #fff;
+  background: #b3cde0;
+  color: var(--ink);
 }
 
 .card--peek {
