@@ -502,7 +502,7 @@ export default function Page() {
               : "Switch to main cards"
           }
         >
-          {deckType === "main" ? "Defs" : "Main"}
+          {deckType === "main" ? "Definitions" : "Main"}
         </button>
       </div>
 
