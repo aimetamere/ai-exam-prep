@@ -1,15 +1,15 @@
 :root {
   color-scheme: light;
-  --bg: #eef1ff;
+  --bg: #f4f8fc;
   --surface: #ffffff;
-  --ink: #0e1230;
-  --ink-2: #4a547e;
-  --brand: #4b5cff;
-  --brand-2: #7a4bff;
-  --muted: #8a92b5;
-  --shadow-lg: 0 30px 60px -20px rgba(40, 45, 130, 0.35),
-    0 18px 36px -18px rgba(40, 45, 130, 0.22);
-  --shadow-md: 0 16px 32px -18px rgba(40, 45, 130, 0.25);
+  --ink: #26323d;
+  --ink-2: #4f6678;
+  --brand: #7fa8c6;
+  --brand-2: #b3cde0;
+  --muted: #6f8798;
+  --shadow-lg: 0 30px 60px -20px rgba(58, 88, 112, 0.28),
+    0 18px 36px -18px rgba(58, 88, 112, 0.2);
+  --shadow-md: 0 16px 32px -18px rgba(58, 88, 112, 0.22);
 }
 
 * {
@@ -33,8 +33,8 @@ body {
     sans-serif;
   color: var(--ink);
   background:
-    radial-gradient(1000px 600px at 15% -10%, #dde4ff 0%, transparent 60%),
-    radial-gradient(900px 500px at 110% 110%, #e7d7ff 0%, transparent 55%),
+    radial-gradient(1000px 600px at 15% -10%, #e3edf5 0%, transparent 60%),
+    radial-gradient(900px 500px at 110% 110%, #d9e8f3 0%, transparent 55%),
     var(--bg);
   overflow: hidden;
   overscroll-behavior: none;
@@ -77,7 +77,7 @@ body {
 .bar {
   flex: 1;
   height: 4px;
-  background: rgba(20, 25, 80, 0.08);
+  background: rgba(79, 102, 120, 0.15);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -91,7 +91,7 @@ body {
 
 .reshuffle {
   border: none;
-  background: rgba(75, 92, 255, 0.08);
+  background: rgba(179, 205, 224, 0.35);
   color: var(--brand);
   width: 34px;
   height: 34px;
@@ -106,7 +106,7 @@ body {
 
 .deck-switch {
   border: none;
-  background: rgba(75, 92, 255, 0.08);
+  background: rgba(179, 205, 224, 0.35);
   color: var(--brand);
   height: 34px;
   padding: 0 0.7rem;
@@ -122,7 +122,7 @@ body {
 }
 
 .deck-switch:hover {
-  background: rgba(75, 92, 255, 0.16);
+  background: rgba(179, 205, 224, 0.55);
   transform: translateY(-1px);
 }
 
@@ -131,7 +131,7 @@ body {
 }
 
 .reshuffle:hover {
-  background: rgba(75, 92, 255, 0.16);
+  background: rgba(179, 205, 224, 0.55);
   transform: rotate(45deg);
 }
 
@@ -201,14 +201,14 @@ body {
 
 .card-face--front {
   background:
-    linear-gradient(135deg, rgba(75, 92, 255, 0.04), rgba(122, 75, 255, 0.05)),
+    linear-gradient(135deg, rgba(179, 205, 224, 0.22), rgba(127, 168, 198, 0.2)),
     var(--surface);
 }
 
 .card-face--back {
   transform: rotateY(180deg);
   background: #b3cde0;
-  color: var(--ink);
+  color: #fff;
 }
 
 .card--peek {
@@ -234,14 +234,15 @@ body {
   text-transform: uppercase;
   font-weight: 700;
   color: var(--brand);
-  background: rgba(75, 92, 255, 0.1);
+  background: rgba(179, 205, 224, 0.45);
   padding: 0.3rem 0.6rem;
   border-radius: 999px;
 }
 
 .card-tag--back {
   color: #fff;
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(43, 68, 90, 0.38);
+  border: 1px solid rgba(255, 255, 255, 0.28);
 }
 
 .card-q {
@@ -264,8 +265,8 @@ body {
 .card-options li {
   padding: 0.75rem 0.9rem;
   border-radius: 14px;
-  background: rgba(75, 92, 255, 0.05);
-  border: 1px solid rgba(75, 92, 255, 0.08);
+  background: rgba(179, 205, 224, 0.3);
+  border: 1px solid rgba(127, 168, 198, 0.45);
   font-size: 0.95rem;
   line-height: 1.45;
   color: var(--ink-2);
@@ -274,13 +275,14 @@ body {
 .card-a {
   margin: 0;
   font-size: clamp(1rem, 2.6vw, 1.15rem);
-  line-height: 1.55;
+  line-height: 1.65;
   font-weight: 500;
   color: #fff;
   letter-spacing: -0.005em;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.85rem;
+  text-wrap: pretty;
 }
 
 .card-a > p {
@@ -290,36 +292,65 @@ body {
 .card-a strong {
   color: #fff;
   font-weight: 700;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 0 0.2rem;
-  border-radius: 4px;
+  background: rgba(43, 68, 90, 0.4);
+  padding: 0.06rem 0.35rem;
+  border-radius: 6px;
 }
 
 .card-a em {
   font-style: italic;
-  color: rgba(255, 255, 255, 0.92);
+  color: rgba(255, 255, 255, 0.96);
 }
 
 .card-a code {
-  background: rgba(0, 0, 0, 0.22);
+  background: rgba(43, 68, 90, 0.5);
   color: #fff;
-  padding: 0.1rem 0.35rem;
-  border-radius: 5px;
+  padding: 0.14rem 0.4rem;
+  border-radius: 6px;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.92em;
 }
 
 .card-a ul,
 .card-a ol {
-  margin: 0;
-  padding-left: 1.15rem;
+  margin: 0.15rem 0 0.1rem;
+  padding-left: 1.3rem;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.45rem;
 }
 
 .card-a li {
   line-height: 1.5;
+}
+
+.card-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 0.6rem;
+  padding-top: 0.4rem;
+}
+
+.status-btn {
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(43, 68, 90, 0.34);
+  color: #fff;
+  border-radius: 10px;
+  padding: 0.52rem 0.68rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: transform 140ms ease, background 140ms ease;
+}
+
+.status-btn:hover {
+  background: rgba(43, 68, 90, 0.52);
+  transform: translateY(-1px);
+}
+
+.status-btn.is-active {
+  background: rgba(26, 43, 58, 0.78);
+  border-color: rgba(255, 255, 255, 0.9);
 }
 
 .card-q strong {
@@ -331,7 +362,7 @@ body {
 }
 
 .card-q code {
-  background: rgba(75, 92, 255, 0.12);
+  background: rgba(179, 205, 224, 0.55);
   color: var(--brand);
   padding: 0.08rem 0.32rem;
   border-radius: 5px;
@@ -363,11 +394,11 @@ body {
   transform: translateX(-50%);
   border: none;
   background: linear-gradient(135deg, var(--brand), var(--brand-2));
-  color: #fff;
+  color: var(--ink);
   padding: 0.85rem 1.4rem;
   border-radius: 999px;
   font-weight: 700;
-  box-shadow: 0 18px 36px -12px rgba(75, 92, 255, 0.5);
+  box-shadow: 0 18px 36px -12px rgba(79, 102, 120, 0.42);
   cursor: pointer;
   transition: transform 160ms ease;
   z-index: 20;

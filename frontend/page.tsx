@@ -14,6 +14,8 @@ type Flashcard = {
 };
 
 type DeckType = "main" | "definitions";
+type CardStatus = "learned" | "not_learned";
+type StatusMap = Record<string, CardStatus>;
 
 function shuffle<T>(items: T[]): T[] {
   const copy = [...items];
@@ -256,11 +258,22 @@ const FLY_DISTANCE = 520;
 const FLING_VELOCITY_THRESHOLD = 0.55;
 const MAX_DRAG = 260;
 const EXIT_DURATION_MS = 320;
+const USER_ID_STORAGE_KEY = "ai-exam-user-id";
+
+function getOrCreateUserId(): string {
+  const existing = window.localStorage.getItem(USER_ID_STORAGE_KEY);
+  if (existing) return existing;
+  const id = crypto.randomUUID();
+  window.localStorage.setItem(USER_ID_STORAGE_KEY, id);
+  return id;
+}
 
 export default function Page() {
   const [deckType, setDeckType] = useState<DeckType>("main");
   const [deck, setDeck] = useState<Flashcard[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [statusByCard, setStatusByCard] = useState<StatusMap>({});
+  const [statusError, setStatusError] = useState<string | null>(null);
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [drag, setDrag] = useState(0);
@@ -270,9 +283,14 @@ export default function Page() {
   const lastPointerTime = useRef<number | null>(null);
   const swipeVelocity = useRef(0);
   const dragMoved = useRef(false);
+  const userIdRef = useRef<string | null>(null);
 
   const applyDragResistance = (dx: number) =>
     Math.tanh(dx / MAX_DRAG) * MAX_DRAG;
+
+  useEffect(() => {
+    userIdRef.current = getOrCreateUserId();
+  }, []);
 
   useEffect(() => {
     try {
@@ -298,6 +316,8 @@ export default function Page() {
         );
       }
       setDeck(shuffle(parsed));
+      setStatusByCard({});
+      setStatusError(null);
       setLoadError(null);
       setIndex(0);
       setFlipped(false);
@@ -308,6 +328,37 @@ export default function Page() {
       setLoadError(err instanceof Error ? err.message : "Unknown error");
     }
   }, [deckType]);
+
+  useEffect(() => {
+    if (!userIdRef.current || deck.length === 0) return;
+    const aborter = new AbortController();
+
+    const loadStatuses = async () => {
+      try {
+        const response = await fetch(
+          `/api/card-status?deckType=${encodeURIComponent(deckType)}`,
+          {
+            headers: { "x-user-id": userIdRef.current as string },
+            signal: aborter.signal,
+          },
+        );
+        if (!response.ok) {
+          throw new Error(`Status load failed (${response.status})`);
+        }
+        const payload = (await response.json()) as { statuses?: StatusMap };
+        setStatusByCard(payload.statuses ?? {});
+        setStatusError(null);
+      } catch (err) {
+        if (aborter.signal.aborted) return;
+        setStatusError(
+          err instanceof Error ? err.message : "Could not load statuses",
+        );
+      }
+    };
+
+    void loadStatuses();
+    return () => aborter.abort();
+  }, [deck, deckType]);
 
   const card = deck[index];
   const upcoming = deck[index + 1];
@@ -341,6 +392,42 @@ export default function Page() {
     setFlipped(false);
     setDrag(0);
     setExit(null);
+  };
+
+  const setCardStatus = async (nextStatus: CardStatus) => {
+    if (!card || !userIdRef.current) return;
+    const cardId = card.id;
+    const previous = statusByCard[cardId];
+    setStatusByCard((current) => ({ ...current, [cardId]: nextStatus }));
+    setStatusError(null);
+
+    try {
+      const response = await fetch("/api/card-status", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-user-id": userIdRef.current,
+        },
+        body: JSON.stringify({
+          cardId,
+          deckType,
+          status: nextStatus,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error(`Status save failed (${response.status})`);
+      }
+    } catch (err) {
+      setStatusByCard((current) => {
+        const copy = { ...current };
+        if (previous) copy[cardId] = previous;
+        else delete copy[cardId];
+        return copy;
+      });
+      setStatusError(
+        err instanceof Error ? err.message : "Could not save status",
+      );
+    }
   };
 
   useEffect(() => {
@@ -472,6 +559,7 @@ export default function Page() {
 
   const isDone = index >= total - 1 && exit === "left";
   const progress = ((index + 1) / total) * 100;
+  const activeStatus = card ? statusByCard[card.id] : null;
 
   return (
     <main className="stage">
@@ -551,6 +639,32 @@ export default function Page() {
                 className="card-a"
                 dangerouslySetInnerHTML={{ __html: answerHtml }}
               />
+              <div className="card-actions">
+                <button
+                  type="button"
+                  className={`status-btn ${activeStatus === "learned" ? "is-active" : ""}`}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onPointerUp={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    void setCardStatus("learned");
+                  }}
+                >
+                  👍 Learned
+                </button>
+                <button
+                  type="button"
+                  className={`status-btn ${activeStatus === "not_learned" ? "is-active" : ""}`}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onPointerUp={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    void setCardStatus("not_learned");
+                  }}
+                >
+                  👎 Not learned
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -559,6 +673,7 @@ export default function Page() {
       <p className="hint">
         Tap to flip · swipe for next · ← → arrows · space to flip
       </p>
+      {statusError && <p className="hint">{statusError}</p>}
 
       {isDone && (
         <button type="button" className="restart" onClick={reshuffle}>
