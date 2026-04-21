@@ -245,6 +245,9 @@ function renderMarkdownBlock(markdown: string): string {
 
 const SWIPE_THRESHOLD = 90;
 const FLY_DISTANCE = 520;
+const FLING_VELOCITY_THRESHOLD = 0.55;
+const MAX_DRAG = 260;
+const EXIT_DURATION_MS = 320;
 
 export default function Page() {
   const [deckType, setDeckType] = useState<DeckType>("main");
@@ -255,7 +258,13 @@ export default function Page() {
   const [drag, setDrag] = useState(0);
   const [exit, setExit] = useState<null | "left" | "right">(null);
   const dragStartX = useRef<number | null>(null);
+  const lastPointerX = useRef<number | null>(null);
+  const lastPointerTime = useRef<number | null>(null);
+  const swipeVelocity = useRef(0);
   const dragMoved = useRef(false);
+
+  const applyDragResistance = (dx: number) =>
+    Math.tanh(dx / MAX_DRAG) * MAX_DRAG;
 
   useEffect(() => {
     try {
@@ -304,7 +313,7 @@ export default function Page() {
       setFlipped(false);
       setDrag(0);
       setExit(null);
-    }, 240);
+    }, EXIT_DURATION_MS);
   };
 
   const goPrev = () => {
@@ -315,7 +324,7 @@ export default function Page() {
       setFlipped(false);
       setDrag(0);
       setExit(null);
-    }, 240);
+    }, EXIT_DURATION_MS);
   };
 
   const reshuffle = () => {
@@ -347,6 +356,9 @@ export default function Page() {
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (exit) return;
     dragStartX.current = e.clientX;
+    lastPointerX.current = e.clientX;
+    lastPointerTime.current = performance.now();
+    swipeVelocity.current = 0;
     dragMoved.current = false;
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   };
@@ -354,14 +366,24 @@ export default function Page() {
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (dragStartX.current === null || exit) return;
     const dx = e.clientX - dragStartX.current;
+    const now = performance.now();
+    if (lastPointerX.current !== null && lastPointerTime.current !== null) {
+      const dt = Math.max(now - lastPointerTime.current, 1);
+      const instantVelocity = (e.clientX - lastPointerX.current) / dt;
+      swipeVelocity.current = swipeVelocity.current * 0.6 + instantVelocity * 0.4;
+    }
+    lastPointerX.current = e.clientX;
+    lastPointerTime.current = now;
     if (Math.abs(dx) > 6) dragMoved.current = true;
-    setDrag(dx);
+    setDrag(applyDragResistance(dx));
   };
 
   const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
     if (dragStartX.current === null) return;
     const dx = e.clientX - dragStartX.current;
     dragStartX.current = null;
+    lastPointerX.current = null;
+    lastPointerTime.current = null;
 
     if (!dragMoved.current) {
       setFlipped((f) => !f);
@@ -369,9 +391,14 @@ export default function Page() {
       return;
     }
 
-    if (dx < -SWIPE_THRESHOLD && index + 1 < total) {
+    const flingLeft =
+      swipeVelocity.current < -FLING_VELOCITY_THRESHOLD && index + 1 < total;
+    const flingRight =
+      swipeVelocity.current > FLING_VELOCITY_THRESHOLD && index > 0;
+
+    if ((dx < -SWIPE_THRESHOLD || flingLeft) && index + 1 < total) {
       goNext();
-    } else if (dx > SWIPE_THRESHOLD && index > 0) {
+    } else if ((dx > SWIPE_THRESHOLD || flingRight) && index > 0) {
       goPrev();
     } else {
       setDrag(0);
@@ -383,20 +410,22 @@ export default function Page() {
       return {
         transform: `translateX(-${FLY_DISTANCE}px) rotate(-14deg)`,
         opacity: 0,
-        transition: "transform 240ms ease-out, opacity 240ms ease-out",
+        transition:
+          "transform 320ms cubic-bezier(.17,.84,.32,1), opacity 320ms ease-out",
       } as React.CSSProperties;
     }
     if (exit === "right") {
       return {
         transform: `translateX(${FLY_DISTANCE}px) rotate(14deg)`,
         opacity: 0,
-        transition: "transform 240ms ease-out, opacity 240ms ease-out",
+        transition:
+          "transform 320ms cubic-bezier(.17,.84,.32,1), opacity 320ms ease-out",
       } as React.CSSProperties;
     }
     const rotate = drag / 24;
     const transition =
       dragStartX.current === null
-        ? "transform 260ms cubic-bezier(.2,.8,.2,1)"
+        ? "transform 280ms cubic-bezier(.2,.85,.28,1)"
         : "none";
     return {
       transform: `translateX(${drag}px) rotate(${rotate}deg)`,

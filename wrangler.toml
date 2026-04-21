@@ -15,7 +15,7 @@
 # Do NOT use frontend/public/_redirects with a `/* → /index.html` rule here — Workers
 # validates that as an infinite loop. Use `not_found_handling` below instead.
 
-name = "ai-exam-prep"We 
+name = "ai-exam-prep"
 compatibility_date = "2025-01-01"
 
 [assets]
