@@ -3,6 +3,7 @@
 import "./page.css";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import flashcardsMarkdown from "../md_exports/flashcards.md?raw";
+import flashcardsDefinitionsMarkdown from "../md_exports/flashcards-def.md?raw";
 
 type Flashcard = {
   id: string;
@@ -11,6 +12,8 @@ type Flashcard = {
   question: string;
   answer: string;
 };
+
+type DeckType = "main" | "definitions";
 
 function shuffle<T>(items: T[]): T[] {
   const copy = [...items];
@@ -90,6 +93,71 @@ function parseFlashcards(markdown: string): Flashcard[] {
       } else {
         answerBuffer.push(line);
       }
+    }
+  }
+
+  flush();
+  return cards;
+}
+
+function parseDefinitionFlashcards(markdown: string): Flashcard[] {
+  const cards: Flashcard[] = [];
+  const lines = markdown.replace(/\r/g, "").split("\n");
+
+  let currentSection = "Definitions";
+  let term: string | null = null;
+  let answerBuffer: string[] = [];
+  let inAnswer = false;
+  let runningNumber = 0;
+
+  const flush = () => {
+    if (term && answerBuffer.length > 0) {
+      runningNumber += 1;
+      const answer = answerBuffer.join("\n").trim();
+      cards.push({
+        id: `def-${runningNumber}`,
+        cardNumber: runningNumber,
+        section: currentSection,
+        question: term.trim(),
+        answer,
+      });
+    }
+    term = null;
+    answerBuffer = [];
+    inAnswer = false;
+  };
+
+  for (const rawLine of lines) {
+    const line = rawLine;
+
+    const sectionMatch = line.match(/^##\s+(.*)$/);
+    if (sectionMatch && !line.startsWith("### ")) {
+      flush();
+      currentSection = sectionMatch[1].trim();
+      continue;
+    }
+
+    const termMatch = line.match(/^###\s+Term:\s*(.+)$/i);
+    if (termMatch) {
+      flush();
+      term = termMatch[1];
+      continue;
+    }
+
+    if (term === null) continue;
+
+    if (/^<details>/i.test(line)) {
+      inAnswer = true;
+      continue;
+    }
+
+    if (/^<\/details>/i.test(line)) {
+      inAnswer = false;
+      continue;
+    }
+
+    if (inAnswer) {
+      answerBuffer.push(line);
     }
   }
 
@@ -179,6 +247,7 @@ const SWIPE_THRESHOLD = 90;
 const FLY_DISTANCE = 520;
 
 export default function Page() {
+  const [deckType, setDeckType] = useState<DeckType>("main");
   const [deck, setDeck] = useState<Flashcard[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [index, setIndex] = useState(0);
@@ -190,18 +259,38 @@ export default function Page() {
 
   useEffect(() => {
     try {
-      if (!flashcardsMarkdown.trim()) {
-        throw new Error("flashcards.md is empty.");
+      const isDefinitionsDeck = deckType === "definitions";
+      const source = isDefinitionsDeck
+        ? flashcardsDefinitionsMarkdown
+        : flashcardsMarkdown;
+      if (!source.trim()) {
+        throw new Error(
+          isDefinitionsDeck
+            ? "flashcards-def.md is empty."
+            : "flashcards.md is empty.",
+        );
       }
-      const parsed = parseFlashcards(flashcardsMarkdown);
+      const parsed = isDefinitionsDeck
+        ? parseDefinitionFlashcards(source)
+        : parseFlashcards(source);
       if (parsed.length === 0) {
-        throw new Error("No cards parsed from flashcards.md.");
+        throw new Error(
+          isDefinitionsDeck
+            ? "No cards parsed from flashcards-def.md."
+            : "No cards parsed from flashcards.md.",
+        );
       }
       setDeck(shuffle(parsed));
+      setLoadError(null);
+      setIndex(0);
+      setFlipped(false);
+      setDrag(0);
+      setExit(null);
     } catch (err) {
+      setDeck([]);
       setLoadError(err instanceof Error ? err.message : "Unknown error");
     }
-  }, []);
+  }, [deckType]);
 
   const card = deck[index];
   const upcoming = deck[index + 1];
@@ -364,6 +453,27 @@ export default function Page() {
           title="Shuffle deck"
         >
           ↻
+        </button>
+        <button
+          type="button"
+          className="deck-switch"
+          onClick={() =>
+            setDeckType((current) =>
+              current === "main" ? "definitions" : "main",
+            )
+          }
+          aria-label={
+            deckType === "main"
+              ? "Switch to definition cards"
+              : "Switch to main cards"
+          }
+          title={
+            deckType === "main"
+              ? "Switch to definition cards"
+              : "Switch to main cards"
+          }
+        >
+          {deckType === "main" ? "Defs" : "Main"}
         </button>
       </div>
 
