@@ -1,12 +1,13 @@
 /// <reference types="vite/client" />
 
 import "./page.css";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import flashcardsMarkdown from "../md_exports/flashcards.md?raw";
 import flashcardsDefinitionsMarkdown from "../md_exports/flashcards-def.md?raw";
 import qcmMarkdown from "../qcm_50_cards_qcm_style.md?raw";
 import qcmMarkdown2 from "../qcm_50_cards_2.md?raw";
 import qcmMarkdown3 from "../qcm_50_cards_3.md?raw";
+import qcmMarkdown4 from "../qcm_50_cards_4.md?raw";
 
 type Flashcard = {
   id: string;
@@ -20,7 +21,7 @@ type Flashcard = {
 };
 
 type DeckType = "main" | "definitions" | "qcm";
-type QcmCategory = "set1" | "set2" | "set3";
+type QcmCategory = "set1" | "set2" | "set3" | "set4";
 type CardStatus = "learned" | "not_learned";
 type StatusMap = Record<string, CardStatus>;
 type MenuView = "progress" | "concepts";
@@ -66,17 +67,17 @@ function parseFlashcards(markdown: string): Flashcard[] {
   for (const rawLine of lines) {
     const line = rawLine;
 
-    const sectionMatch = line.match(/^##\s+(.*)$/);
-    if (sectionMatch && !line.startsWith("### ")) {
-      flush();
-      currentSection = sectionMatch[1].trim();
-      continue;
-    }
-
-    const cardMatch = line.match(/^###\s+Card\s+(\d+)\s*$/i);
+    const cardMatch = line.match(/^#{2,3}\s+Card\s+(\d+)\s*$/i);
     if (cardMatch) {
       flush();
       cardNumber = Number(cardMatch[1]);
+      continue;
+    }
+
+    const sectionMatch = line.match(/^##\s+(.*)$/);
+    if (sectionMatch && !/^##\s+Card\s+\d+\s*$/i.test(line)) {
+      flush();
+      currentSection = sectionMatch[1].trim();
       continue;
     }
 
@@ -244,17 +245,17 @@ function parseQcmFlashcards(markdown: string, idPrefix = "qcm"): Flashcard[] {
   for (const rawLine of lines) {
     const line = rawLine;
 
-    const sectionMatch = line.match(/^##\s+(.*)$/);
-    if (sectionMatch && !line.startsWith("### ")) {
-      flush();
-      currentSection = sectionMatch[1].trim();
-      continue;
-    }
-
-    const cardMatch = line.match(/^###\s+Card\s+(\d+)\s*$/i);
+    const cardMatch = line.match(/^#{2,3}\s+Card\s+(\d+)\s*$/i);
     if (cardMatch) {
       flush();
       cardNumber = Number(cardMatch[1]);
+      continue;
+    }
+
+    const sectionMatch = line.match(/^##\s+(.*)$/);
+    if (sectionMatch && !/^##\s+Card\s+\d+\s*$/i.test(line)) {
+      flush();
+      currentSection = sectionMatch[1].trim();
       continue;
     }
 
@@ -275,8 +276,6 @@ function parseQcmFlashcards(markdown: string, idPrefix = "qcm"): Flashcard[] {
       inDetails = false;
       continue;
     }
-
-    if (!inDetails) continue;
 
     const answerMatch = line.match(/^\*\*Answer:\*\*\s*(.*)$/i);
     if (answerMatch) {
@@ -450,6 +449,10 @@ export default function Page() {
   const blockGestureForScroll = useRef(false);
   const hasPointerCapture = useRef(false);
   const userIdRef = useRef<string | null>(null);
+  const deckRef = useRef<HTMLDivElement | null>(null);
+  const frontFaceRef = useRef<HTMLDivElement | null>(null);
+  const backFaceRef = useRef<HTMLDivElement | null>(null);
+  const [cardHeightPx, setCardHeightPx] = useState<number | null>(null);
 
   const applyDragResistance = (dx: number) =>
     Math.tanh(dx / MAX_DRAG) * MAX_DRAG;
@@ -467,15 +470,25 @@ export default function Page() {
           ? qcmMarkdown2
           : qcmCategory === "set3"
             ? qcmMarkdown3
+            : qcmCategory === "set4"
+              ? qcmMarkdown4
             : qcmMarkdown;
       const activeQcmFileName =
         qcmCategory === "set2"
           ? "qcm_50_cards_2.md"
           : qcmCategory === "set3"
             ? "qcm_50_cards_3.md"
+            : qcmCategory === "set4"
+              ? "qcm_50_cards_4.md"
             : "qcm_50_cards_qcm_style.md";
       const activeQcmPrefix =
-        qcmCategory === "set2" ? "qcm2" : qcmCategory === "set3" ? "qcm3" : "qcm1";
+        qcmCategory === "set2"
+          ? "qcm2"
+          : qcmCategory === "set3"
+            ? "qcm3"
+            : qcmCategory === "set4"
+              ? "qcm4"
+              : "qcm1";
       const source = isDefinitionsDeck
         ? flashcardsDefinitionsMarkdown
         : isQcmDeck
@@ -586,6 +599,35 @@ export default function Page() {
     setDrag(0);
     setExit(null);
   }, [index, total]);
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      const deckEl = deckRef.current;
+      const frontEl = frontFaceRef.current;
+      const backEl = backFaceRef.current;
+      if (!deckEl || !frontEl || !backEl) return;
+
+      const availableHeight = deckEl.clientHeight;
+      if (availableHeight <= 0) return;
+
+      const neededHeight = Math.ceil(
+        Math.max(frontEl.scrollHeight, backEl.scrollHeight),
+      );
+      const minHeight = 380;
+      const nextHeight = Math.min(
+        Math.max(neededHeight, minHeight),
+        availableHeight,
+      );
+      setCardHeightPx((prev) => (prev === nextHeight ? prev : nextHeight));
+    };
+
+    const raf = window.requestAnimationFrame(measure);
+    window.addEventListener("resize", measure);
+    return () => {
+      window.cancelAnimationFrame(raf);
+      window.removeEventListener("resize", measure);
+    };
+  }, [index, selectedQcmAnswers, deckType, qcmCategory, flipped, total]);
 
   const goToCard = (cardId: string) => {
     let nextIndex = activeDeck.findIndex((item) => item.id === cardId);
@@ -891,6 +933,13 @@ export default function Page() {
     Boolean(card.qcmCorrectLabel) &&
     selectedQcmLabel === card.qcmCorrectLabel;
 
+  const mainCardStyle = cardHeightPx
+    ? ({ ...cardStyle, height: `${cardHeightPx}px` } as React.CSSProperties)
+    : cardStyle;
+  const peekCardStyle = cardHeightPx
+    ? ({ height: `${cardHeightPx}px` } as React.CSSProperties)
+    : undefined;
+
   return (
     <main className="stage">
       <div className="topbar">
@@ -1004,6 +1053,17 @@ export default function Page() {
               title="QCM set 3"
             >
               QCM 3
+            </button>
+            <button
+              type="button"
+              className={`deck-switch ${qcmCategory === "set4" ? "is-active" : ""}`}
+              onClick={() => setQcmCategory("set4")}
+              aria-label="Switch to QCM set 4"
+              aria-selected={qcmCategory === "set4"}
+              role="tab"
+              title="QCM set 4"
+            >
+              QCM 4
             </button>
           </div>
         )}
@@ -1152,10 +1212,14 @@ export default function Page() {
         </div>
       )}
 
-      <div className="deck">
+      <div className="deck" ref={deckRef}>
         {upcoming && (
-          <div className="card card--peek" aria-hidden="true">
-            <div className="card-face card-face--front">
+          <div className="card card--peek" aria-hidden="true" style={peekCardStyle}>
+            <div
+              className={`card-face card-face--front ${
+                isQcmCard ? "card-face--front-qcm" : ""
+              }`}
+            >
               <p
                 className="card-q"
                 dangerouslySetInnerHTML={{ __html: upcomingQuestionHtml }}
@@ -1166,7 +1230,7 @@ export default function Page() {
 
         <div
           className={`card ${flipped ? "is-flipped" : ""}`}
-          style={cardStyle}
+          style={mainCardStyle}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
@@ -1175,7 +1239,12 @@ export default function Page() {
           tabIndex={0}
         >
           <div className="card-inner">
-            <div className="card-face card-face--front">
+            <div
+              ref={frontFaceRef}
+              className={`card-face card-face--front ${
+                isQcmCard ? "card-face--front-qcm" : ""
+              }`}
+            >
               <span className="card-tag">{card.section}</span>
               <p
                 className="card-q"
@@ -1214,7 +1283,7 @@ export default function Page() {
               )}
             </div>
 
-            <div className="card-face card-face--back">
+            <div ref={backFaceRef} className="card-face card-face--back">
               <span className="card-tag card-tag--back">Answer</span>
               {isQcmCard ? (
                 <div className="card-a qcm-answer">
@@ -1271,7 +1340,7 @@ export default function Page() {
 
       <p className="hint">
         {deckType === "qcm"
-          ? "Select an option to reveal answer · swipe for next · ← → arrows"
+          ? "Select option to reveal answer · swipe next · ← →"
           : "Tap to flip · swipe for next · ← → arrows · space to flip"}
       </p>
       {statusError && <p className="hint">{statusError}</p>}

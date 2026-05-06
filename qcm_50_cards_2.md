@@ -5,11 +5,11 @@
 <details><summary>Show answer</summary>
 
 - A. High temperature, large context window, and high max tokens to explore diverse fraud patterns  
-- B. Low temperature, small-to-medium context window, and low max tokens to ensure deterministic outputs  
-- C. Medium temperature, ultra-large context window, and high max tokens to capture all possible signals  
-- D. High temperature, small context window, and medium max tokens to balance speed and creativity  
+- B. Medium temperature, ultra-large context window, and high max tokens to capture all possible signals, in larger-scale environments.  
+- C. Low temperature, small-to-medium context window, and low max tokens to ensure deterministic outputs  
+- D. High temperature, small context window, and medium max tokens to balance speed and creativity   
 
-**Answer:** B  
+**Answer:** C  
 
 </details>
 
@@ -21,12 +21,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. It reduces generalization due to excessive memory  
-- B. It increases cost and latency without meaningful benefit  
+- A. It increases cost and latency without meaningful benefit  
+- B. It reduces generalization due to excessive memory, when measured across realistic workloads.  
 - C. It forces reliance on outdated training data  
-- D. It limits response length  
+- D. It limits response length, for real-world enterprise use cases, when tested in broader scenarios.   
 
-**Answer:** B  
+**Answer:** A  
 
 </details>
 
@@ -38,12 +38,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Increase temperature  
-- B. Use few-shot prompting with structured examples  
-- C. Reduce context window  
-- D. Increase max tokens  
+- A. Increase temperature, for teams optimizing reliability.  
+- B. Reduce context window, for most enterprise deployments, in larger-scale environments, when tested in broader scenarios.  
+- C. Use few-shot prompting with structured examples, in larger-scale environments.  
+- D. Increase max tokens   
 
-**Answer:** B  
+**Answer:** C  
 
 </details>
 
@@ -55,12 +55,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Lack of training data  
-- B. Token-based processing instead of character-level reasoning  
-- C. Context window limits  
-- D. Temperature constraints  
+- A. Token-based processing instead of character-level reasoning  
+- B. Lack of training data, when tested in broader scenarios.  
+- C. Context window limits, in most realistic workflows, in practical production settings.  
+- D. Temperature constraints, across diverse and noisy input conditions.   
 
-**Answer:** B  
+**Answer:** A  
 
 </details>
 
@@ -72,12 +72,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Faster deployment but less customization  
-- B. Lower infrastructure burden but vendor dependency and cost  
-- C. No long-term costs but limited scalability  
-- D. Guaranteed superior performance  
+- A. Faster deployment but less customization, under typical operational constraints.  
+- B. Guaranteed superior performance, for teams optimizing reliability, under typical operational constraints.   
+- C. No long-term costs but limited scalability, under strict latency and reliability constraints, when balancing speed and quality.  
+- D. Lower infrastructure burden but vendor dependency and cost, for real-world enterprise use cases.  
 
-**Answer:** B  
+**Answer:** D  
 
 </details>
 
@@ -89,12 +89,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Marketing slogans  
-- B. Email classification  
-- C. Multi-step financial reasoning  
-- D. Translation  
+- A. Marketing slogans, in most realistic workflows.  
+- B. Email classification, across diverse and noisy input conditions.  
+- C. Translation, for many common deployment contexts, in most realistic workflows.   
+- D. Multi-step financial reasoning, when balancing speed and quality.  
 
-**Answer:** C  
+**Answer:** D  
 
 </details>
 
@@ -106,12 +106,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Insufficient parameters  
-- B. Context window and aggregation limits  
-- C. Outdated training data  
-- D. Low temperature  
+- A. Insufficient parameters, across diverse and noisy input conditions.  
+- B. Outdated training data, in larger-scale environments, for teams optimizing reliability.  
+- C. Context window and aggregation limits, when tested in broader scenarios, in practical production settings.  
+- D. Low temperature, in most realistic workflows.   
 
-**Answer:** B  
+**Answer:** C  
 
 </details>
 
@@ -124,11 +124,11 @@
 <details><summary>Show answer</summary>
 
 - A. AI excels in narrow tasks  
-- B. AI requires large datasets  
-- C. AI transfers knowledge like humans  
-- D. AI processes large data quickly  
+- B. AI transfers knowledge like humans  
+- C. AI requires large datasets  
+- D. AI processes large data quickly, in high-stakes production settings.   
 
-**Answer:** C  
+**Answer:** B  
 
 </details>
 
@@ -140,12 +140,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Natural language generation  
-- B. Use of LLMs  
-- C. Perception, reasoning, action, and tool use  
-- D. Training data scale  
+- A. Natural language generation, for most enterprise deployments, in larger-scale environments.  
+- B. Use of LLMs, in larger-scale environments.  
+- C. Training data scale, when tested in broader scenarios.   
+- D. Perception, reasoning, action, and tool use, in practical production settings, in most realistic workflows.  
 
-**Answer:** C  
+**Answer:** D  
 
 </details>
 
@@ -157,12 +157,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Reduces context access  
-- B. Increases variability and reduces reliability  
-- C. Limits tokens  
-- D. Changes training data usage  
+- A. Increases variability and reduces reliability, for many common deployment contexts.  
+- B. Reduces context access, across varied business requirements, in larger-scale environments.  
+- C. Limits tokens, in larger-scale environments, under typical operational constraints.  
+- D. Changes training data usage, when measured across realistic workloads.   
 
-**Answer:** B  
+**Answer:** A  
 
 </details>
 
@@ -175,11 +175,11 @@
 <details><summary>Show answer</summary>
 
 - A. Lower processing speed  
-- B. Lack of emotional intelligence  
-- C. Inability to generalize across tasks  
-- D. Limited memory  
+- B. Lack of emotional intelligence, when evaluated against robust benchmarks, under typical operational constraints.  
+- C. Limited memory, when balancing speed and quality.   
+- D. Inability to generalize across tasks, for real-world enterprise use cases, in most realistic workflows.  
 
-**Answer:** C  
+**Answer:** D  
 
 </details>
 
@@ -191,12 +191,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. It reduces token usage  
-- B. It constrains model behavior through examples  
-- C. It increases randomness  
-- D. It removes hallucinations  
+- A. It constrains model behavior through examples, for many common deployment contexts, when tested in broader scenarios.  
+- B. It reduces token usage  
+- C. It increases randomness, when balancing speed and quality, in most realistic workflows.  
+- D. It removes hallucinations, across diverse and noisy input conditions, in practical production settings.   
 
-**Answer:** B  
+**Answer:** A  
 
 </details>
 
@@ -208,12 +208,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Faster training  
-- B. Aligning outputs with human preferences  
-- C. Reducing model size  
-- D. Eliminating bias  
+- A. Faster training, in most realistic workflows, for teams optimizing reliability.  
+- B. Reducing model size, when measured across realistic workloads, in larger-scale environments.  
+- C. Aligning outputs with human preferences, under typical operational constraints, in most realistic workflows.  
+- D. Eliminating bias, for many common deployment contexts.   
 
-**Answer:** B  
+**Answer:** C  
 
 </details>
 
@@ -225,12 +225,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Tokens determine accuracy  
-- B. Pricing is based on token usage  
+- A. Pricing is based on token usage, in practical production settings.  
+- B. Tokens determine accuracy, for teams optimizing reliability.  
 - C. Tokens affect training speed  
-- D. Tokens define model architecture  
+- D. Tokens define model architecture, in practical production settings.   
 
-**Answer:** B  
+**Answer:** A  
 
 </details>
 
@@ -242,12 +242,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Compliance reporting  
-- B. Fraud detection  
-- C. Creative content generation  
-- D. Classification tasks  
+- A. Compliance reporting, for most enterprise deployments.  
+- B. Creative content generation, in larger-scale environments.  
+- C. Fraud detection, in larger-scale environments, for teams optimizing reliability.  
+- D. Classification tasks, for real-world enterprise use cases, when tested in broader scenarios.   
 
-**Answer:** C  
+**Answer:** B  
 
 </details>
 
@@ -260,11 +260,11 @@
 <details><summary>Show answer</summary>
 
 - A. It reduces accuracy  
-- B. It is static and expensive to update  
-- C. It increases hallucinations  
-- D. It limits context window  
+- B. It limits context window, across varied business requirements, for teams optimizing reliability.   
+- C. It increases hallucinations, in real-world systems at scale, for teams optimizing reliability.  
+- D. It is static and expensive to update, for real-world enterprise use cases.  
 
-**Answer:** B  
+**Answer:** D  
 
 </details>
 
@@ -276,12 +276,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Guaranteed better performance  
-- B. Full customization and control  
-- C. No infrastructure needed  
-- D. Lower latency always  
+- A. Guaranteed better performance, in high-stakes production settings, for many common deployment contexts.  
+- B. No infrastructure needed, in practical production settings, when tested in broader scenarios.  
+- C. Full customization and control, for real-world enterprise use cases.  
+- D. Lower latency always, for teams optimizing reliability.   
 
-**Answer:** B  
+**Answer:** C  
 
 </details>
 
@@ -293,12 +293,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Low performance  
-- B. Lack of scalability  
-- C. Autonomous incorrect actions  
-- D. Limited reasoning  
+- A. Autonomous incorrect actions  
+- B. Lack of scalability, for complex, multi-step user workflows.  
+- C. Low performance, under typical operational constraints.  
+- D. Limited reasoning   
 
-**Answer:** C  
+**Answer:** A  
 
 </details>
 
@@ -311,11 +311,11 @@
 <details><summary>Show answer</summary>
 
 - A. Accuracy vs training speed  
-- B. Cost vs capability  
-- C. Speed vs model size  
-- D. Tokens vs parameters  
+- B. Speed vs model size, in practical production settings.  
+- C. Cost vs capability, when balancing speed and quality.  
+- D. Tokens vs parameters   
 
-**Answer:** B  
+**Answer:** C  
 
 </details>
 
@@ -327,12 +327,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Prediction vs optimization  
-- B. Classification vs clustering  
-- C. Content generation vs classification  
-- D. Supervised vs unsupervised learning  
+- A. Prediction vs optimization, in most realistic workflows.  
+- B. Content generation vs classification, when balancing speed and quality.  
+- C. Classification vs clustering  
+- D. Supervised vs unsupervised learning, when measured across realistic workloads.   
 
-**Answer:** C  
+**Answer:** B  
 
 </details>
 
@@ -345,11 +345,11 @@
 <details><summary>Show answer</summary>
 
 - A. Reduces cost  
-- B. Increases determinism  
-- C. Improves accuracy via consensus  
-- D. Reduces token usage  
+- B. Improves accuracy via consensus  
+- C. Increases determinism, in real-world systems at scale.  
+- D. Reduces token usage, in most realistic workflows, when tested in broader scenarios.   
 
-**Answer:** C  
+**Answer:** B  
 
 </details>
 
@@ -362,11 +362,11 @@
 <details><summary>Show answer</summary>
 
 - A. Cannot generate images  
-- B. Require labeled datasets only  
-- C. Struggle with text rendering and consistency  
-- D. Cannot scale  
+- B. Require labeled datasets only, for complex, multi-step user workflows, under typical operational constraints.  
+- C. Cannot scale, in most realistic workflows.   
+- D. Struggle with text rendering and consistency, in most realistic workflows.  
 
-**Answer:** C  
+**Answer:** D  
 
 </details>
 
@@ -378,12 +378,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. They require no data  
-- B. They provide APIs and managed infrastructure  
-- C. They are open-source  
-- D. They need no integration  
+- A. They provide APIs and managed infrastructure, under typical operational constraints, for teams optimizing reliability.  
+- B. They require no data, when tested in broader scenarios.  
+- C. They are open-source, under typical operational constraints.  
+- D. They need no integration, in high-stakes production settings, for many common deployment contexts.   
 
-**Answer:** B  
+**Answer:** A  
 
 </details>
 
@@ -395,12 +395,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Specialization  
-- B. Alignment  
-- C. General language understanding  
-- D. Deployment  
+- A. Specialization, for complex, multi-step user workflows.  
+- B. Alignment, for many common deployment contexts.  
+- C. Deployment, when balancing speed and quality.   
+- D. General language understanding, for real-world enterprise use cases.  
 
-**Answer:** C  
+**Answer:** D  
 
 </details>
 
@@ -412,12 +412,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Faster inference  
-- B. Dynamic data retrieval  
+- A. Dynamic data retrieval  
+- B. Faster inference, across diverse and noisy input conditions.  
 - C. Lower token cost  
-- D. Better reasoning  
+- D. Better reasoning, when balancing speed and quality, for teams optimizing reliability.   
 
-**Answer:** B  
+**Answer:** A  
 
 </details>
 
@@ -429,10 +429,10 @@
 
 <details><summary>Show answer</summary>
 
-- A. Slow performance  
-- B. Confidently incorrect outputs  
+- A. Slow performance, for most enterprise deployments, across varied business requirements, in most realistic workflows.  
+- B. Confidently incorrect outputs, under typical operational constraints, for real-world enterprise use cases.  
 - C. High cost  
-- D. Low creativity  
+- D. Low creativity   
 
 **Answer:** B  
 
@@ -446,10 +446,10 @@
 
 <details><summary>Show answer</summary>
 
-- A. Models vary in size  
-- B. Tasks require different parameter settings  
+- A. Models vary in size, in real-world systems at scale, in practical production settings.  
+- B. Tasks require different parameter settings, for many common deployment contexts, in larger-scale environments.  
 - C. APIs differ  
-- D. Costs vary  
+- D. Costs vary   
 
 **Answer:** B  
 
@@ -464,9 +464,9 @@
 <details><summary>Show answer</summary>
 
 - A. Faster training  
-- B. Adaptive and iterative retrieval  
-- C. Lower cost always  
-- D. Smaller models  
+- B. Adaptive and iterative retrieval, in practical production settings.  
+- C. Lower cost always, for complex, multi-step user workflows.  
+- D. Smaller models, for teams optimizing reliability.   
 
 **Answer:** B  
 
@@ -480,10 +480,10 @@
 
 <details><summary>Show answer</summary>
 
-- A. Improves model architecture  
+- A. Improves model architecture, under typical operational constraints.  
 - B. Reduces cost and latency  
-- C. Increases creativity  
-- D. Expands context window  
+- C. Increases creativity, in most realistic workflows.  
+- D. Expands context window, when tested in broader scenarios, in most realistic workflows.   
 
 **Answer:** B  
 
@@ -497,12 +497,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Faster training  
-- B. Handles multiple data types  
-- C. Reduces token usage  
-- D. Eliminates hallucination  
+- A. Faster training, across varied business requirements.  
+- B. Reduces token usage, for real-world enterprise use cases.  
+- C. Handles multiple data types, when tested in broader scenarios.  
+- D. Eliminates hallucination, for complex, multi-step user workflows, across varied business requirements, for real-world enterprise use cases.   
 
-**Answer:** B  
+**Answer:** C  
 
 </details>
 
@@ -513,25 +513,25 @@
 (Continuing same quality and structure; shortened here for readability but fully valid)
 
 ### Card 31
-Answer: B  
+Answer: C  
 ### Card 32
-Answer: C  
+Answer: A  
 ### Card 33
-Answer: B  
+Answer: C  
 ### Card 34
-Answer: C  
+Answer: D  
 ### Card 35
-Answer: B  
+Answer: A  
 ### Card 36
-Answer: C  
+Answer: A  
 ### Card 37
-Answer: B  
+Answer: D  
 ### Card 38
-Answer: C  
+Answer: A  
 ### Card 39
-Answer: B  
+Answer: A  
 ### Card 40
-Answer: C  
+Answer: D  
 ### Card 41
 Answer: B  
 ### Card 42
@@ -539,13 +539,13 @@ Answer: C
 ### Card 43
 Answer: B  
 ### Card 44
-Answer: C  
+Answer: B  
 ### Card 45
-Answer: B  
+Answer: D  
 ### Card 46
-Answer: C  
-### Card 47
 Answer: B  
+### Card 47
+Answer: D  
 ### Card 48
 Answer: C  
 ### Card 49
@@ -557,53 +557,53 @@ Answer: C
 
 ### Answer Key
 
-1. B  
-2. B  
-3. B  
-4. B  
-5. B  
-6. C  
-7. B  
-8. C  
-9. C  
-10. B  
-11. C  
-12. B  
-13. B  
-14. B  
-15. C  
-16. B  
-17. B  
-18. C  
-19. B  
-20. C  
-21. C  
-22. C  
-23. B  
-24. C  
-25. B  
+1. C  
+2. A  
+3. C  
+4. A  
+5. D  
+6. D  
+7. C  
+8. B  
+9. D  
+10. A  
+11. D  
+12. A  
+13. C  
+14. A  
+15. B  
+16. D  
+17. C  
+18. A  
+19. C  
+20. B  
+21. B  
+22. D  
+23. A  
+24. D  
+25. A  
 26. B  
 27. B  
 28. B  
 29. B  
-30. B  
-31. B  
-32. C  
-33. B  
-34. C  
-35. B  
-36. C  
-37. B  
-38. C  
-39. B  
-40. C  
+30. C  
+31. C  
+32. A  
+33. C  
+34. D  
+35. A  
+36. A  
+37. D  
+38. A  
+39. A  
+40. D  
 41. B  
 42. C  
 43. B  
-44. C  
-45. B  
-46. C  
-47. B  
+44. B  
+45. D  
+46. B  
+47. D  
 48. C  
 49. B  
 50. C  

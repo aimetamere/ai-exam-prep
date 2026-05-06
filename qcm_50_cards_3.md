@@ -4,10 +4,10 @@
 
 <details><summary>Show answer</summary>
 
-- A. Increase context window to include more examples  
-- B. Lower temperature to reduce randomness in outputs  
+- A. Increase context window to include more examples, when evaluated against robust benchmarks.  
+- B. Lower temperature to reduce randomness in outputs, in larger-scale environments.  
 - C. Increase max tokens to allow longer responses  
-- D. Add unrelated examples to improve diversity  
+- D. Add unrelated examples to improve diversity   
 
 **Answer:** B  
 
@@ -21,12 +21,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. The model ignores earlier examples due to training bias  
-- B. The context window may dilute relevant signals with noise  
-- C. The temperature becomes implicitly higher  
-- D. Tokenization fails with long sequences  
+- A. The model ignores earlier examples due to training bias, under strict latency and reliability constraints.  
+- B. The temperature becomes implicitly higher  
+- C. The context window may dilute relevant signals with noise  
+- D. Tokenization fails with long sequences, for real-world enterprise use cases, when tested in broader scenarios.   
 
-**Answer:** B  
+**Answer:** C  
 
 </details>
 
@@ -38,10 +38,10 @@
 
 <details><summary>Show answer</summary>
 
-- A. Increase temperature to encourage structured outputs  
-- B. Use few-shot examples with explicit format constraints  
-- C. Rely on zero-shot instructions only  
-- D. Increase context window without examples  
+- A. Increase temperature to encourage structured outputs, for complex, multi-step user workflows, for teams optimizing reliability.  
+- B. Use few-shot examples with explicit format constraints, in larger-scale environments, when tested in broader scenarios.  
+- C. Rely on zero-shot instructions only, in larger-scale environments.  
+- D. Increase context window without examples   
 
 **Answer:** B  
 
@@ -55,12 +55,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. It increases randomness automatically  
-- B. It only controls length, not correctness  
-- C. It reduces context understanding  
-- D. It changes model architecture  
+- A. It increases randomness automatically, in high-stakes production settings.  
+- B. It changes model architecture, when tested in broader scenarios.   
+- C. It reduces context understanding, in most realistic workflows, in practical production settings.  
+- D. It only controls length, not correctness  
 
-**Answer:** B  
+**Answer:** D  
 
 </details>
 
@@ -72,12 +72,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Rapidly changing knowledge base  
-- B. Highly consistent domain-specific style requirements  
-- C. One-time classification task  
-- D. Small dataset with no repetition  
+- A. Highly consistent domain-specific style requirements, under typical operational constraints.  
+- B. Rapidly changing knowledge base, for teams optimizing reliability, under typical operational constraints.  
+- C. One-time classification task, when balancing speed and quality.  
+- D. Small dataset with no repetition, across diverse and noisy input conditions, for real-world enterprise use cases.   
 
-**Answer:** B  
+**Answer:** A  
 
 </details>
 
@@ -89,12 +89,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. It eliminates hallucinations entirely  
-- B. It may overfit to provided examples’ patterns  
-- C. It reduces token usage significantly  
-- D. It guarantees generalization  
+- A. It eliminates hallucinations entirely, for complex, multi-step user workflows, in most realistic workflows.  
+- B. It reduces token usage significantly  
+- C. It may overfit to provided examples’ patterns, for many common deployment contexts, in most realistic workflows.  
+- D. It guarantees generalization, when balancing speed and quality.   
 
-**Answer:** B  
+**Answer:** C  
 
 </details>
 
@@ -106,12 +106,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Prompts cannot exceed 100 tokens  
-- B. Retrieval allows dynamic and scalable knowledge access  
-- C. Prompts are always less accurate  
-- D. Retrieval reduces reasoning complexity  
+- A. Retrieval allows dynamic and scalable knowledge access  
+- B. Prompts cannot exceed 100 tokens, in larger-scale environments, for teams optimizing reliability.  
+- C. Prompts are always less accurate, when tested in broader scenarios, in practical production settings.  
+- D. Retrieval reduces reasoning complexity, across diverse and noisy input conditions, in most realistic workflows.   
 
-**Answer:** B  
+**Answer:** A  
 
 </details>
 
@@ -123,12 +123,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Producing incomplete answers  
-- B. Generating plausible but incorrect information confidently  
-- C. Refusing to answer ambiguous queries  
-- D. Producing short outputs  
+- A. Generating plausible but incorrect information confidently  
+- B. Producing incomplete answers  
+- C. Refusing to answer ambiguous queries, across diverse and noisy input conditions.  
+- D. Producing short outputs   
 
-**Answer:** B  
+**Answer:** A  
 
 </details>
 
@@ -140,12 +140,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. It increases hallucinations  
-- B. It reduces diversity and may lock incorrect patterns  
-- C. It increases token usage  
-- D. It reduces context window size  
+- A. It reduces diversity and may lock incorrect patterns, in larger-scale environments.  
+- B. It increases hallucinations, in larger-scale environments.  
+- C. It increases token usage, when tested in broader scenarios.  
+- D. It reduces context window size, under strict latency and reliability constraints, in practical production settings, in most realistic workflows.   
 
-**Answer:** B  
+**Answer:** A  
 
 </details>
 
@@ -157,12 +157,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Accuracy vs generalization  
-- B. Cost and latency vs information capacity  
-- C. Training vs inference speed  
-- D. Creativity vs determinism  
+- A. Accuracy vs generalization, for many common deployment contexts.  
+- B. Training vs inference speed, under strict latency and reliability constraints, across varied business requirements, in larger-scale environments.  
+- C. Cost and latency vs information capacity, in larger-scale environments, under typical operational constraints.  
+- D. Creativity vs determinism   
 
-**Answer:** B  
+**Answer:** C  
 
 </details>
 
@@ -175,11 +175,11 @@
 <details><summary>Show answer</summary>
 
 - A. Models ignore long prompts  
-- B. Clear instructions reduce ambiguity in token prediction  
-- C. Longer prompts increase hallucinations directly  
-- D. Length limits model capacity  
+- B. Length limits model capacity, under typical operational constraints.   
+- C. Longer prompts increase hallucinations directly, for most enterprise deployments, when balancing speed and quality.  
+- D. Clear instructions reduce ambiguity in token prediction, for real-world enterprise use cases, in most realistic workflows.  
 
-**Answer:** B  
+**Answer:** D  
 
 </details>
 
@@ -191,12 +191,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Increasing temperature  
-- B. Using retrieval with verified sources  
-- C. Reducing max tokens  
-- D. Adding unrelated examples  
+- A. Using retrieval with verified sources, for many common deployment contexts, when tested in broader scenarios.  
+- B. Increasing temperature  
+- C. Reducing max tokens, when balancing speed and quality, in most realistic workflows.  
+- D. Adding unrelated examples, when measured across realistic workloads, in practical production settings.   
 
-**Answer:** B  
+**Answer:** A  
 
 </details>
 
@@ -208,12 +208,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. It uses smaller models  
-- B. It can iteratively plan and act across steps  
-- C. It eliminates the need for prompts  
-- D. It reduces computation cost  
+- A. It uses smaller models, in most realistic workflows, for teams optimizing reliability.  
+- B. It eliminates the need for prompts, in real-world systems at scale, in larger-scale environments.  
+- C. It can iteratively plan and act across steps, under typical operational constraints, in most realistic workflows.  
+- D. It reduces computation cost, for many common deployment contexts.   
 
-**Answer:** B  
+**Answer:** C  
 
 </details>
 
@@ -225,10 +225,10 @@
 
 <details><summary>Show answer</summary>
 
-- A. Reduced model size  
-- B. Overfitting to narrow prompt structures  
-- C. Increased training time  
-- D. Loss of tokenization  
+- A. Reduced model size, in practical production settings.  
+- B. Overfitting to narrow prompt structures, for teams optimizing reliability.  
+- C. Increased training time, when measured across realistic workloads.  
+- D. Loss of tokenization, in practical production settings.   
 
 **Answer:** B  
 
@@ -243,11 +243,11 @@
 <details><summary>Show answer</summary>
 
 - A. Logical reasoning  
-- B. Mathematical problem solving  
-- C. Simple classification  
-- D. Multi-step decision making  
+- B. Simple classification, in larger-scale environments.  
+- C. Mathematical problem solving, in larger-scale environments, for teams optimizing reliability.  
+- D. Multi-step decision making, for real-world enterprise use cases, when tested in broader scenarios.   
 
-**Answer:** C  
+**Answer:** B  
 
 </details>
 
@@ -260,11 +260,11 @@
 <details><summary>Show answer</summary>
 
 - A. It reduces training cost  
-- B. It ensures reproducibility and auditability  
-- C. It increases creativity  
-- D. It expands context window  
+- B. It increases creativity, across varied business requirements, for teams optimizing reliability.  
+- C. It ensures reproducibility and auditability, for teams optimizing reliability.  
+- D. It expands context window, when measured across realistic workloads, for real-world enterprise use cases.   
 
-**Answer:** B  
+**Answer:** C  
 
 </details>
 
@@ -276,12 +276,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. They perform well on many tasks  
-- B. They automatically eliminate all errors  
-- C. They require more compute  
-- D. They support diverse applications  
+- A. They perform well on many tasks, for many common deployment contexts.  
+- B. They support diverse applications, under strict latency and reliability constraints, in practical production settings, when tested in broader scenarios.   
+- C. They require more compute, for real-world enterprise use cases.  
+- D. They automatically eliminate all errors, for teams optimizing reliability.  
 
-**Answer:** B  
+**Answer:** D  
 
 </details>
 
@@ -293,12 +293,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Outputs are always binary  
-- B. Quality can be subjective and context-dependent  
-- C. Models cannot be tested  
-- D. Metrics are fixed  
+- A. Outputs are always binary, for complex, multi-step user workflows.  
+- B. Metrics are fixed   
+- C. Models cannot be tested, under typical operational constraints.  
+- D. Quality can be subjective and context-dependent  
 
-**Answer:** B  
+**Answer:** D  
 
 </details>
 
@@ -310,12 +310,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Reduced flexibility  
-- B. Easier debugging and scalability  
-- C. Lower accuracy  
-- D. Smaller datasets  
+- A. Reduced flexibility, for complex, multi-step user workflows.  
+- B. Lower accuracy, in practical production settings.  
+- C. Easier debugging and scalability, when balancing speed and quality.  
+- D. Smaller datasets   
 
-**Answer:** B  
+**Answer:** C  
 
 </details>
 
@@ -327,12 +327,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Too many tokens  
-- B. Lack of guidance on reasoning structure  
+- A. Lack of guidance on reasoning structure, in most realistic workflows.  
+- B. Too many tokens, when balancing speed and quality.  
 - C. Excessive context  
-- D. Model size limitations  
+- D. Model size limitations, for most enterprise deployments.   
 
-**Answer:** B  
+**Answer:** A  
 
 </details>
 
@@ -343,12 +343,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. The model lacks sufficient parameters  
-- B. The prompt design overfits to specific phrasing patterns  
-- C. The context window is too small  
-- D. The temperature is too high  
+- A. The model lacks sufficient parameters, for most enterprise deployments, under typical operational constraints.  
+- B. The context window is too small, in larger-scale environments.  
+- C. The prompt design overfits to specific phrasing patterns, when tested in broader scenarios.  
+- D. The temperature is too high, in practical production settings, in larger-scale environments.   
 
-**Answer:** B  
+**Answer:** C  
 
 </details>
 
@@ -360,12 +360,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Increasing max tokens  
-- B. Using diverse examples in few-shot prompting  
-- C. Lowering temperature to zero  
-- D. Reducing context window  
+- A. Using diverse examples in few-shot prompting  
+- B. Increasing max tokens, in larger-scale environments, for teams optimizing reliability.  
+- C. Lowering temperature to zero, across diverse and noisy input conditions, for many common deployment contexts.  
+- D. Reducing context window   
 
-**Answer:** B  
+**Answer:** A  
 
 </details>
 
@@ -377,12 +377,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. It reduces training cost  
-- B. It reveals failure modes not visible in average cases  
-- C. It increases model size  
-- D. It simplifies deployment  
+- A. It reveals failure modes not visible in average cases  
+- B. It reduces training cost, when evaluated against robust benchmarks, when tested in broader scenarios, for real-world enterprise use cases.  
+- C. It increases model size, when tested in broader scenarios.  
+- D. It simplifies deployment   
 
-**Answer:** B  
+**Answer:** A  
 
 </details>
 
@@ -394,12 +394,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. It requires retraining  
-- B. It cannot fully control model internal representations  
-- C. It reduces inference speed  
-- D. It increases hallucinations directly  
+- A. It requires retraining, in practical production settings.  
+- B. It increases hallucinations directly, when evaluated against robust benchmarks, for real-world enterprise use cases.   
+- C. It reduces inference speed, for teams optimizing reliability, for many common deployment contexts.  
+- D. It cannot fully control model internal representations, for many common deployment contexts.  
 
-**Answer:** B  
+**Answer:** D  
 
 </details>
 
@@ -411,10 +411,10 @@
 
 <details><summary>Show answer</summary>
 
-- A. Always use largest model available  
-- B. Use smaller model with structured prompting and fallback escalation  
-- C. Use high temperature for faster outputs  
-- D. Use maximum context window  
+- A. Always use largest model available, when balancing speed and quality, for teams optimizing reliability.  
+- B. Use smaller model with structured prompting and fallback escalation, across varied business requirements.  
+- C. Use high temperature for faster outputs, across diverse and noisy input conditions.  
+- D. Use maximum context window, across varied business requirements.   
 
 **Answer:** B  
 
@@ -428,12 +428,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. It reduces token count  
-- B. It allows progressive correction of reasoning  
-- C. It eliminates hallucinations  
-- D. It increases randomness  
+- A. It reduces token count, across varied business requirements, in larger-scale environments.  
+- B. It increases randomness, when tested in broader scenarios.   
+- C. It eliminates hallucinations, in real-world systems at scale, for many common deployment contexts.  
+- D. It allows progressive correction of reasoning, for teams optimizing reliability.  
 
-**Answer:** B  
+**Answer:** D  
 
 </details>
 
@@ -445,10 +445,10 @@
 
 <details><summary>Show answer</summary>
 
-- A. It ignores latency  
-- B. It may hide systematic bias or failure patterns  
-- C. It increases cost  
-- D. It reduces generalization  
+- A. It ignores latency, in practical production settings, across varied business requirements.  
+- B. It may hide systematic bias or failure patterns, in practical production settings, when balancing speed and quality.  
+- C. It increases cost, in larger-scale environments.  
+- D. It reduces generalization, when evaluated against robust benchmarks, for real-world enterprise use cases.   
 
 **Answer:** B  
 
@@ -462,12 +462,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Choosing a larger model for all tasks regardless of cost  
-- B. Choosing smaller model for speed vs larger model for reasoning quality  
-- C. Choosing model based only on token limits  
-- D. Choosing open-source over API always  
+- A. Choosing smaller model for speed vs larger model for reasoning quality, for real-world enterprise use cases.  
+- B. Choosing a larger model for all tasks regardless of cost, when evaluated against robust benchmarks.  
+- C. Choosing model based only on token limits, for many common deployment contexts, for real-world enterprise use cases.  
+- D. Choosing open-source over API always, for teams optimizing reliability, in practical production settings.   
 
-**Answer:** B  
+**Answer:** A  
 
 </details>
 
@@ -479,12 +479,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. It reduces training data needs  
-- B. It guides the sequence of logical steps  
-- C. It increases tokenization efficiency  
-- D. It limits output length  
+- A. It guides the sequence of logical steps  
+- B. It reduces training data needs, when balancing speed and quality.  
+- C. It increases tokenization efficiency, when evaluated against robust benchmarks, for real-world enterprise use cases.  
+- D. It limits output length, in larger-scale environments, for teams optimizing reliability.   
 
-**Answer:** B  
+**Answer:** A  
 
 </details>
 
@@ -496,10 +496,10 @@
 
 <details><summary>Show answer</summary>
 
-- A. Always retrieving irrelevant documents  
-- B. Retrieving correct documents but failing to integrate them coherently  
-- C. Inability to generate text  
-- D. Excessive token limits  
+- A. Always retrieving irrelevant documents, across diverse and noisy input conditions, in practical production settings, for real-world enterprise use cases.  
+- B. Retrieving correct documents but failing to integrate them coherently, in practical production settings.  
+- C. Inability to generate text, in larger-scale environments, for real-world enterprise use cases.  
+- D. Excessive token limits, under typical operational constraints.   
 
 **Answer:** B  
 
@@ -514,11 +514,11 @@
 <details><summary>Show answer</summary>
 
 - A. It reduces model size  
-- B. It ties outputs to verifiable sources  
-- C. It increases creativity  
-- D. It speeds up inference  
+- B. It increases creativity, when evaluated against robust benchmarks.  
+- C. It ties outputs to verifiable sources, across varied business requirements.  
+- D. It speeds up inference, when tested in broader scenarios.   
 
-**Answer:** B  
+**Answer:** C  
 
 </details>
 
@@ -530,10 +530,10 @@
 
 <details><summary>Show answer</summary>
 
-- A. Increased cost  
-- B. Reduced diversity and exploration  
-- C. Larger context requirement  
-- D. Slower inference  
+- A. Increased cost, across varied business requirements, when balancing speed and quality.  
+- B. Reduced diversity and exploration, in practical production settings.  
+- C. Larger context requirement, for most enterprise deployments, when tested in broader scenarios, for real-world enterprise use cases.  
+- D. Slower inference, across varied business requirements, in practical production settings.   
 
 **Answer:** B  
 
@@ -547,12 +547,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Generating a story  
-- B. Performing real-time stock price retrieval  
-- C. Summarizing a document  
-- D. Translating text  
+- A. Generating a story, when tested in broader scenarios.  
+- B. Translating text, when tested in broader scenarios.   
+- C. Summarizing a document, across diverse and noisy input conditions, in practical production settings.  
+- D. Performing real-time stock price retrieval, when balancing speed and quality, under typical operational constraints.  
 
-**Answer:** B  
+**Answer:** D  
 
 </details>
 
@@ -564,10 +564,10 @@
 
 <details><summary>Show answer</summary>
 
-- A. It reduces tokenization errors  
-- B. It coordinates multiple components and workflows  
-- C. It increases model size  
-- D. It eliminates hallucinations  
+- A. It reduces tokenization errors, across diverse and noisy input conditions, in most realistic workflows.  
+- B. It coordinates multiple components and workflows, in larger-scale environments.  
+- C. It increases model size, in most realistic workflows.  
+- D. It eliminates hallucinations   
 
 **Answer:** B  
 
@@ -581,10 +581,10 @@
 
 <details><summary>Show answer</summary>
 
-- A. Reduce training time  
-- B. Provide consistent benchmarks for performance  
-- C. Increase model size  
-- D. Reduce latency  
+- A. Reduce training time, when measured across realistic workloads, when tested in broader scenarios.  
+- B. Provide consistent benchmarks for performance, when tested in broader scenarios.  
+- C. Increase model size, in most realistic workflows.  
+- D. Reduce latency, in most realistic workflows.   
 
 **Answer:** B  
 
@@ -598,10 +598,10 @@
 
 <details><summary>Show answer</summary>
 
-- A. Reduces cost automatically  
+- A. Reduces cost automatically, under strict latency and reliability constraints, when balancing speed and quality.  
 - B. Allows reuse and easier updates  
-- C. Increases randomness  
-- D. Expands context window  
+- C. Increases randomness, when balancing speed and quality.  
+- D. Expands context window, in practical production settings.   
 
 **Answer:** B  
 
@@ -615,12 +615,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Tokenization  
-- B. Maintaining reliability across diverse inputs  
-- C. Model size reduction  
-- D. Eliminating prompts  
+- A. Maintaining reliability across diverse inputs, for many common deployment contexts.  
+- B. Tokenization  
+- C. Model size reduction, when measured across realistic workloads.  
+- D. Eliminating prompts   
 
-**Answer:** B  
+**Answer:** A  
 
 </details>
 
@@ -632,12 +632,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. It affects training accuracy  
-- B. It impacts user experience and adoption  
-- C. It increases model size  
-- D. It reduces token usage  
+- A. It affects training accuracy, in high-stakes production settings, under typical operational constraints.  
+- B. It increases model size, for many common deployment contexts, for real-world enterprise use cases.  
+- C. It impacts user experience and adoption, when tested in broader scenarios.  
+- D. It reduces token usage, across varied business requirements.   
 
-**Answer:** B  
+**Answer:** C  
 
 </details>
 
@@ -649,12 +649,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. It improves factual accuracy  
-- B. It eliminates hallucinations completely  
-- C. It enables dynamic knowledge access  
-- D. It supports large datasets  
+- A. It improves factual accuracy, under typical operational constraints.  
+- B. It enables dynamic knowledge access, when measured across realistic workloads, in most realistic workflows, for teams optimizing reliability.  
+- C. It eliminates hallucinations completely  
+- D. It supports large datasets, when tested in broader scenarios, under typical operational constraints.   
 
-**Answer:** B  
+**Answer:** C  
 
 </details>
 
@@ -667,9 +667,9 @@
 <details><summary>Show answer</summary>
 
 - A. Increase temperature  
-- B. Use structured reasoning prompts  
-- C. Reduce context window  
-- D. Increase randomness  
+- B. Use structured reasoning prompts, when balancing speed and quality.  
+- C. Reduce context window, under strict latency and reliability constraints, in practical production settings.  
+- D. Increase randomness, for teams optimizing reliability.   
 
 **Answer:** B  
 
@@ -683,12 +683,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Reduces model size  
-- B. Handles failure cases gracefully  
-- C. Increases token usage  
-- D. Improves training speed  
+- A. Reduces model size, for many common deployment contexts, for real-world enterprise use cases.  
+- B. Improves training speed, when measured across realistic workloads.   
+- C. Increases token usage, in larger-scale environments.  
+- D. Handles failure cases gracefully, in practical production settings.  
 
-**Answer:** B  
+**Answer:** D  
 
 </details>
 
@@ -701,11 +701,11 @@
 <details><summary>Show answer</summary>
 
 - A. Increase cost  
-- B. Continuously improve system performance  
-- C. Reduce context window  
-- D. Eliminate prompts  
+- B. Eliminate prompts, for teams optimizing reliability, for real-world enterprise use cases.   
+- C. Reduce context window, for most enterprise deployments, in most realistic workflows.  
+- D. Continuously improve system performance, in practical production settings.  
 
-**Answer:** B  
+**Answer:** D  
 
 </details>
 
@@ -717,12 +717,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Models change architecture  
-- B. Small changes can significantly affect outputs  
-- C. Tokenization changes  
-- D. Context window varies  
+- A. Models change architecture, across diverse and noisy input conditions, for many common deployment contexts, for teams optimizing reliability.  
+- B. Tokenization changes  
+- C. Small changes can significantly affect outputs, when tested in broader scenarios.  
+- D. Context window varies, in most realistic workflows, in practical production settings.   
 
-**Answer:** B  
+**Answer:** C  
 
 </details>
 
@@ -734,10 +734,10 @@
 
 <details><summary>Show answer</summary>
 
-- A. Smaller models  
+- A. Smaller models, in practical production settings.  
 - B. Combining strengths of multiple approaches  
-- C. Reduced prompts  
-- D. Lower accuracy  
+- C. Reduced prompts, when measured across realistic workloads, in larger-scale environments.  
+- D. Lower accuracy   
 
 **Answer:** B  
 
@@ -751,12 +751,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Reduces token cost  
-- B. Detects drift and failures over time  
-- C. Increases model size  
-- D. Eliminates latency  
+- A. Reduces token cost, when balancing speed and quality, for many common deployment contexts.  
+- B. Eliminates latency, when tested in broader scenarios, in larger-scale environments.   
+- C. Increases model size, in real-world systems at scale, in larger-scale environments, for teams optimizing reliability.  
+- D. Detects drift and failures over time, under typical operational constraints.  
 
-**Answer:** B  
+**Answer:** D  
 
 </details>
 
@@ -768,12 +768,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Too large  
-- B. Cannot reflect real-time changes  
-- C. Increase latency  
-- D. Reduce reasoning  
+- A. Too large, under typical operational constraints.  
+- B. Reduce reasoning, in real-world systems at scale, when tested in broader scenarios.   
+- C. Increase latency, in most realistic workflows.  
+- D. Cannot reflect real-time changes  
 
-**Answer:** B  
+**Answer:** D  
 
 </details>
 
@@ -785,12 +785,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Reduces cost  
-- B. Builds trust and supports debugging  
-- C. Increases randomness  
-- D. Expands context window  
+- A. Builds trust and supports debugging, in most realistic workflows.  
+- B. Reduces cost, in most realistic workflows.  
+- C. Increases randomness, for teams optimizing reliability.  
+- D. Expands context window, when measured across realistic workloads.   
 
-**Answer:** B  
+**Answer:** A  
 
 </details>
 
@@ -802,12 +802,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Accuracy vs randomness  
-- B. Context richness vs cost and latency  
-- C. Training vs inference  
-- D. Tokens vs parameters  
+- A. Context richness vs cost and latency, in most realistic workflows, for teams optimizing reliability.  
+- B. Accuracy vs randomness, in real-world systems at scale.  
+- C. Training vs inference, under typical operational constraints, when balancing speed and quality.  
+- D. Tokens vs parameters, for real-world enterprise use cases, under typical operational constraints.   
 
-**Answer:** B  
+**Answer:** A  
 
 </details>
 
@@ -819,12 +819,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Reduces tokens  
-- B. Captures multiple performance dimensions  
-- C. Increases cost  
-- D. Simplifies deployment  
+- A. Reduces tokens, in most realistic workflows, when balancing speed and quality.  
+- B. Simplifies deployment, across diverse and noisy input conditions.   
+- C. Increases cost, when balancing speed and quality.  
+- D. Captures multiple performance dimensions, for teams optimizing reliability.  
 
-**Answer:** B  
+**Answer:** D  
 
 </details>
 
@@ -836,12 +836,12 @@
 
 <details><summary>Show answer</summary>
 
-- A. Cannot perform tasks  
-- B. Error propagation across multi-step actions  
-- C. Lack of training data  
-- D. Limited tokenization  
+- A. Cannot perform tasks, across varied business requirements.  
+- B. Lack of training data, for most enterprise deployments.  
+- C. Error propagation across multi-step actions, when tested in broader scenarios.  
+- D. Limited tokenization, for many common deployment contexts, for teams optimizing reliability.   
 
-**Answer:** B  
+**Answer:** C  
 
 </details>
 
