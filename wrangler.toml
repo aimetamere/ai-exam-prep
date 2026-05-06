@@ -28,4 +28,4 @@ not_found_handling = "single-page-application"
 [[d1_databases]]
 binding = "DB"
 database_name = "ai-exam-prep-db"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "ff34a14f-f225-4a9e-98ba-e6cc84bc0b09"

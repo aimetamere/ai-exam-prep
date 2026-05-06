@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AI &amp; Sustainability: Risk, Opportunity, and Responsibility</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #e8edf2; font-family: 'Segoe UI', sans-serif; color: #1a2332; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+  #nav { width: 960px; max-width: 98vw; display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
+  #nav button { background: #fff; border: 1px solid #c8d0db; color: #1a2332; padding: 7px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+  #nav button:hover { background: #0f4c81; border-color: #0f4c81; color: #fff; }
+  #nav button:disabled { opacity: 0.35; cursor: default; }
+  #counter { font-size: 14px; color: #5a6a7e; font-weight: 600; }
+  .slide-wrap { width: 960px; max-width: 98vw; }
+  .slide { width: 100%; aspect-ratio: 16/9; background: #fff; border: 1px solid #c8d0db; border-radius: 10px; overflow: hidden; display: none; flex-direction: column; box-shadow: 0 2px 16px rgba(0,0,0,.1); }
+  .slide.active { display: flex; }
+  .hdr { padding: 18px 30px 10px; border-bottom: 2px solid #f0f3f7; }
+  .tag { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #0f4c81; margin-bottom: 4px; }
+  .title { font-size: 22px; font-weight: 800; color: #0f172a; line-height: 1.2; }
+  .sub { font-size: 13px; color: #5a6a7e; margin-top: 3px; }
+  .body { flex: 1; padding: 12px 30px 12px; display: flex; gap: 16px; overflow: hidden; }
+  .foot { padding: 6px 30px; border-top: 1px solid #e8edf2; display: flex; justify-content: space-between; background: #f8fafc; }
+  .fl { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: #0f4c81; }
+  .fn { font-size: 10px; color: #8896a5; }
+  .col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .col2 { flex: 2; }
+  strong { color: #0f172a; }
+  .lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #5a6a7e; margin-bottom: 3px; }
+  .card { background: #f8fafc; border: 1px solid #dde3ec; border-radius: 8px; padding: 10px 12px; }
+  .card.b { border-color: #93c5fd; background: #eff6ff; }
+  .card.g { border-color: #6ee7b7; background: #f0fdf4; }
+  .card.p { border-color: #c4b5fd; background: #faf5ff; }
+  .card.a { border-color: #fcd34d; background: #fffbeb; }
+  .card.r { border-color: #fca5a5; background: #fef2f2; }
+  .card.t { border-color: #67e8f9; background: #ecfeff; }
+  .card.o { border-color: #fdba74; background: #fff7ed; }
+  .card.n { border-color: #a5b4fc; background: #eef2ff; }
+  .ct { font-size: 12px; font-weight: 700; margin-bottom: 4px; color: #0f172a; }
+  .cd { font-size: 12px; color: #4b5a6e; line-height: 1.5; }
+  ul.L { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  ul.L li { font-size: 13px; line-height: 1.45; padding-left: 16px; position: relative; color: #1a2332; }
+  ul.L li::before { content: '▸'; position: absolute; left: 0; color: #0f4c81; font-size: 10px; top: 2px; }
+  ul.L li.warn::before { content: '▲'; font-size: 10px; top: 2px; color: #dc2626; }
+  ul.L li.ok::before { content: '◆'; font-size: 9px; top: 3px; color: #059669; }
+  ul.L li.q::before { content: '?'; font-size: 11px; font-weight: 700; top: 1px; color: #7c3aed; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .tbl th { background: #f0f4f9; color: #3d5068; padding: 6px 9px; text-align: left; border: 1px solid #dde3ec; font-weight: 700; }
+  .tbl td { padding: 6px 9px; border: 1px solid #dde3ec; vertical-align: top; color: #1a2332; font-size: 12px; }
+  .tbl tr:nth-child(even) td { background: #f8fafc; }
+  .bdg { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 10px; font-weight: 700; margin: 2px; }
+  .bdg.b { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+  .bdg.g { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+  .bdg.p { background: #ede9fe; color: #5b21b6; border: 1px solid #c4b5fd; }
+  .bdg.a { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+  .bdg.r { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+  .bdg.t { background: #cffafe; color: #164e63; border: 1px solid #67e8f9; }
+  .bdg.o { background: #ffedd5; color: #9a3412; border: 1px solid #fdba74; }
+  .bdg.n { background: #e0e7ff; color: #3730a3; border: 1px solid #a5b4fc; }
+  .hl { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 9px 13px; font-size: 13px; color: #1a2332; line-height: 1.5; }
+  .hl.g { background: #f0fdf4; border-color: #6ee7b7; }
+  .hl.a { background: #fffbeb; border-color: #fcd34d; }
+  .hl.r { background: #fef2f2; border-color: #fca5a5; }
+  .hl.p { background: #faf5ff; border-color: #c4b5fd; }
+  .hl.o { background: #fff7ed; border-color: #fdba74; }
+  .warn-box { background: #fef2f2; border: 1px solid #fca5a5; border-left: 4px solid #dc2626; border-radius: 0 8px 8px 0; padding: 8px 12px; font-size: 12px; color: #1a2332; line-height: 1.5; }
+  .info-box { background: #eff6ff; border: 1px solid #93c5fd; border-left: 4px solid #0f4c81; border-radius: 0 8px 8px 0; padding: 8px 12px; font-size: 12px; color: #1a2332; line-height: 1.5; }
+  .tip-box { background: #f0fdf4; border: 1px solid #6ee7b7; border-left: 4px solid #059669; border-radius: 0 8px 8px 0; padding: 8px 12px; font-size: 12px; color: #1a2332; line-height: 1.5; }
+  .trick-box { background: #faf5ff; border: 1px solid #c4b5fd; border-left: 4px solid #7c3aed; border-radius: 0 8px 8px 0; padding: 8px 12px; font-size: 12px; color: #1a2332; line-height: 1.5; }
+  /* Title slide */
+  .ts { background: #fff; }
+  .ts-c { display: flex; flex-direction: column; height: 100%; padding: 32px 50px; justify-content: center; position: relative; }
+  .ts-main { font-size: 36px; font-weight: 900; line-height: 1.1; color: #0f172a; }
+  .ts-accent { color: #0f4c81; }
+  .ts-sub { font-size: 15px; color: #5a6a7e; margin-top: 8px; max-width: 480px; line-height: 1.6; }
+  .ts-pills { position: absolute; right: 50px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; }
+  .tsp { background: #f0f4f9; border: 1px solid #c8d0db; border-radius: 12px; padding: 5px 14px; font-size: 11px; color: #5a6a7e; }
+  .tsp span { color: #0f4c81; font-weight: 700; }
+  /* Section-divider slide */
+  .ss { background: #fff; border-left: 8px solid #0f4c81; }
+  .ss-c { display: flex; flex-direction: column; height: 100%; padding: 0 50px; justify-content: center; }
+  .ss-n { font-size: 80px; font-weight: 900; color: #e8edf2; line-height: 1; }
+  .ss-t { font-size: 30px; font-weight: 800; margin-top: -10px; color: #0f172a; }
+  .ss-d { font-size: 14px; color: #5a6a7e; margin-top: 6px; max-width: 520px; line-height: 1.6; }
+  .ss-tags { display: flex; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
+  /* Dark section-divider */
+  .ss-dark { background: #0f172a; border-left: 8px solid #059669; }
+  .ss-dark .ss-n { color: #1e293b; }
+  .ss-dark .ss-t { color: #f1f5f9; }
+  .ss-dark .ss-d { color: #94a3b8; }
+  /* Stat row */
+  .stat-row { display: flex; gap: 12px; }
+  .stat { flex: 1; background: #f8fafc; border: 1px solid #dde3ec; border-radius: 8px; padding: 10px 12px; text-align: center; }
+  .stat.r { border-color: #fca5a5; background: #fef2f2; }
+  .stat.g { border-color: #6ee7b7; background: #f0fdf4; }
+  .stat.b { border-color: #93c5fd; background: #eff6ff; }
+  .stat.a { border-color: #fcd34d; background: #fffbeb; }
+  .stat-num { font-size: 22px; font-weight: 900; color: #0f4c81; line-height: 1; }
+  .stat-num.r { color: #dc2626; }
+  .stat-num.g { color: #059669; }
+  .stat-num.a { color: #d97706; }
+  .stat-lbl { font-size: 10px; color: #5a6a7e; margin-top: 3px; line-height: 1.4; }
+  /* Flow pills */
+  .flow { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+  .fb { background: #f8fafc; border: 1px solid #dde3ec; border-radius: 6px; padding: 6px 10px; font-size: 12px; text-align: center; color: #1a2332; }
+  .fb.b { background: #eff6ff; border-color: #93c5fd; color: #1d4ed8; font-weight: 600; }
+  .fb.g { background: #f0fdf4; border-color: #6ee7b7; color: #065f46; font-weight: 600; }
+  .fb.r { background: #fef2f2; border-color: #fca5a5; color: #991b1b; font-weight: 600; }
+  .fb.a { background: #fffbeb; border-color: #fcd34d; color: #92400e; font-weight: 600; }
+  .arr { font-size: 14px; color: #94a3b8; }
+  /* Closing slide */
+  .close-slide { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 60%, #0f4c81 100%); }
+  .close-slide .ts-main { color: #f1f5f9; }
+  .close-slide .ts-sub { color: #94a3b8; }
+  .close-q { font-size: 18px; font-weight: 800; color: #fff; line-height: 1.4; max-width: 540px; margin-top: 18px; border-left: 4px solid #059669; padding-left: 16px; }
+  .close-chips { display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
+  .close-chip { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 4px 14px; font-size: 11px; color: #cbd5e1; }
+  /* ESG pill strip */
+  .esg-strip { display: flex; gap: 10px; margin-bottom: 6px; }
+  .esg-e { background: #f0fdf4; border: 1.5px solid #059669; border-radius: 6px; padding: 4px 12px; font-size: 11px; font-weight: 700; color: #065f46; }
+  .esg-s { background: #eff6ff; border: 1.5px solid #2563eb; border-radius: 6px; padding: 4px 12px; font-size: 11px; font-weight: 700; color: #1d4ed8; }
+  .esg-g { background: #faf5ff; border: 1.5px solid #7c3aed; border-radius: 6px; padding: 4px 12px; font-size: 11px; font-weight: 700; color: #5b21b6; }
+  /* Progress bar at top */
+  .progress-bar-wrap { width: 960px; max-width: 98vw; height: 4px; background: #dde3ec; border-radius: 2px; margin-bottom: 4px; }
+  .progress-bar { height: 4px; background: #0f4c81; border-radius: 2px; transition: width 0.3s; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar-wrap"><div class="progress-bar" id="pbar" style="width:10%"></div></div>
+<div id="nav">
+  <button id="btnPrev" onclick="prev()" disabled>← Prev</button>
+  <span id="counter">1 / 11</span>
+  <button id="btnNext" onclick="next()">Next →</button>
+</div>
+<div class="slide-wrap">
+
+<!-- S1: TITLE -->
+<div class="slide active ts" id="s1">
+  <div class="ts-c">
+    <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#059669;margin-bottom:10px;">CODE University of Applied Sciences</div>
+    <div class="ts-main">AI &amp; Sustainability<br/><span class="ts-accent">Risk, Opportunity,</span><br/>and Responsibility</div>
+    <div class="ts-sub">Can AI accelerate ESG — or undermine it? The answer depends entirely on the choices leaders make.</div>
+    <div style="display:flex;gap:8px;margin-top:18px;">
+      <span class="bdg r">Part I: AI as ESG Risk</span>
+      <span class="bdg g">Part II: AI as ESG Lever</span>
+      <span class="bdg p">Part III: Your Role</span>
+    </div>
+  </div>
+  <div class="ts-pills">
+    <div class="tsp"><span>Guest Lecturer</span> Firas Ben Hassan</div>
+    <div class="tsp">10 Slides</div>
+    <div class="tsp"><span>E</span> Environmental</div>
+    <div class="tsp"><span>S</span> Social</div>
+    <div class="tsp"><span>G</span> Governance</div>
+    <div class="tsp">Future Leaders</div>
+  </div>
+</div>
+
+<!-- S2: WHY THIS MATTERS NOW -->
+<div class="slide" id="s2">
+  <div class="hdr">
+    <div class="tag">Context · 2025</div>
+    <div class="title">AI adoption is accelerating — and ESG pressure is too. They are on a collision course.</div>
+    <div class="sub">The question is not whether AI affects sustainability. It is whether that effect is positive or negative.</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">Two forces growing in parallel</div>
+      <div class="stat-row">
+        <div class="stat b">
+          <div class="stat-num">300%</div>
+          <div class="stat-lbl">Growth in AI compute demand 2020–2025</div>
+        </div>
+        <div class="stat a">
+          <div class="stat-num">92%</div>
+          <div class="stat-lbl">of S&amp;P 500 companies now publish ESG reports</div>
+        </div>
+        <div class="stat r">
+          <div class="stat-num">$80B+</div>
+          <div class="stat-lbl">Data center energy spend projected 2025</div>
+        </div>
+      </div>
+      <div class="lbl" style="margin-top:4px;">The core tension</div>
+      <div class="flow">
+        <div class="fb b">AI adoption pressure</div>
+        <div class="arr">vs</div>
+        <div class="fb g">Net zero commitments</div>
+        <div class="arr">vs</div>
+        <div class="fb r">No unified standard</div>
+      </div>
+      <div class="info-box" style="margin-top:6px;">
+        <strong>The strategic gap:</strong> Most companies are deploying AI rapidly while treating sustainability as a separate workstream. This is the gap future leaders must close.
+      </div>
+    </div>
+    <div class="col">
+      <div class="lbl">Why this is a business question, not just an ethics question</div>
+      <ul class="L">
+        <li>Regulators are moving: EU AI Act + CSRD now overlap directly</li>
+        <li>Investors screen for ESG risk — AI infrastructure is becoming material</li>
+        <li>Customers and talent increasingly factor sustainability into brand choice</li>
+        <li class="warn">Companies that ignore AI's ESG footprint face disclosure and reputational risk</li>
+      </ul>
+      <div class="trick-box" style="margin-top:6px;">
+        <strong>Framing for this course:</strong> We treat AI and sustainability not as separate topics but as a single strategic design challenge. You are here because you will make decisions at this intersection.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI &amp; Sustainability</span><span class="fn">Slide 2 / 10</span></div>
+</div>
+
+<!-- S3: THE HIDDEN ENVIRONMENTAL COST -->
+<div class="slide" id="s3">
+  <div class="hdr">
+    <div class="tag">Part I — AI as ESG Risk · Environmental</div>
+    <div class="title">AI has a physical footprint most organizations have not accounted for.</div>
+    <div class="sub">The carbon cost of intelligence is real, growing, and largely invisible on most P&amp;L statements.</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">Where the footprint comes from</div>
+      <div class="card r">
+        <div class="ct">Energy — Training</div>
+        <div class="cd">Training a single large language model can emit as much CO₂ as five transatlantic flights per second of compute time. One major model training run has been estimated at 300+ tonnes CO₂.</div>
+      </div>
+      <div class="card a">
+        <div class="ct">Energy — Inference (often underestimated)</div>
+        <div class="cd">Inference runs continuously at scale. A search query powered by generative AI uses roughly 10x the energy of a traditional search. Multiply across billions of daily interactions.</div>
+      </div>
+      <div class="card o">
+        <div class="ct">Water for cooling</div>
+        <div class="cd">Microsoft reported consuming ~6.4 billion litres of water in 2022, partly driven by AI infrastructure cooling requirements — a 34% year-on-year increase.</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="lbl">Hardware lifecycle</div>
+      <ul class="L">
+        <li>GPU production requires rare earths: cobalt, lithium, neodymium</li>
+        <li>Hardware refresh cycles in AI are 18–24 months — far faster than enterprise IT</li>
+        <li class="warn">E-waste from AI accelerators is not systematically tracked or disclosed</li>
+      </ul>
+      <div class="lbl" style="margin-top:8px;">The "invisible pollution" problem</div>
+      <div class="warn-box">
+        AI's environmental cost does not appear on most product invoices, cloud bills, or ESG dashboards. It is abstracted away — which means most leaders are making AI investment decisions without seeing the full cost.
+      </div>
+      <div class="bdg r" style="margin-top:8px;">E — Environmental Risk</div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI &amp; Sustainability</span><span class="fn">Slide 3 / 10</span></div>
+</div>
+
+<!-- S4: ESG RISKS FULL PICTURE -->
+<div class="slide" id="s4">
+  <div class="hdr">
+    <div class="tag">Part I — AI as ESG Risk · Full Picture</div>
+    <div class="title">The ESG risk of AI goes beyond energy. It affects equity, accountability, and governance structures.</div>
+    <div class="sub">Each dimension of ESG has a direct exposure to unmanaged AI deployment.</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <div class="esg-strip">
+        <div class="esg-e">E — Environmental</div>
+        <div class="esg-s">S — Social</div>
+        <div class="esg-g">G — Governance</div>
+      </div>
+      <table class="tbl">
+        <tr>
+          <th style="width:22%;">Dimension</th>
+          <th style="width:35%;">AI-specific risk</th>
+          <th>Real-world manifestation</th>
+        </tr>
+        <tr>
+          <td><strong style="color:#059669;">E</strong></td>
+          <td>Carbon footprint, resource extraction, water stress</td>
+          <td>Data center emissions misreported; rare earth mining linked to deforestation</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#2563eb;">S</strong></td>
+          <td>Algorithmic bias, inequality amplification</td>
+          <td>Hiring AI discriminates by zip code; credit scoring AI penalises minorities</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#2563eb;">S</strong></td>
+          <td>Job displacement without transition support</td>
+          <td>Automation in logistics and back-office accelerates; reskilling budgets flat</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#7c3aed;">G</strong></td>
+          <td>Black-box decision-making, no auditability</td>
+          <td>Insurance claim denial by AI with no human review or appeal path</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#7c3aed;">G</strong></td>
+          <td>Concentration of AI power in 3–4 companies</td>
+          <td>Single vendor failure cascades across industries; regulatory capture risk</td>
+        </tr>
+      </table>
+    </div>
+    <div class="col" style="max-width:260px;">
+      <div class="lbl">Which risks are already regulated</div>
+      <ul class="L">
+        <li class="warn">EU AI Act (2025): high-risk AI must be auditable and documented</li>
+        <li class="warn">CSRD requires ESG disclosure — AI infrastructure increasingly in scope</li>
+        <li>SEC climate disclosure rules affect US-listed firms with AI data centers</li>
+      </ul>
+      <div class="trick-box" style="margin-top:8px;">
+        <strong>Class prompt:</strong> Pick one cell in the table. Which stakeholder — regulator, investor, employee, or customer — is most likely to surface this risk first, and why?
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI &amp; Sustainability</span><span class="fn">Slide 4 / 10</span></div>
+</div>
+
+<!-- S5: WHY THE PROBLEM IS GETTING WORSE -->
+<div class="slide" id="s5">
+  <div class="hdr">
+    <div class="tag">Part I — AI as ESG Risk · Trajectory</div>
+    <div class="title">The structural incentives pushing AI deployment faster are directly opposed to the incentives for sustainability.</div>
+    <div class="sub">This is not an accident. It is the predictable outcome of how AI investment is currently measured and rewarded.</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">Four reinforcing dynamics</div>
+      <div class="card r">
+        <div class="ct">The AI arms race</div>
+        <div class="cd">Google, Microsoft, Meta, Amazon, and Baidu are each spending $50B+ on AI infrastructure in 2025. Competitive pressure makes slowing down feel like falling behind — regardless of sustainability cost.</div>
+      </div>
+      <div class="card a">
+        <div class="ct">Real-time AI demands more inference energy</div>
+        <div class="cd">Every product that adds generative AI to its core loop — search, email, customer service — runs inference millions of times per day. Energy load grows with adoption.</div>
+      </div>
+      <div class="card r">
+        <div class="ct">No ESG reporting standard for AI</div>
+        <div class="cd">Unlike buildings or fleets, AI compute has no standardised carbon accounting methodology. Companies cannot be compared. Greenwashing is easy.</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="lbl">The incentive misalignment, illustrated</div>
+      <div class="flow" style="flex-direction:column;align-items:flex-start;gap:6px;">
+        <div class="fb b" style="width:100%;">Board metric: AI adoption speed and ROI</div>
+        <div class="arr" style="padding-left:20px;">drives</div>
+        <div class="fb a" style="width:100%;">Engineering choice: fastest model, not most efficient</div>
+        <div class="arr" style="padding-left:20px;">leads to</div>
+        <div class="fb r" style="width:100%;">ESG outcome: energy and water footprint not measured</div>
+        <div class="arr" style="padding-left:20px;">result</div>
+        <div class="fb r" style="width:100%;">Net zero commitments become aspirational, not operational</div>
+      </div>
+      <div class="info-box" style="margin-top:8px;">
+        <strong>The design question:</strong> What would need to change in how firms measure AI performance for sustainability to become a design constraint rather than an afterthought?
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI &amp; Sustainability</span><span class="fn">Slide 5 / 10</span></div>
+</div>
+
+<!-- S6: IF WE DON'T FIX THIS -->
+<div class="slide" id="s6">
+  <div class="hdr">
+    <div class="tag">Part I — Scenario Projection · Uncorrected Path</div>
+    <div class="title">If current trends continue uncorrected, AI becomes one of the largest obstacles to ESG credibility by 2035.</div>
+    <div class="sub">These are not worst-case predictions. They follow directly from current adoption rates and the absence of structural countermeasures.</div>
+  </div>
+  <div class="body">
+    <div class="col col2">
+      <div class="lbl">Projected outcomes — uncorrected trajectory</div>
+      <div class="stat-row" style="margin-bottom:8px;">
+        <div class="stat r">
+          <div class="stat-num r">2–4%</div>
+          <div class="stat-lbl">Share of global electricity consumed by AI data centers by 2030 (IEA estimate)</div>
+        </div>
+        <div class="stat r">
+          <div class="stat-num r">70%</div>
+          <div class="stat-lbl">of knowledge workers face automation displacement risk by 2030 without reskilling programmes (McKinsey)</div>
+        </div>
+        <div class="stat r">
+          <div class="stat-num r">High</div>
+          <div class="stat-lbl">Probability of major regulatory backlash if AI's ESG footprint goes undisclosed</div>
+        </div>
+      </div>
+      <table class="tbl">
+        <tr>
+          <th>Outcome</th>
+          <th>ESG dimension</th>
+          <th>Consequence for business</th>
+        </tr>
+        <tr>
+          <td>AI becomes top-5 emissions source per firm</td>
+          <td><span class="bdg g">E</span></td>
+          <td>Net zero targets become legally and financially untenable</td>
+        </tr>
+        <tr>
+          <td>Automation divide widens — urban vs. rural, high-skill vs. low-skill</td>
+          <td><span class="bdg b">S</span></td>
+          <td>Social licence to operate weakens; talent and community relations deteriorate</td>
+        </tr>
+        <tr>
+          <td>Regulatory backlash — mandated audits, compute caps, disclosure requirements</td>
+          <td><span class="bdg p">G</span></td>
+          <td>Compliance costs surge; innovation velocity constrained reactively</td>
+        </tr>
+        <tr>
+          <td>ESG ratings devalued as AI-driven greenwashing proliferates</td>
+          <td><span class="bdg g">E</span> <span class="bdg p">G</span></td>
+          <td>Investor confidence in ESG metrics collapses; capital allocation distorted</td>
+        </tr>
+      </table>
+    </div>
+    <div class="col" style="max-width:240px;">
+      <div class="warn-box">
+        <strong>The most damaging outcome is not just environmental.</strong> It is that AI, deployed without ESG design, actively discredits the ESG frameworks companies have spent a decade building.
+      </div>
+      <div class="lbl" style="margin-top:10px;">What changes this trajectory</div>
+      <ul class="L">
+        <li class="ok">ESG reporting standards applied to AI compute</li>
+        <li class="ok">Energy efficiency as a first-class model selection criterion</li>
+        <li class="ok">Reskilling investment proportional to automation savings</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI &amp; Sustainability</span><span class="fn">Slide 6 / 10</span></div>
+</div>
+
+<!-- S7: PIVOT — POSITIVE POTENTIAL -->
+<div class="slide ss-dark" id="s7">
+  <div class="ss-c">
+    <div class="ss-n">07</div>
+    <div class="ss-t" style="color:#f0fdf4;">Part II: AI as a Force for ESG</div>
+    <div class="ss-d" style="color:#94a3b8;">The same capabilities that create environmental and governance risk can — when deliberately directed — accelerate sustainability goals faster than any previous technology.</div>
+    <div class="ss-tags">
+      <span class="bdg g">Climate Modelling</span>
+      <span class="bdg g">Energy Optimisation</span>
+      <span class="bdg g">Supply Chain Transparency</span>
+      <span class="bdg g">ESG Automation</span>
+    </div>
+    <div style="margin-top:18px;font-size:13px;color:#64748b;">The pivot: same technology, different design intent.</div>
+  </div>
+</div>
+
+<!-- S8: REAL IMPACT USE CASES -->
+<div class="slide" id="s8">
+  <div class="hdr">
+    <div class="tag">Part II — AI as ESG Lever · Use Cases</div>
+    <div class="title">AI does not just reduce harm at the margin. Applied deliberately, it can redesign entire systems.</div>
+    <div class="sub">These are not future possibilities. They are in production today.</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">Environmental acceleration</div>
+      <div class="card g">
+        <div class="ct">Climate and catastrophe modelling</div>
+        <div class="cd">AI processes satellite, IoT, and atmospheric data to produce flood, wildfire, and drought predictions at 10x the resolution of traditional physics models — with a 48-hour update cycle vs. annual revisions.</div>
+      </div>
+      <div class="card g">
+        <div class="ct">Energy grid optimisation</div>
+        <div class="cd">DeepMind's AI reduced Google's data centre cooling energy by 40%. Applied to national grids, similar models balance renewable intermittency and cut curtailment of solar and wind output.</div>
+      </div>
+      <div class="card g">
+        <div class="ct">Precision agriculture</div>
+        <div class="cd">Computer vision and sensor fusion cut pesticide use by 30–80% per acre, reduce water consumption by 20–40%, and increase yield — simultaneously improving E and food security (S).</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="lbl">Governance and reporting</div>
+      <div class="card b">
+        <div class="ct">ESG data automation and real-time reporting</div>
+        <div class="cd">NLP extracts sustainability data from supplier contracts, invoices, and logistics records — converting manual quarterly ESG reports into continuous dashboards. Tracking indirect emissions across the entire supply chain becomes practical at scale for the first time.</div>
+      </div>
+      <div class="card b">
+        <div class="ct">Fraud detection in ESG claims</div>
+        <div class="cd">AI cross-references corporate sustainability claims against satellite imagery, shipping records, and financial data — identifying greenwashing with far higher precision than human auditors.</div>
+      </div>
+      <div class="card n">
+        <div class="ct">Circular economy optimisation</div>
+        <div class="cd">AI matches waste streams to secondary-use buyers, optimises reverse logistics, and extends product life cycles — reducing raw material extraction at the system level.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI &amp; Sustainability</span><span class="fn">Slide 8 / 10</span></div>
+</div>
+
+<!-- S9: IF WE GET IT RIGHT -->
+<div class="slide" id="s9">
+  <div class="hdr">
+    <div class="tag">Part II — Scenario Projection · Corrected Path</div>
+    <div class="title">With deliberate design choices, AI accelerates the net-zero transition and makes ESG reporting genuinely reliable for the first time.</div>
+    <div class="sub">These outcomes are not automatic. They require the kind of leadership this course is designed to develop.</div>
+  </div>
+  <div class="body">
+    <div class="col col2">
+      <div class="lbl">Projected outcomes — deliberate AI-ESG integration</div>
+      <div class="stat-row" style="margin-bottom:8px;">
+        <div class="stat g">
+          <div class="stat-num g">2035</div>
+          <div class="stat-lbl">Target year for AI to cut industrial emissions by 4% — equivalent to eliminating all aviation globally (BCG estimate)</div>
+        </div>
+        <div class="stat g">
+          <div class="stat-num g">Real-time</div>
+          <div class="stat-lbl">ESG reporting shifts from annual to continuous, making data audit-ready and investment-grade</div>
+        </div>
+        <div class="stat g">
+          <div class="stat-num g">+$5T</div>
+          <div class="stat-lbl">Estimated economic value from AI-enabled circular economy transitions by 2030 (Ellen MacArthur Foundation)</div>
+        </div>
+      </div>
+      <table class="tbl">
+        <tr>
+          <th>Outcome</th>
+          <th>ESG dimension</th>
+          <th>What enables it</th>
+        </tr>
+        <tr>
+          <td>AI accelerates net-zero transition across energy, agriculture, logistics</td>
+          <td><span class="bdg g">E</span></td>
+          <td>AI applied to optimisation problems where human analysis is too slow or too coarse</td>
+        </tr>
+        <tr>
+          <td>ESG reporting becomes continuous, automated, and verifiable</td>
+          <td><span class="bdg p">G</span></td>
+          <td>NLP + computer vision applied to supply chain data at scale</td>
+        </tr>
+        <tr>
+          <td>Reskilling programmes scale using personalised AI-driven learning</td>
+          <td><span class="bdg b">S</span></td>
+          <td>Automation savings reinvested into workforce transition — by policy and by design</td>
+        </tr>
+        <tr>
+          <td>Green AI becomes a competitive advantage, not just a compliance cost</td>
+          <td><span class="bdg g">E</span> <span class="bdg p">G</span></td>
+          <td>Buyers, investors, and talent increasingly screen for it — market signal strengthens</td>
+        </tr>
+      </table>
+    </div>
+    <div class="col" style="max-width:230px;">
+      <div class="tip-box">
+        <strong>The core shift:</strong> From "AI as a product decision" to "AI as a systems design decision." The leaders who drive this shift do not just build AI — they build the governance and incentive structures around it.
+      </div>
+      <div class="lbl" style="margin-top:10px;">Green AI as competitive moat</div>
+      <ul class="L">
+        <li class="ok">Lower energy cost = lower operating cost at scale</li>
+        <li class="ok">ESG credibility attracts institutional capital</li>
+        <li class="ok">Regulatory readiness reduces compliance risk premium</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI &amp; Sustainability</span><span class="fn">Slide 9 / 11</span></div>
+</div>
+
+<!-- S10: TECHNIQUES, TIPS & TRICKS FOR AI LEADERS -->
+<div class="slide" id="s10">
+  <div class="hdr">
+    <div class="tag">Part III — AI Leader Playbook · Techniques, Tips &amp; Tricks</div>
+    <div class="title">Sustainable AI leadership is not a mindset — it is a set of concrete practices you can apply from day one.</div>
+    <div class="sub">Across GenAI, Agentic AI, and AI systems design, these are the levers future leaders can pull.</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">GenAI — what to do and promote</div>
+      <div class="tip-box" style="margin-bottom:6px;">
+        <strong>Right-size your model.</strong> GPT-4-class models use 10–50x more energy than smaller fine-tuned models for the same task. Always ask: can a smaller model solve 90% of this problem? Usually yes.
+      </div>
+      <div class="tip-box" style="margin-bottom:6px;">
+        <strong>Prompt efficiency is energy efficiency.</strong> Shorter, well-structured prompts reduce token processing. Train your teams to write precise prompts — it cuts cost and carbon simultaneously.
+      </div>
+      <div class="trick-box" style="margin-bottom:6px;">
+        <strong>Demand model cards from vendors.</strong> Any serious GenAI provider publishes energy use, training data provenance, and bias evaluation. If they do not have one, that is the answer.
+      </div>
+      <div class="warn-box">
+        <strong>Avoid AI for AI's sake.</strong> Every GenAI feature that does not solve a real problem wastes compute. Require a business case that includes an energy cost estimate.
+      </div>
+    </div>
+    <div class="col">
+      <div class="lbl">Agentic AI — specific risks and techniques</div>
+      <div class="warn-box" style="margin-bottom:6px;">
+        <strong>Agentic loops multiply compute.</strong> An agent that calls tools, re-reasons, and retries can use 20–100x the tokens of a single query. Design with step budgets and early-exit conditions.
+      </div>
+      <div class="tip-box" style="margin-bottom:6px;">
+        <strong>Human-in-the-loop checkpoints.</strong> For consequential decisions — approvals, procurement, reporting — build mandatory human review gates. Autonomy should be earned, not assumed.
+      </div>
+      <div class="trick-box" style="margin-bottom:6px;">
+        <strong>Audit trails are non-negotiable.</strong> Every agentic action should be logged with timestamp, model version, inputs, and outputs. This is your governance proof under EU AI Act.
+      </div>
+      <div class="lbl" style="margin-top:4px;">AI systems design — promote these standards</div>
+      <div class="info-box">
+        <strong>Measure what you manage:</strong> require AI energy dashboards alongside performance dashboards &nbsp;·&nbsp; run model efficiency benchmarks before deployment &nbsp;·&nbsp; include carbon cost in AI ROI calculations &nbsp;·&nbsp; publish an annual AI sustainability report alongside the ESG report
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI &amp; Sustainability</span><span class="fn">Slide 10 / 11</span></div>
+</div>
+
+<!-- S11: THE ROLE OF FUTURE LEADERS -->
+<div class="slide close-slide" id="s11">
+  <div class="ts-c">
+    <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#059669;margin-bottom:10px;">Part III — Your Role as Future Leaders</div>
+    <div class="ts-main" style="font-size:30px;">You are not just AI users.<br/>You are AI <span style="color:#34d399;">architects</span>.</div>
+    <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;max-width:560px;">
+      <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:9px 13px;font-size:12px;color:#e2e8f0;"><strong style="color:#fff;">Demand energy-efficient AI.</strong> Ask vendors for model cards, compute costs, and Scope 2 emissions. These numbers exist. Require them.</div>
+      <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:9px 13px;font-size:12px;color:#e2e8f0;"><strong style="color:#fff;">Integrate ESG into AI strategy from the start.</strong> Not as a compliance checkbox after the model is deployed — but as a design constraint before the first line of code.</div>
+      <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:9px 13px;font-size:12px;color:#e2e8f0;"><strong style="color:#fff;">Push for transparency and governance.</strong> If you cannot explain how your AI makes a decision, you should not be making consequential decisions with it.</div>
+      <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:9px 13px;font-size:12px;color:#e2e8f0;"><strong style="color:#fff;">Balance innovation with responsibility.</strong> Speed is not a virtue when the externalities are invisible. Measure what matters.</div>
+    </div>
+    <div class="close-q">Will you scale AI at any cost — or design it responsibly?</div>
+    <div class="close-chips">
+      <span class="close-chip">EU AI Act</span>
+      <span class="close-chip">CSRD</span>
+      <span class="close-chip">Green AI</span>
+      <span class="close-chip">Responsible Scaling</span>
+      <span class="close-chip">ESG × AI Governance</span>
+    </div>
+  </div>
+</div>
+
+</div><!-- end slide-wrap -->
+
+<script>
+  let cur = 0;
+  const total = 11;
+  const slides = document.querySelectorAll('.slide');
+
+  function show(n) {
+    slides[cur].classList.remove('active');
+    cur = n;
+    slides[cur].classList.add('active');
+    document.getElementById('counter').textContent = (cur + 1) + ' / ' + total;
+    document.getElementById('btnPrev').disabled = cur === 0;
+    document.getElementById('btnNext').disabled = cur === total - 1;
+    document.getElementById('pbar').style.width = ((cur + 1) / total * 100) + '%';
+  }
+
+  function next() { if (cur < total - 1) show(cur + 1); }
+  function prev() { if (cur > 0) show(cur - 1); }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prev();
+  });
+</script>
+</body>
+</html>

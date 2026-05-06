@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>MLOps · LLMOps · Agentic Ops</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #e8edf2; font-family: 'Segoe UI', sans-serif; color: #1a2332; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+  #nav { width: 960px; max-width: 98vw; display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
+  #nav button { background: #fff; border: 1px solid #c8d0db; color: #1a2332; padding: 7px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+  #nav button:hover { background: #1d4ed8; border-color: #1d4ed8; color: #fff; }
+  #nav button:disabled { opacity: 0.35; cursor: default; }
+  #counter { font-size: 14px; color: #5a6a7e; font-weight: 600; }
+  .slide-wrap { width: 960px; max-width: 98vw; }
+  .slide { width: 100%; aspect-ratio: 16/9; background: #fff; border: 1px solid #c8d0db; border-radius: 10px; overflow: hidden; display: none; flex-direction: column; box-shadow: 0 2px 16px rgba(0,0,0,.1); }
+  .slide.active { display: flex; }
+  .hdr { padding: 18px 30px 10px; border-bottom: 2px solid #f0f3f7; }
+  .tag { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #1d4ed8; margin-bottom: 4px; }
+  .title { font-size: 22px; font-weight: 800; color: #0f172a; line-height: 1.2; }
+  .sub { font-size: 13px; color: #5a6a7e; margin-top: 3px; }
+  .body { flex: 1; padding: 12px 30px 12px; display: flex; gap: 16px; overflow: hidden; }
+  .foot { padding: 6px 30px; border-top: 1px solid #e8edf2; display: flex; justify-content: space-between; background: #f8fafc; }
+  .fl { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: #1d4ed8; }
+  .fn { font-size: 10px; color: #8896a5; }
+  .col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .col2 { flex: 2; }
+  strong { color: #0f172a; }
+  .lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #5a6a7e; margin-bottom: 3px; }
+  .card { background: #f8fafc; border: 1px solid #dde3ec; border-radius: 8px; padding: 10px 12px; }
+  .card.b { border-color: #93c5fd; background: #eff6ff; }
+  .card.g { border-color: #6ee7b7; background: #f0fdf4; }
+  .card.p { border-color: #c4b5fd; background: #faf5ff; }
+  .card.a { border-color: #fcd34d; background: #fffbeb; }
+  .card.r { border-color: #fca5a5; background: #fef2f2; }
+  .card.t { border-color: #67e8f9; background: #ecfeff; }
+  .card.o { border-color: #fdba74; background: #fff7ed; }
+  .ct { font-size: 12px; font-weight: 700; margin-bottom: 4px; color: #0f172a; }
+  .cd { font-size: 12px; color: #4b5a6e; line-height: 1.5; }
+  ul.L { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  ul.L li { font-size: 13px; line-height: 1.45; padding-left: 16px; position: relative; color: #1a2332; }
+  ul.L li::before { content: '▸'; position: absolute; left: 0; color: #1d4ed8; font-size: 10px; top: 2px; }
+  ul.L li.tip::before { content: '💡'; font-size: 11px; top: 1px; }
+  ul.L li.warn::before { content: '⚠️'; font-size: 11px; top: 1px; }
+  ul.L li.ok::before { content: '✅'; font-size: 11px; top: 1px; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .tbl th { background: #f0f4f9; color: #3d5068; padding: 6px 9px; text-align: left; border: 1px solid #dde3ec; font-weight: 700; }
+  .tbl td { padding: 6px 9px; border: 1px solid #dde3ec; vertical-align: top; color: #1a2332; font-size: 12px; }
+  .tbl tr:nth-child(even) td { background: #f8fafc; }
+  .bdg { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 10px; font-weight: 700; margin: 2px; }
+  .bdg.b { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+  .bdg.g { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+  .bdg.p { background: #ede9fe; color: #5b21b6; border: 1px solid #c4b5fd; }
+  .bdg.a { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+  .bdg.r { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+  .bdg.t { background: #cffafe; color: #164e63; border: 1px solid #67e8f9; }
+  .bdg.o { background: #ffedd5; color: #9a3412; border: 1px solid #fdba74; }
+  .hl { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 9px 13px; font-size: 13px; color: #1a2332; line-height: 1.5; }
+  .hl.g { background: #f0fdf4; border-color: #6ee7b7; }
+  .hl.a { background: #fffbeb; border-color: #fcd34d; }
+  .hl.r { background: #fef2f2; border-color: #fca5a5; }
+  .hl.p { background: #faf5ff; border-color: #c4b5fd; }
+  .hl.o { background: #fff7ed; border-color: #fdba74; }
+  .tip-box { background: #f0fdf4; border: 1px solid #6ee7b7; border-left: 4px solid #059669; border-radius: 0 8px 8px 0; padding: 8px 12px; font-size: 12px; color: #1a2332; line-height: 1.5; }
+  .trick-box { background: #faf5ff; border: 1px solid #c4b5fd; border-left: 4px solid #7c3aed; border-radius: 0 8px 8px 0; padding: 8px 12px; font-size: 12px; color: #1a2332; line-height: 1.5; }
+  .warn-box { background: #fef2f2; border: 1px solid #fca5a5; border-left: 4px solid #dc2626; border-radius: 0 8px 8px 0; padding: 8px 12px; font-size: 12px; color: #1a2332; line-height: 1.5; }
+  .ts { background: #fff; }
+  .ts-c { display: flex; flex-direction: column; height: 100%; padding: 32px 50px; justify-content: center; position: relative; }
+  .ts-main { font-size: 38px; font-weight: 900; line-height: 1.1; color: #0f172a; }
+  .ts-sub { font-size: 15px; color: #5a6a7e; margin-top: 8px; max-width: 500px; line-height: 1.6; }
+  .ts-pills { position: absolute; right: 50px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; }
+  .tsp { background: #f0f4f9; border: 1px solid #c8d0db; border-radius: 12px; padding: 5px 14px; font-size: 11px; color: #5a6a7e; }
+  .tsp span { color: #1d4ed8; font-weight: 700; }
+  .ss { background: #fff; border-left: 8px solid #1d4ed8; }
+  .ss-c { display: flex; flex-direction: column; height: 100%; padding: 0 50px; justify-content: center; }
+  .ss-n { font-size: 80px; font-weight: 900; color: #e8edf2; line-height: 1; }
+  .ss-t { font-size: 32px; font-weight: 800; margin-top: -10px; color: #0f172a; }
+  .ss-d { font-size: 14px; color: #5a6a7e; margin-top: 6px; max-width: 520px; line-height: 1.6; }
+  .ss-tags { display: flex; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
+  .cloud-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .cloud-card { border-radius: 8px; border: 1px solid #dde3ec; overflow: hidden; }
+  .cloud-head { padding: 7px 10px; display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700; }
+  .cloud-body { padding: 8px 10px; display: flex; flex-direction: column; gap: 5px; background: #f8fafc; }
+  .cloud-svc { font-size: 11px; color: #4b5a6e; line-height: 1.4; }
+  .cloud-svc strong { color: #0f172a; font-size: 11px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .dot-aws { background: #f90; }
+  .dot-azure { background: #0078D4; }
+  .dot-gcp { background: #34A853; }
+  .cloud-aws { border-color: #f59e0b; }
+  .cloud-aws .cloud-head { background: #fffbeb; color: #92400e; }
+  .cloud-azure { border-color: #93c5fd; }
+  .cloud-azure .cloud-head { background: #eff6ff; color: #1d4ed8; }
+  .cloud-gcp { border-color: #6ee7b7; }
+  .cloud-gcp .cloud-head { background: #f0fdf4; color: #065f46; }
+  .flow { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+  .fb { background: #f8fafc; border: 1px solid #dde3ec; border-radius: 6px; padding: 6px 10px; font-size: 12px; text-align: center; color: #1a2332; }
+  .fb.b { background: #eff6ff; border-color: #93c5fd; color: #1d4ed8; font-weight: 600; }
+  .fb.g { background: #f0fdf4; border-color: #6ee7b7; color: #065f46; font-weight: 600; }
+  .fb.p { background: #faf5ff; border-color: #c4b5fd; color: #5b21b6; font-weight: 600; }
+  .fb.o { background: #fff7ed; border-color: #fdba74; color: #9a3412; font-weight: 600; }
+  .arr { font-size: 14px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<div id="nav">
+  <button id="btnPrev" onclick="prev()" disabled>← Prev</button>
+  <span id="counter">1 / 28</span>
+  <button id="btnNext" onclick="next()">Next →</button>
+</div>
+<div class="slide-wrap">
+
+<!-- S1 TITLE -->
+<div class="slide active ts" id="s1">
+  <div class="ts-c">
+    <div class="ts-main">MLOps · LLMOps<br/>Agentic Ops</div>
+    <div class="ts-sub">From model packaging to autonomous agents — the complete AI production stack with tools, tips, and real-world patterns</div>
+  </div>
+  <div class="ts-pills">
+    <div class="tsp"><span>Foundation</span> MLOps</div>
+    <div class="tsp"><span>Module 1</span> LLMOps</div>
+    <div class="tsp"><span>Module 2</span> Agentic Ops</div>
+    <div class="tsp">28 Slides</div>
+    <div class="tsp">AWS · Azure · GCP</div>
+  </div>
+</div>
+
+<!-- S2 ROADMAP -->
+<div class="slide" id="s2">
+  <div class="hdr"><div class="tag">Course Overview</div><div class="title">Three Disciplines. One Production Reality.</div><div class="sub">MLOps is the foundation — LLMOps and Agentic Ops are the specialisations that build on it</div></div>
+  <div class="body" style="flex-direction:column;gap:10px">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+      <div class="card o">
+        <div class="ct" style="font-size:14px">🟠 Foundation · MLOps</div>
+        <div class="cd">The discipline for <strong>getting ML models to production</strong> and keeping them reliable. Packaging, serving, versioning, drift detection, retraining pipelines. The bedrock every other discipline builds on.</div>
+        <div style="margin-top:6px"><span class="bdg o">6 slides</span></div>
+      </div>
+      <div class="card g">
+        <div class="ct" style="font-size:14px">🟢 Module 1 · LLMOps</div>
+        <div class="cd">Running <strong>language models in production</strong>. Evaluation, versioning, guardrails, RAG design, monitoring, cost control. The ops layer most teams dangerously skip.</div>
+        <div style="margin-top:6px"><span class="bdg g">9 slides</span></div>
+      </div>
+      <div class="card p">
+        <div class="ct" style="font-size:14px">🟣 Module 2 · Agentic Ops</div>
+        <div class="cd">Controlling <strong>autonomous agents</strong> that plan, use tools, and act in the real world. Non-deterministic systems that need trust boundaries, kill switches, and immutable audit trails.</div>
+        <div style="margin-top:6px"><span class="bdg p">9 slides</span></div>
+      </div>
+    </div>
+    <div class="hl o"><strong>The progression:</strong> MLOps = ship and maintain models → LLMOps = AI generates and responds at scale → Agentic Ops = AI plans and <em>acts</em> autonomously. Each layer adds autonomy. Each layer adds a new class of operational risk that the previous layer's tooling wasn't built to handle.</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+      <div class="card" style="text-align:center"><div style="font-size:18px">🏗</div><div class="ct">Architecture</div><div class="cd" style="font-size:11px">Real production patterns</div></div>
+      <div class="card" style="text-align:center"><div style="font-size:18px">🛠</div><div class="ct">Tools</div><div class="cd" style="font-size:11px">Concrete tech stack choices</div></div>
+      <div class="card" style="text-align:center"><div style="font-size:18px">💡</div><div class="ct">Tips & Tricks</div><div class="cd" style="font-size:11px">What the docs don't tell you</div></div>
+      <div class="card" style="text-align:center"><div style="font-size:18px">⚠️</div><div class="ct">Pitfalls</div><div class="cd" style="font-size:11px">Failures that sink projects</div></div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">2 / 28</span></div>
+</div>
+
+<!-- S3 SECTION: MLOPS -->
+<div class="slide ss" id="s3" style="border-left-color:#ea580c">
+  <div class="ss-c">
+    <div class="ss-n">00</div>
+    <div class="ss-t">MLOps — The Foundation</div>
+    <div class="ss-d">Getting models out of notebooks and into reliable, observable, maintainable production systems. Every AI ops discipline builds on this.</div>
+    <div class="ss-tags">
+      <span class="bdg o">Packaging</span><span class="bdg a">Serving</span><span class="bdg b">Versioning</span><span class="bdg r">Drift Detection</span><span class="bdg g">Retraining</span><span class="bdg t">The AI Ops Engineer</span>
+    </div>
+  </div>
+</div>
+
+<!-- S4 MLOPS LIFECYCLE -->
+<div class="slide" id="s4">
+  <div class="hdr"><div class="tag">MLOps · Lifecycle</div><div class="title">The ML Project Lifecycle — End to End</div><div class="sub">Most teams invest 80% of effort in steps 1–3 and wonder why production fails</div></div>
+  <div class="body" style="flex-direction:column;gap:9px">
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px">
+      <div class="card o" style="text-align:center"><div style="font-size:18px">🎯</div><div class="ct" style="font-size:11px">1. Problem</div><div class="cd" style="font-size:10px">Business goal, KPIs, success metric before any code</div></div>
+      <div class="card b" style="text-align:center"><div style="font-size:18px">📥</div><div class="ct" style="font-size:11px">2. Data</div><div class="cd" style="font-size:10px">Collect, clean, feature store, versioning</div></div>
+      <div class="card p" style="text-align:center"><div style="font-size:18px">⚙️</div><div class="ct" style="font-size:11px">3. Train</div><div class="cd" style="font-size:10px">Experiment tracking, eval, reproducibility</div></div>
+      <div class="card g" style="text-align:center"><div style="font-size:18px">📦</div><div class="ct" style="font-size:11px">4. Package</div><div class="cd" style="font-size:10px">Registry, container, model card, ONNX</div></div>
+      <div class="card a" style="text-align:center"><div style="font-size:18px">🚀</div><div class="ct" style="font-size:11px">5. Deploy</div><div class="cd" style="font-size:10px">Canary, A/B, shadow mode, rollback</div></div>
+      <div class="card r" style="text-align:center"><div style="font-size:18px">📊</div><div class="ct" style="font-size:11px">6. Monitor</div><div class="cd" style="font-size:10px">Drift, perf, retrain triggers</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div>
+        <div class="lbl">MLOps maturity levels</div>
+        <table class="tbl">
+          <tr><th>Level</th><th>Reality</th><th>Risk</th></tr>
+          <tr><td><strong>0</strong> Manual</td><td>Notebook → prod. No pipeline.</td><td>Silent failure, no rollback</td></tr>
+          <tr><td><strong>1</strong> Automated</td><td>CI/CD for models. Scheduled retraining.</td><td>Drift goes undetected</td></tr>
+          <tr><td><strong>2</strong> Full MLOps</td><td>Drift detection, eval gates, registry.</td><td>Requires dedicated team</td></tr>
+        </table>
+      </div>
+      <div>
+        <div class="tip-box"><strong>💡 Tip:</strong> Always start with Level 0 — but design for Level 2. The scaffolding you skip now costs 10× to retrofit when the model is in prod and failing silently.</div>
+        <div class="warn-box" style="margin-top:6px"><strong>⚠️ Pitfall:</strong> Skipping shadow mode. Always run the new model alongside the old for 48–72h before cutting traffic. Shadow mode catches regressions that evals miss.</div>
+      </div>
+      <div>
+        <div class="lbl">Key tools by stage</div>
+        <div class="card"><div class="cd" style="font-size:11px">
+          <strong>Experiment tracking:</strong> MLflow, W&B, Neptune<br/>
+          <strong>Feature store:</strong> Feast, Tecton, Vertex Feature Store<br/>
+          <strong>Pipelines:</strong> Kubeflow, Metaflow, ZenML<br/>
+          <strong>Registry:</strong> MLflow Registry, W&B Artifacts<br/>
+          <strong>Serving:</strong> BentoML, Seldon, KServe, Triton
+        </div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">4 / 28</span></div>
+</div>
+
+<!-- S5 PACKAGING & DRIFT -->
+<div class="slide" id="s5">
+  <div class="hdr"><div class="tag">MLOps · Packaging & Drift</div><div class="title">You Built the Model. Now the Real Work Begins.</div><div class="sub">Packaging correctness and drift detection are where 80% of production failures originate</div></div>
+  <div class="body" style="flex-direction:column;gap:9px">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px">
+      <div class="card o"><div class="ct">📦 Packaging</div><div class="cd">Model + dependencies + config → reproducible artifact. Docker + ONNX + model card. Anything not rebuildable from a git tag is a liability in prod.</div></div>
+      <div class="card r"><div class="ct">📉 Data Drift</div><div class="cd">Input feature distribution shifts over time. A fraud model trained in 2022 sees different patterns in 2025. The model was right — the world changed.</div><div style="margin-top:5px"><span class="bdg r">PSI</span><span class="bdg r">KL Divergence</span></div></div>
+      <div class="card a"><div class="ct">🎯 Concept Drift</div><div class="cd">The input→label relationship changes. During COVID, "travel intent" stopped predicting bookings the same way. The learned pattern is now wrong.</div><div style="margin-top:5px"><span class="bdg a">ADWIN</span><span class="bdg a">DDM</span></div></div>
+      <div class="card p"><div class="ct">🧠 Model Drift</div><div class="cd">Output distribution degrades even when inputs look stable. Often caused by upstream pipeline changes. The model is the symptom — the cause is upstream.</div><div style="margin-top:5px"><span class="bdg p">Shadow eval</span><span class="bdg p">PSI on preds</span></div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div>
+        <div class="lbl">Drift detection tools</div>
+        <table class="tbl">
+          <tr><th>Tool</th><th>Best for</th><th>Key feature</th></tr>
+          <tr><td><strong>Evidently AI</strong></td><td>Data & model drift</td><td>HTML reports, CI/CD friendly</td></tr>
+          <tr><td><strong>WhyLogs / WhyLabs</strong></td><td>Statistical profiling</td><td>Lightweight, streaming-ready</td></tr>
+          <tr><td><strong>Arize AI</strong></td><td>Model performance slicing</td><td>Slice-based performance analysis</td></tr>
+          <tr><td><strong>NannyML</strong></td><td>No-label drift</td><td>Detects drift without ground truth</td></tr>
+        </table>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <div class="tip-box"><strong>💡 NannyML for real-world:</strong> Most drift tools need ground truth labels. NannyML's confidence-based estimation detects degradation before labels arrive — essential for insurance, credit, or any use case where labels come weeks after prediction.</div>
+        <div class="warn-box"><strong>⚠️ PSI threshold cargo-culting:</strong> Most teams blindly use PSI &gt; 0.2 = retrain. Set thresholds based on your model's actual sensitivity to distribution change, not industry defaults. Calibrate on your own data.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">5 / 28</span></div>
+</div>
+
+<!-- S6 RETRAINING -->
+<div class="slide" id="s6">
+  <div class="hdr"><div class="tag">MLOps · Retraining & Versioning</div><div class="title">Automated Retraining — Triggers, Gates & Safe Promotion</div><div class="sub">Retraining on a schedule is a lazy default. Trigger-based retraining is the right answer.</div></div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">Retraining trigger strategies</div>
+      <div class="card r"><div class="ct">❌ Schedule-based (naive)</div><div class="cd">Retrain every Monday at 2am. Simple. Wasteful when data hasn't changed. Dangerous when drift happens mid-week and you wait 6 days to respond.</div></div>
+      <div class="card g" style="margin-top:6px"><div class="ct">✅ Trigger-based (correct)</div><div class="cd">Retrain when: (1) PSI exceeds threshold, (2) model accuracy drops below SLA, (3) new labelled data volume exceeds N, or (4) a business event occurs — regulatory change, product launch.</div></div>
+      <div class="tip-box" style="margin-top:6px"><strong>💡 Tip: combine both.</strong> Use trigger-based as primary, schedule-based as a backstop. If no trigger fires in 30 days, force a retrain anyway. Drift detectors can have blind spots.</div>
+    </div>
+    <div class="col">
+      <div class="lbl">The eval gate — never skip this</div>
+      <div class="flow" style="justify-content:center;margin-bottom:8px">
+        <div class="fb o">Train</div><div class="arr">→</div>
+        <div class="fb b">Eval vs champion</div><div class="arr">→</div>
+        <div class="fb g">Shadow deploy</div><div class="arr">→</div>
+        <div class="fb">Promote</div>
+      </div>
+      <div class="card b"><div class="ct">Model versioning with MLflow</div><div class="cd"><strong>Stages:</strong> None → Staging → Production → Archived. Never manually overwrite a Production model. Always promote through staging. Every version is queryable by name + version string.</div></div>
+      <div class="trick-box" style="margin-top:6px"><strong>🔮 Champion/challenger pattern:</strong> Run the new challenger model on 5–10% of real traffic alongside the champion. Collect live performance data for 24–48h. Only promote if challenger beats champion on all KPIs <em>and</em> business metrics. This catches what offline eval misses.</div>
+      <div class="card a" style="margin-top:6px"><div class="ct">Rollback strategy</div><div class="cd">Always keep N-1 model in Staging, ready to promote back. Rollback must be a one-command operation, not a full pipeline re-run.</div></div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">6 / 28</span></div>
+</div>
+
+<!-- S7 AI OPS ENGINEER -->
+<div class="slide" id="s7">
+  <div class="hdr"><div class="tag">MLOps · The Role</div><div class="title">The AI Ops Engineer — Skills, Responsibilities & Career Path</div><div class="sub">One of the most in-demand and least understood roles in tech right now</div></div>
+  <div class="body" style="flex-direction:column;gap:9px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div>
+        <div class="lbl">Core responsibilities</div>
+        <ul class="L">
+          <li>Design and operate ML pipelines end-to-end</li>
+          <li>Build drift monitoring and alerting systems</li>
+          <li>Automate retraining with eval gates and safe promotion</li>
+          <li>Own serving infrastructure — latency SLAs, cost budgets, failure playbooks</li>
+          <li>Bridge ML research and platform engineering</li>
+          <li>Govern AI systems — audit trails, compliance, explainability, bias monitoring</li>
+        </ul>
+        <div class="lbl" style="margin-top:8px">The three zones</div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <div class="card b"><div class="ct">Build zone</div><div class="cd">CI/CD for ML, feature stores, training pipelines, containerisation, infra-as-code.</div></div>
+          <div class="card g"><div class="ct">Run zone</div><div class="cd">Serving infra, A/B testing, canary rollouts, latency monitoring, cost tracking, on-call.</div></div>
+          <div class="card a"><div class="ct">Govern zone</div><div class="cd">Drift dashboards, retraining triggers, model cards, GDPR / EU AI Act compliance.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="lbl">Skills needed</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+          <div class="card" style="border-color:#93c5fd"><div class="ct" style="font-size:11px">🐍 Python & MLOps</div><div class="cd" style="font-size:10px">MLflow, W&B, DVC, ZenML — pick one pipeline framework and go deep</div></div>
+          <div class="card" style="border-color:#6ee7b7"><div class="ct" style="font-size:11px">☁️ Cloud Platforms</div><div class="cd" style="font-size:10px">SageMaker, Vertex AI, Azure ML — certification-level knowledge in at least one</div></div>
+          <div class="card" style="border-color:#c4b5fd"><div class="ct" style="font-size:11px">🐳 Containers & K8s</div><div class="cd" style="font-size:10px">Docker, Kubernetes, Helm, KServe — models need to run somewhere reliably</div></div>
+          <div class="card" style="border-color:#fcd34d"><div class="ct" style="font-size:11px">📊 Observability</div><div class="cd" style="font-size:10px">Prometheus, Grafana, OpenTelemetry — you can't fix what you can't see</div></div>
+          <div class="card" style="border-color:#fca5a5"><div class="ct" style="font-size:11px">⚖️ AI Governance</div><div class="cd" style="font-size:10px">EU AI Act, GDPR, fairness metrics, SHAP, LIME explainability</div></div>
+          <div class="card" style="border-color:#67e8f9"><div class="ct" style="font-size:11px">🔄 Data Engineering</div><div class="cd" style="font-size:10px">Spark, dbt, Airflow — models are only as good as upstream pipelines</div></div>
+        </div>
+        <div class="trick-box" style="margin-top:6px"><strong>🔮 Career tip:</strong> T-shaped is the target. Deep in MLOps tooling + broad enough in data engineering, cloud, and governance to own a full pipeline alone. The generalist who can debug from raw data to serving latency is extremely rare and extremely valuable.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">7 / 28</span></div>
+</div>
+
+<!-- S8 MLOPS CLOUD -->
+<div class="slide" id="s8">
+  <div class="hdr"><div class="tag">MLOps · Cloud Platforms</div><div class="title">AWS · Azure · GCP — MLOps Native Services</div><div class="sub">Where each cloud genuinely leads and where it falls short</div></div>
+  <div class="body" style="flex-direction:column;gap:9px">
+    <div class="cloud-row">
+      <div class="cloud-card cloud-aws"><div class="cloud-head"><div class="dot dot-aws"></div>AWS — Best for pipeline depth</div><div class="cloud-body">
+        <div class="cloud-svc"><strong>SageMaker:</strong> Most mature end-to-end MLOps platform — experiment tracking, model registry, A/B testing, shadow deployment, drift detection, and model monitoring in one service.</div>
+        <div class="cloud-svc"><strong>SageMaker Clarify:</strong> Bias detection, feature attribution (SHAP), and data drift monitoring. Integrates with the deployment pipeline so drift alerts can auto-trigger retraining.</div>
+        <div class="cloud-svc"><strong>SageMaker Pipelines:</strong> DAG-based ML pipelines with step caching, conditional branching, and experiment tracking. Native integration with MLflow and W&B.</div>
+        <div class="cloud-svc"><strong>Best for:</strong> Teams wanting end-to-end MLOps ownership within the AWS ecosystem with the deepest feature set. Steeper learning curve but most powerful.</div>
+      </div></div>
+      <div class="cloud-card cloud-azure"><div class="cloud-head"><div class="dot dot-azure"></div>Azure — Best for governance</div><div class="cloud-body">
+        <div class="cloud-svc"><strong>Azure ML:</strong> Full MLOps lifecycle with integrated Responsible AI dashboard — fairness metrics, error analysis, counterfactual explanations, and causal analysis out of the box.</div>
+        <div class="cloud-svc"><strong>Azure ML Pipelines + Prompt Flow:</strong> Unified pipeline framework for both classical ML and LLM workflows. Valuable when your team runs both types of models.</div>
+        <div class="cloud-svc"><strong>Data drift monitoring:</strong> Built-in dataset monitor that compares training vs serving distributions weekly. Triggers alerts and retraining jobs automatically.</div>
+        <div class="cloud-svc"><strong>Best for:</strong> Enterprise teams needing governance, compliance (EU AI Act, GDPR), and a unified platform across classical ML and LLM workflows.</div>
+      </div></div>
+      <div class="cloud-card cloud-gcp"><div class="cloud-head"><div class="dot dot-gcp"></div>GCP — Best for developer velocity</div><div class="cloud-body">
+        <div class="cloud-svc"><strong>Vertex AI:</strong> Managed training, experiment tracking, model registry, and serving. Tight BigQuery integration means feature engineering and training data live in the same platform.</div>
+        <div class="cloud-svc"><strong>Vertex Feature Store:</strong> Managed online/offline feature store with low-latency serving. Eliminates training/serving skew — the #1 source of silent production failures.</div>
+        <div class="cloud-svc"><strong>Vertex ML Metadata:</strong> Automatic lineage tracking for every artifact, dataset, and model. Know exactly what data trained every model version with zero manual tracking.</div>
+        <div class="cloud-svc"><strong>Best for:</strong> Teams already in GCP with data in BigQuery. Best developer experience and tightest data-to-model integration available on any cloud.</div>
+      </div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div class="trick-box"><strong>🔮 AWS trick:</strong> Use SageMaker Model Monitor with a custom statistics baseline. The default baseline is too broad for most models. Build a per-feature baseline from your training set and tune PSI thresholds per feature — some features are more predictive of drift than others.</div>
+      <div class="trick-box"><strong>🔮 Azure trick:</strong> Enable the Responsible AI dashboard before your first production deployment, not after. The fairness and error analysis views catch slice-level regressions that aggregate accuracy metrics completely miss.</div>
+      <div class="trick-box"><strong>🔮 GCP trick:</strong> Use Vertex Feature Store's online serving for real-time features and its offline store for training — same feature definitions, zero skew by construction. This alone eliminates the most common silent production failure pattern.</div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">8 / 28</span></div>
+</div>
+
+<!-- S9 SECTION: LLMOPS -->
+<div class="slide ss" id="s9" style="border-left-color:#059669">
+  <div class="ss-c">
+    <div class="ss-n">01</div>
+    <div class="ss-t">LLMOps</div>
+    <div class="ss-d">Running language models in production — evaluation, versioning, guardrails, RAG design, monitoring, and cost control. The discipline most teams dangerously skip.</div>
+    <div class="ss-tags">
+      <span class="bdg g">Model Lifecycle</span><span class="bdg b">Evals</span><span class="bdg a">Guardrails</span><span class="bdg t">RAG</span><span class="bdg p">Monitoring</span><span class="bdg r">Cost Control</span>
+    </div>
+  </div>
+</div>
+
+<!-- S10 WHY LLMOPS DIFFERENT -->
+<div class="slide" id="s10">
+  <div class="hdr"><div class="tag">LLMOps · Foundations</div><div class="title">Why LLMOps is Fundamentally Different from MLOps</div><div class="sub">LLMs break every assumption that classical MLOps was designed around</div></div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">What classical MLOps assumes — and LLMs violate</div>
+      <table class="tbl">
+        <tr><th>Assumption</th><th>Reality with LLMs</th></tr>
+        <tr><td>Deterministic outputs</td><td>Same prompt → different output every time. Testing is probabilistic.</td></tr>
+        <tr><td>Hard error failures</td><td>LLMs fail silently — hallucinations look like correct answers.</td></tr>
+        <tr><td>Versioning = swap a file</td><td>Prompt changes are code. Model weights + system prompt = version.</td></tr>
+        <tr><td>Latency in milliseconds</td><td>LLM inference: 500ms–30s. Token streaming changes UX architecture.</td></tr>
+        <tr><td>Cost = compute time</td><td>Cost = tokens in × price + tokens out × price. Easy 100× cost spikes.</td></tr>
+        <tr><td>Eval = accuracy score</td><td>Correctness + safety + groundedness + consistency + helpfulness.</td></tr>
+      </table>
+    </div>
+    <div class="col">
+      <div class="lbl">The 5 production failure modes</div>
+      <div class="card a"><div class="ct">1. Hallucination</div><div class="cd">Confident, fluent, completely wrong. Hard to detect without grounding or eval harnesses. Catastrophic in regulated industries.</div></div>
+      <div class="card r" style="margin-top:5px"><div class="ct">2. Prompt Injection</div><div class="cd">User input hijacks system prompt: "Ignore previous instructions." Treat all user input as untrusted. Sanitise before it reaches the model.</div></div>
+      <div class="card p" style="margin-top:5px"><div class="ct">3. Silent Model Drift</div><div class="cd">Provider updates the base model. Your prompts subtly break. Users complain. You find out two weeks later.</div></div>
+      <div class="card" style="margin-top:5px"><div class="ct">4. Context Overflow</div><div class="cd">Long conversation exceeds context window. Model silently drops the system prompt — the most important part of the context.</div></div>
+      <div class="card b" style="margin-top:5px"><div class="ct">5. Cost Explosion</div><div class="cd">One uncapped prompt × 1M users = Monday morning bill shock. Always set max_tokens. Always.</div></div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">10 / 28</span></div>
+</div>
+
+<!-- S11 LLMOPS STACK -->
+<div class="slide" id="s11">
+  <div class="hdr"><div class="tag">LLMOps · Full Stack</div><div class="title">The Complete LLMOps Stack — Layer by Layer</div><div class="sub">Every layer is required. Skipping any one creates a production incident waiting to happen.</div></div>
+  <div class="body" style="flex-direction:column;gap:9px">
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:7px">
+      <div class="card b" style="text-align:center"><div style="font-size:18px">📦</div><div class="ct">Data Pipeline</div><div class="cd" style="font-size:11px">Chunking, embedding, vector store ingestion. Data cleaning for fine-tuning datasets.</div></div>
+      <div class="card p" style="text-align:center"><div style="font-size:18px">🎯</div><div class="ct">Model Selection</div><div class="cd" style="font-size:11px">Fine-tune vs RAG vs prompt engineering. Build vs buy vs rent. Cost vs latency tradeoff.</div></div>
+      <div class="card g" style="text-align:center"><div style="font-size:18px">🧪</div><div class="ct">Evaluation</div><div class="cd" style="font-size:11px">Automated evals: correctness, groundedness, safety, consistency. Run on every prompt change.</div></div>
+      <div class="card a" style="text-align:center"><div style="font-size:18px">🚀</div><div class="ct">Deployment</div><div class="cd" style="font-size:11px">Canary rollout. Multi-model routing. Fallback chains. Prompt versioning in registry.</div></div>
+      <div class="card t" style="text-align:center"><div style="font-size:18px">📊</div><div class="ct">Monitoring</div><div class="cd" style="font-size:11px">Trace every call. Latency p95, cost/token, hallucination rate, user thumbs-down rate.</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div>
+        <div class="lbl">The build/buy/rent decision tree</div>
+        <table class="tbl">
+          <tr><th>Option</th><th>When to choose</th><th>Key risk</th></tr>
+          <tr><td><strong>Managed API</strong></td><td>Fast start, general tasks, low volume</td><td>Vendor lock-in, data privacy</td></tr>
+          <tr><td><strong>Self-hosted open model</strong></td><td>Sensitive data, high volume, cost at scale</td><td>MLOps complexity, GPU cost</td></tr>
+          <tr><td><strong>Fine-tuned on your data</strong></td><td>Domain-specific, consistent style</td><td>Data quality, retraining cost</td></tr>
+          <tr><td><strong>RAG-augmented managed</strong></td><td>Factual accuracy on private knowledge</td><td>Retrieval quality, index freshness</td></tr>
+        </table>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <div class="tip-box"><strong>💡 Start managed, migrate on demand.</strong> Validate the use case first. Only invest in self-hosting when you have proven PMF, volume that justifies GPU costs, and a team that can run the infra. Most companies move to self-hosting 12–18 months too early.</div>
+        <div class="trick-box"><strong>🔮 Multi-model routing:</strong> Route simple queries to a cheap fast model (GPT-4o-mini, Claude Haiku), complex queries to the flagship. A routing classifier costs almost nothing but reduces cost by 60–70% in most enterprise use cases.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">11 / 28</span></div>
+</div>
+
+<!-- S12 EVALS -->
+<div class="slide" id="s12">
+  <div class="hdr"><div class="tag">LLMOps · Evaluation</div><div class="title">LLM Evaluation — You Cannot A/B Test Your Way to Safety</div><div class="sub">Evals must be systematic, automated, and run on every single prompt change</div></div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">The five evaluation dimensions</div>
+      <div class="card b"><div class="ct">Correctness</div><div class="cd">Is the answer factually right? Build your ground-truth dataset from production Q&A logs with expert annotation. Expensive once, invaluable always.</div></div>
+      <div class="card g" style="margin-top:5px"><div class="ct">Groundedness (RAG)</div><div class="cd">Is every claim supported by retrieved context? Ragas scores faithfulness, context precision, and recall. A grounded answer that contradicts its source is still a hallucination.</div></div>
+      <div class="card r" style="margin-top:5px"><div class="ct">Safety & Robustness</div><div class="cd">Prompt injection resistance, jailbreak resistance, content policy compliance. Test with a real red-team dataset — not toy examples.</div></div>
+      <div class="card a" style="margin-top:5px"><div class="ct">Consistency</div><div class="cd">Same answer to 5 paraphrases of the same question? High variance = reliability risk. Test paraphrase sets for every critical query type.</div></div>
+      <div class="card p" style="margin-top:5px"><div class="ct">Latency & Cost</div><div class="cd">p95 latency within SLA? Cost per query within budget? These are eval dimensions too — a correct but 10-second answer fails a real-time SLA.</div></div>
+    </div>
+    <div class="col">
+      <div class="lbl">Eval tools — honest comparison</div>
+      <table class="tbl">
+        <tr><th>Tool</th><th>Best for</th><th>Standout feature</th></tr>
+        <tr><td><strong>LangSmith</strong></td><td>Tracing + regression</td><td>Prompt versioning, replay, annotation</td></tr>
+        <tr><td><strong>Ragas</strong></td><td>RAG-specific eval</td><td>Faithfulness + context precision</td></tr>
+        <tr><td><strong>DeepEval</strong></td><td>Unit test-style</td><td>14+ metrics, pytest integration</td></tr>
+        <tr><td><strong>Helicone</strong></td><td>Prod monitoring</td><td>Gateway-level tracing, no SDK changes</td></tr>
+        <tr><td><strong>Promptfoo</strong></td><td>Red-teaming</td><td>Built-in adversarial + jailbreak library</td></tr>
+      </table>
+      <div class="tip-box" style="margin-top:6px"><strong>💡 LLM-as-Judge:</strong> Use GPT-4o or Claude to evaluate outputs from smaller models. Scales without human labellers. But calibrate the judge against human labels first — uncalibrated judges introduce systematic biases that correlate with style, not correctness.</div>
+      <div class="trick-box" style="margin-top:6px"><strong>🔮 Eval-driven development:</strong> Write your eval suite before writing your prompt. Define "good" in measurable terms first. Then write the prompt to pass the evals. Same discipline as TDD — dramatically better output quality.</div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">12 / 28</span></div>
+</div>
+
+<!-- S13 RAG -->
+<div class="slide" id="s13">
+  <div class="hdr"><div class="tag">LLMOps · RAG Architecture</div><div class="title">RAG Pipeline Design — The Most Common LLMOps Pattern</div><div class="sub">80% of RAG failures are retrieval problems. Fix retrieval before blaming the model.</div></div>
+  <div class="body" style="flex-direction:column;gap:9px">
+    <div class="flow" style="justify-content:center;margin-bottom:2px">
+      <div class="fb b">User Query</div><div class="arr">→</div>
+      <div class="fb">Embed Query</div><div class="arr">→</div>
+      <div class="fb">Hybrid Search</div><div class="arr">→</div>
+      <div class="fb g">Rerank</div><div class="arr">→</div>
+      <div class="fb">Top-K Chunks</div><div class="arr">→</div>
+      <div class="fb o">LLM + Context</div><div class="arr">→</div>
+      <div class="fb b">Grounded Answer</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div>
+        <div class="lbl">Chunking strategies</div>
+        <table class="tbl">
+          <tr><th>Strategy</th><th>Best for</th><th>Pitfall</th></tr>
+          <tr><td>Fixed-size (512 tokens)</td><td>Fast start, simple docs</td><td>Splits mid-sentence</td></tr>
+          <tr><td>Semantic chunking</td><td>Complex PDFs, reasoning</td><td>Slower, needs good embedder</td></tr>
+          <tr><td>Hierarchical (parent/child)</td><td>Long docs with sections</td><td>Index complexity overhead</td></tr>
+          <tr><td>Sentence window</td><td>Precision retrieval</td><td>Overlap management needed</td></tr>
+        </table>
+        <div class="lbl" style="margin-top:7px">Vector databases</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">
+          <span class="bdg b">Pinecone — managed, scalable</span>
+          <span class="bdg g">Weaviate — open source, hybrid</span>
+          <span class="bdg p">Qdrant — fast, on-prem friendly</span>
+          <span class="bdg a">PGVector — already in Postgres</span>
+          <span class="bdg t">Chroma — local dev only</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <div class="tip-box"><strong>💡 Hybrid search is non-negotiable in production.</strong> Dense vector search misses exact keyword matches (product codes, IDs). BM25 misses semantic similarity. Use both, fuse with Reciprocal Rank Fusion. Improves recall by 15–25% with minimal latency overhead.</div>
+        <div class="trick-box"><strong>🔮 Reranker as quality multiplier.</strong> After vector search returns top-20, run a cross-encoder reranker (Cohere Rerank, BGE-Reranker) to reorder by true relevance. ~50ms overhead, 25–35% precision improvement. LLM answer quality is directly proportional to top-3 chunk quality.</div>
+        <div class="warn-box"><strong>⚠️ Embedding model mismatch.</strong> You must use the same embedding model at index time and query time. Switching models = full re-index. Choose carefully before building the index. all-mpnet-base-v2 is a safe default for English.</div>
+        <div class="tip-box"><strong>💡 PGVector before specialised vector DB.</strong> If under ~1M vectors, PGVector gives you vector search inside Postgres. No new infra, ACID compliance, no new ops burden. Migrate only when you actually outgrow it.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">13 / 28</span></div>
+</div>
+
+<!-- S14 GUARDRAILS -->
+<div class="slide" id="s14">
+  <div class="hdr"><div class="tag">LLMOps · Control Layer</div><div class="title">Guardrails, Rate Limits & Cost Controls</div><div class="sub">Three layers every production LLM deployment must have before the first user ever sees it</div></div>
+  <div class="body" style="flex-direction:column;gap:9px">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+      <div class="card r">
+        <div class="ct" style="font-size:14px">🛡 Guardrails</div>
+        <ul class="L" style="margin-top:6px">
+          <li>PII detection and redaction before model sees input</li>
+          <li>Prompt injection detection — regex + semantic classifiers</li>
+          <li>Topic blocking — refuse out-of-scope queries gracefully</li>
+          <li>Output filtering — harmful content, sensitive data leakage</li>
+          <li>Groundedness check — flag responses contradicting context</li>
+          <li>Toxicity scoring on every output before returning to user</li>
+        </ul>
+        <div style="margin-top:7px"><span class="bdg r">NeMo Guardrails</span><span class="bdg b">Guardrails AI</span><span class="bdg a">Bedrock Guardrails</span><span class="bdg g">Llama Guard</span></div>
+      </div>
+      <div class="card a">
+        <div class="ct" style="font-size:14px">⏱ Rate Limits</div>
+        <ul class="L" style="margin-top:6px">
+          <li>Per-user token budgets per day (prevent abuse)</li>
+          <li>Per-tenant request quotas (multi-tenant fairness)</li>
+          <li>Model-level TPM/RPM caps (respect provider limits)</li>
+          <li>Graceful degradation: queue then reject, never hang</li>
+          <li>Burst allowance with token bucket algorithm</li>
+          <li>Priority queues: paid users over free tier</li>
+        </ul>
+        <div class="trick-box" style="margin-top:7px"><strong>🔮 Pattern:</strong> API Gateway → Redis token counter → LLM. Never expose LLM endpoint directly to users.</div>
+      </div>
+      <div class="card g">
+        <div class="ct" style="font-size:14px">💰 Cost Controls</div>
+        <ul class="L" style="margin-top:6px">
+          <li>max_tokens on every request — no exceptions, ever</li>
+          <li>Daily/monthly spend hard cap per environment and tenant</li>
+          <li>Model router: cheap model first, flagship only when needed</li>
+          <li>Prompt caching for static system prompts and documents</li>
+          <li>Semantic cache: return cached response for near-duplicate queries</li>
+          <li>Kill switch: auto-disable if spend &gt;2× 7-day rolling average</li>
+        </ul>
+        <div class="tip-box" style="margin-top:7px"><strong>💡 Semantic caching</strong> with GPTCache or Momento: 30–40% of queries in customer support are near-duplicates. This is free money.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">14 / 28</span></div>
+</div>
+
+<!-- S15 LLMOPS MONITORING -->
+<div class="slide" id="s15">
+  <div class="hdr"><div class="tag">LLMOps · Monitoring</div><div class="title">Production LLM Monitoring — What to Measure and How</div><div class="sub">If you instrument nothing else, instrument these six things first</div></div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">The six essential metrics</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <div class="card b"><div class="ct">Latency p95/p99</div><div class="cd" style="font-size:11px">Time-to-first-token (TTFT) and total generation time. With streaming, users tolerate slow completion if TTFT is fast.</div></div>
+        <div class="card r"><div class="ct">Hallucination rate</div><div class="cd" style="font-size:11px">Automated groundedness scoring on a sample of prod responses. Track weekly. Any upward trend = investigate immediately.</div></div>
+        <div class="card a"><div class="ct">Cost per query</div><div class="cd" style="font-size:11px">Input + output tokens × price. Track by tenant, feature, model. Cost spikes at 3am are a real thing.</div></div>
+        <div class="card g"><div class="ct">User signal</div><div class="cd" style="font-size:11px">Thumbs-down rate, session abandonment, follow-up "try again" rate. Best proxy for quality without ground truth.</div></div>
+        <div class="card p"><div class="ct">Guardrail hit rate</div><div class="cd" style="font-size:11px">Spike in PII detection = data leak risk. Spike in topic blocking = prompt injection wave in progress.</div></div>
+        <div class="card t"><div class="ct">Context utilisation</div><div class="cd" style="font-size:11px">Consistently &gt;80% = risk of context overflow silent failures. Time to add context compression middleware.</div></div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="lbl">Monitoring architecture</div>
+      <div class="card"><div class="cd" style="font-size:11px">
+        <strong>Trace every LLM call:</strong> prompt, response, model, tokens in/out, latency, guardrail results, user ID, session ID<br/><br/>
+        <strong>Async evaluation:</strong> run groundedness + safety eval on 5–10% of prod calls in a background queue — never block the user response<br/><br/>
+        <strong>Apply anomaly detection to LLM metrics:</strong> the same time-series anomaly detection concepts apply here — cost spikes, latency spikes, and hallucination rate increases are all detectable anomalies
+      </div></div>
+      <div class="tip-box" style="margin-top:6px"><strong>💡 OpenLLMetry:</strong> OpenTelemetry-native instrumentation for LLM calls. One decorator → full trace propagation from your API layer through every LLM call, tool call, and retrieval step. Works with LangSmith, Datadog, Honeycomb, any OTLP backend.</div>
+      <div class="trick-box" style="margin-top:6px"><strong>🔮 Shadow evals in prod:</strong> Run your eval suite nightly against a random sample of real production conversations — not the happy path. The messy, adversarial, real stuff your test suite never anticipated. This is where actual failure modes live.</div>
+      <div class="warn-box" style="margin-top:6px"><strong>⚠️ PII in traces:</strong> LLM traces contain raw user inputs. PII ends up in your logs unless you actively prevent it. Run PII scrubbing before trace data leaves the application tier. GDPR auditors will find it if you don't.</div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">15 / 28</span></div>
+</div>
+
+<!-- S16 LLMOPS CLOUD -->
+<div class="slide" id="s16">
+  <div class="hdr"><div class="tag">LLMOps · Cloud Platforms</div><div class="title">AWS · Azure · GCP — LLMOps Deep Dive</div><div class="sub">Where each cloud genuinely leads and where it falls short</div></div>
+  <div class="body" style="flex-direction:column;gap:9px">
+    <div class="cloud-row">
+      <div class="cloud-card cloud-aws"><div class="cloud-head"><div class="dot dot-aws"></div>AWS — Best for pipeline depth</div><div class="cloud-body">
+        <div class="cloud-svc"><strong>Bedrock:</strong> Multi-model managed API — Claude, Llama, Titan, Mistral. Bedrock Guardrails is the most mature managed safety layer. Knowledge Bases for managed RAG.</div>
+        <div class="cloud-svc"><strong>SageMaker:</strong> Most mature MLOps platform — experiment tracking, model registry, A/B testing, shadow deployment, drift detection all in one service.</div>
+        <div class="cloud-svc"><strong>Bedrock Prompt Caching:</strong> Cache system prompts up to 200K tokens. For document-heavy RAG, cuts cost by 70–90% and latency by 60% on repeated context.</div>
+        <div class="cloud-svc"><strong>Best for:</strong> Teams wanting end-to-end ownership with fine-grained IAM control. Steeper learning curve, most powerful feature set.</div>
+      </div></div>
+      <div class="cloud-card cloud-azure"><div class="cloud-head"><div class="dot dot-azure"></div>Azure — Best for out-of-the-box LLMOps</div><div class="cloud-body">
+        <div class="cloud-svc"><strong>Azure AI Foundry:</strong> Most complete integrated LLMOps platform. Prompt flows, evals, fine-tuning, deployment, and monitoring in a single UI — the closest thing to a "full LLMOps IDE."</div>
+        <div class="cloud-svc"><strong>Content Safety:</strong> Harm detection, jailbreak detection, and groundedness scoring as a managed service — no custom guardrail code needed.</div>
+        <div class="cloud-svc"><strong>Prompt Flow variants:</strong> Run 5 prompt versions against the same eval dataset simultaneously and compare outputs side-by-side. Fastest way to prompt-engineer with data.</div>
+        <div class="cloud-svc"><strong>Best for:</strong> Teams wanting the fastest path from prototype to governed production. Best for M365-integrated enterprises.</div>
+      </div></div>
+      <div class="cloud-card cloud-gcp"><div class="cloud-head"><div class="dot dot-gcp"></div>GCP — Best for RAG quality</div><div class="cloud-body">
+        <div class="cloud-svc"><strong>Vertex AI Grounding:</strong> Native Google Search grounding — the LLM calls live Google Search in real-time. Best anti-hallucination feature available on any cloud for general knowledge tasks.</div>
+        <div class="cloud-svc"><strong>Vertex Eval + Model Garden:</strong> Access to Gemini, Claude, Llama with one-click fine-tuning and built-in evaluation pipelines. ROUGE, BLEU, and custom metrics via Gemini-as-judge.</div>
+        <div class="cloud-svc"><strong>Gemini 1.5 Flash:</strong> One of the fastest, cheapest models available. Use it as your routing classifier and for simple tasks. Reserve Pro for complex reasoning. Cost difference is 15–20×.</div>
+        <div class="cloud-svc"><strong>Best for:</strong> Teams needing best RAG quality, BigQuery data integration, or developer velocity above all else.</div>
+      </div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div class="trick-box"><strong>🔮 AWS trick:</strong> Use Bedrock's native prompt caching on Claude — cache system prompts up to 200K tokens. For document-heavy RAG with repeated context, this cuts cost by 70–90%. Game-changing for enterprise knowledge base use cases.</div>
+      <div class="trick-box"><strong>🔮 Azure trick:</strong> AI Foundry's Prompt Flow supports "variants" — run multiple prompt versions against the same eval dataset simultaneously. Compare outputs side-by-side. Fastest prompt engineering workflow available on any cloud.</div>
+      <div class="trick-box"><strong>🔮 GCP trick:</strong> Gemini 1.5 Flash for routing and summarisation + Gemini 1.5 Pro only for complex reasoning. Implement a classifier that routes queries by complexity. The cost difference is 15–20× — the routing classifier pays for itself in hours.</div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">16 / 28</span></div>
+</div>
+
+<!-- S17 SECTION: AGENTIC OPS -->
+<div class="slide ss" id="s17" style="border-left-color:#7c3aed">
+  <div class="ss-c">
+    <div class="ss-n">02</div>
+    <div class="ss-t">Agentic Ops</div>
+    <div class="ss-d">Controlling autonomous systems that plan, use tools, and act in the real world — with all the operational complexity that implies.</div>
+    <div class="ss-tags">
+      <span class="bdg p">Agent Architecture</span><span class="bdg r">Failure Modes</span><span class="bdg a">Trust Boundaries</span><span class="bdg g">Audit Trails</span><span class="bdg b">Kill Switches</span><span class="bdg t">Orchestration</span>
+    </div>
+  </div>
+</div>
+
+<!-- S18 WHAT IS AN AGENT -->
+<div class="slide" id="s18">
+  <div class="hdr"><div class="tag">Agentic Ops · Foundations</div><div class="title">What is an Agentic System — And Why It Breaks Everything</div><div class="sub">An agent doesn't just answer — it plans, decides, uses tools, and acts across multiple steps</div></div>
+  <div class="body">
+    <div class="col">
+      <div class="card p"><div class="ct">The anatomy of an agent</div>
+        <ul class="L" style="margin-top:5px">
+          <li><strong>Planner</strong> — LLM that decides what steps to take next</li>
+          <li><strong>Memory</strong> — short-term (context window) + long-term (vector store)</li>
+          <li><strong>Tool use</strong> — web search, code execution, database queries, API calls</li>
+          <li><strong>Executor</strong> — runs the tool, returns result to the planner</li>
+          <li><strong>Loop</strong> — repeats until task complete or stop condition triggered</li>
+        </ul>
+      </div>
+      <div class="lbl" style="margin-top:8px">Business examples today</div>
+      <ul class="L">
+        <li>🏦 <strong>Procurement agent</strong> — queries suppliers, generates POs, approves payments</li>
+        <li>📋 <strong>Research agent</strong> — searches web, reads papers, writes structured summaries</li>
+        <li>🛡 <strong>Security agent</strong> — monitors alerts, runs playbooks, patches systems</li>
+        <li>💬 <strong>Customer ops agent</strong> — accesses CRM, processes refunds, escalates complaints</li>
+        <li>💻 <strong>Coding agent</strong> — reads codebase, writes tests, opens pull requests</li>
+      </ul>
+    </div>
+    <div class="col">
+      <div class="lbl">Why agents break classical monitoring</div>
+      <div class="card r"><div class="ct">Non-deterministic</div><div class="cd">Same input → different action sequence every time. You cannot replay and reproduce failures reliably. Classical debugging doesn't work.</div></div>
+      <div class="card a" style="margin-top:5px"><div class="ct">Multi-step with compounding errors</div><div class="cd">Failure at step 7 of 12 may have already taken irreversible actions at steps 2–6. By the time you detect it, the damage is done.</div></div>
+      <div class="card" style="margin-top:5px"><div class="ct">Tool-using — real blast radius</div><div class="cd">The agent can write code, call APIs, send emails, modify databases, approve payments. Blast radius is real, immediate, and sometimes irreversible.</div></div>
+      <div class="hl" style="margin-top:6px"><strong>The fundamental shift:</strong> Classical monitoring asks "did the function return the right value?" Agentic Ops asks "did the agent take the right <em>sequence of actions</em>, at the right confidence level, with appropriate oversight at each step?"</div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">18 / 28</span></div>
+</div>
+
+<!-- S19 FAILURE MODES -->
+<div class="slide" id="s19">
+  <div class="hdr"><div class="tag">Agentic Ops · Risk Architecture</div><div class="title">The 5 Failure Modes of Autonomous Agents</div><div class="sub">Each requires a specific operational guardrail — not just monitoring after the fact</div></div>
+  <div class="body" style="flex-direction:column;gap:8px">
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px">
+      <div class="card r"><div class="ct">1. Hallucinated Tool Calls</div><div class="cd" style="font-size:11px">Agent calls a function with made-up parameters. The tool executes with bad data. Records corrupted, transactions submitted, emails sent.</div><div class="lbl" style="margin-top:5px">Guardrail</div><div class="cd" style="font-size:11px">JSON schema validation on every tool input before execution. Dry-run mode for destructive tools.</div></div>
+      <div class="card a"><div class="ct">2. Infinite Loops</div><div class="cd" style="font-size:11px">Agent retries a failing tool indefinitely. Loop runs until token budget or billing limit is hit. Common when tool returns ambiguous errors.</div><div class="lbl" style="margin-top:5px">Guardrail</div><div class="cd" style="font-size:11px">Max step count. Max retry per tool. Circuit breaker on repeated identical actions.</div></div>
+      <div class="card p"><div class="ct">3. Scope Creep</div><div class="cd" style="font-size:11px">Agent "helpfully" takes additional actions beyond the task definition. Small expansions compound into large unintended consequences.</div><div class="lbl" style="margin-top:5px">Guardrail</div><div class="cd" style="font-size:11px">Strict task definition. Allowlist of permitted tools per task type. Human approval for any tool call outside the list.</div></div>
+      <div class="card b"><div class="ct">4. Context Overflow</div><div class="cd" style="font-size:11px">Long task sequences exceed context window. Agent "forgets" original instructions and constraints mid-task. Behaviour becomes unpredictable.</div><div class="lbl" style="margin-top:5px">Guardrail</div><div class="cd" style="font-size:11px">Persistent memory store. Re-inject system prompt every N steps. Context compression middleware.</div></div>
+      <div class="card g"><div class="ct">5. Conflicting Instructions</div><div class="cd" style="font-size:11px">Tool output contradicts original instructions. Agent oscillates between two valid-but-opposed actions, making no progress and accumulating cost.</div><div class="lbl" style="margin-top:5px">Guardrail</div><div class="cd" style="font-size:11px">Explicit conflict resolution rules. Escalate to human when confidence drops below threshold.</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="hl p"><strong>Design principle:</strong> Design for failure, not success. Every agentic system must have a documented answer to "What happens when the agent does something wrong — and how do we roll it back?" before it goes to production.</div>
+      <div class="trick-box"><strong>🔮 Critic + Actor pattern:</strong> Run a second LLM as a "critic" that evaluates every proposed action before the executor runs it. The critic checks: is this action within scope? Is the confidence high enough? Does this contradict earlier instructions? The overhead is ~30% but dramatically reduces failure modes 1, 3, and 5.</div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">19 / 28</span></div>
+</div>
+
+<!-- S20 TRUST & CONTROL -->
+<div class="slide" id="s20">
+  <div class="hdr"><div class="tag">Agentic Ops · Control Architecture</div><div class="title">Trust Boundaries, Kill Switches & Audit Trails</div><div class="sub">The three non-negotiable components of any production agent deployment</div></div>
+  <div class="body">
+    <div class="col">
+      <div class="card p"><div class="ct" style="font-size:14px">🔐 Trust Boundary</div>
+        <ul class="L" style="margin-top:5px">
+          <li>Explicit allowlist of tools the agent can call — no open-ended access</li>
+          <li>Scope permissions with IAM/RBAC — agent identity ≠ admin identity, ever</li>
+          <li>Human-in-the-loop checkpoints for high-risk actions before execution</li>
+          <li>Human-on-the-loop monitoring for medium-risk autonomous decisions</li>
+          <li><strong>Blast radius:</strong> maximum damage if agent acts incorrectly must be bounded and reversible</li>
+        </ul>
+      </div>
+      <div class="card r" style="margin-top:7px"><div class="ct" style="font-size:14px">🛑 Kill Switches</div>
+        <ul class="L" style="margin-top:5px">
+          <li>Emergency stop that halts all agent activity immediately — one command</li>
+          <li>Circuit breakers that auto-pause on anomalous action sequences</li>
+          <li>Automatic suspension if cost/token budget exceeded by &gt;2×</li>
+          <li>Business-hour restrictions for financial and operational agents</li>
+          <li>Automatic pause if same tool fails more than N times in M minutes</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card g"><div class="ct" style="font-size:14px">📋 Audit Trails</div>
+        <ul class="L" style="margin-top:5px">
+          <li>Immutable log of every action: what was called, with what params, at what time</li>
+          <li>Full reasoning chain: why the agent made each decision (LLM reasoning trace)</li>
+          <li>Input/output hashes for integrity verification — detect tampering</li>
+          <li>Required for: GDPR Article 22, EU AI Act, financial audit, SOC2 compliance</li>
+          <li>Minimum retention: 90 days for most financial use cases; 7 years for some</li>
+        </ul>
+      </div>
+      <div class="lbl" style="margin-top:7px">Human oversight calibration</div>
+      <table class="tbl">
+        <tr><th>Action Category</th><th>Risk</th><th>Oversight Model</th></tr>
+        <tr><td>Read-only queries, lookups</td><td>Low</td><td>Autonomous — log only</td></tr>
+        <tr><td>Send emails, create drafts</td><td>Medium</td><td>Human-on-the-loop review</td></tr>
+        <tr><td>Financial transactions</td><td>High</td><td>Human-in-the-loop approval</td></tr>
+        <tr><td>Delete / modify production data</td><td>Critical</td><td>Block — never autonomous</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">20 / 28</span></div>
+</div>
+
+<!-- S21 AGENTIC TOOLS -->
+<div class="slide" id="s21">
+  <div class="hdr"><div class="tag">Agentic Ops · Tool Stack</div><div class="title">Agentic Ops Stack — Orchestration, Observability, Sandboxing</div><div class="sub">The complete technology landscape for running agents in production</div></div>
+  <div class="body" style="flex-direction:column;gap:9px">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div>
+        <div class="lbl">Orchestration (workflow control)</div>
+        <div class="card p"><div class="cd">
+          <strong>LangGraph</strong> — stateful multi-agent workflows, conditional branching, human-in-the-loop nodes<br/>
+          <strong>Temporal</strong> — durable workflows, automatic retries, human approval steps, time-travel debugging<br/>
+          <strong>Prefect / Airflow</strong> — task queues with observability, scheduling, and retry policies<br/>
+          <strong>CrewAI</strong> — role-based multi-agent orchestration with goal-oriented task assignment
+        </div></div>
+      </div>
+      <div>
+        <div class="lbl">Observability (agent tracing)</div>
+        <div class="card b"><div class="cd">
+          <strong>Arize Phoenix</strong> — full agent trace with every reasoning step, tool call, and intermediate output<br/>
+          <strong>LangSmith</strong> — LangChain-native tracing, replay, annotation, and regression testing<br/>
+          <strong>Helicone</strong> — cost, latency, and tool-call monitoring at the gateway level<br/>
+          <strong>OpenTelemetry + OpenLLMetry</strong> — vendor-neutral trace propagation across entire agent execution graph
+        </div></div>
+      </div>
+      <div>
+        <div class="lbl">Tool execution (sandboxing)</div>
+        <div class="card g"><div class="cd">
+          <strong>E2B</strong> — sandboxed code execution environments, isolated per-agent-session<br/>
+          <strong>Daytona</strong> — reproducible isolated runtime environments for tool calls<br/>
+          <strong>Docker + seccomp</strong> — container-scoped tool execution with syscall filtering<br/>
+          <strong>AWS Lambda + IAM</strong> — fine-grained permission per tool call, zero shared credentials
+        </div></div>
+      </div>
+    </div>
+    <div class="cloud-row">
+      <div class="cloud-card cloud-aws"><div class="cloud-head"><div class="dot dot-aws"></div>AWS Agentic Stack</div><div class="cloud-body">
+        <div class="cloud-svc"><strong>Bedrock Agents:</strong> Managed agent runtime with action groups, memory, and knowledge base integration. Native Lambda integration for tool execution.</div>
+        <div class="cloud-svc"><strong>Step Functions:</strong> Best human-in-the-loop control flow — explicit approval states, wait for callback, visual workflow designer. The most mature human-gated workflow orchestration available.</div>
+        <div class="cloud-svc"><strong>CloudTrail:</strong> Immutable audit trail for every Bedrock API call. Every agent action is an AWS API call — CloudTrail captures it automatically with no custom instrumentation.</div>
+      </div></div>
+      <div class="cloud-card cloud-azure"><div class="cloud-head"><div class="dot dot-azure"></div>Azure Agentic Stack</div><div class="cloud-body">
+        <div class="cloud-svc"><strong>AI Foundry Agents:</strong> Agent Service with tool calling, persistent memory, tracing, and safety filters built in. Best out-of-the-box enterprise agent platform.</div>
+        <div class="cloud-svc"><strong>Logic Apps:</strong> Low-code durable workflows with 500+ enterprise connectors. Agent can natively reach M365, Dynamics, SAP, Salesforce without custom integration code.</div>
+        <div class="cloud-svc"><strong>Managed Identity + RBAC:</strong> Zero-credential tool access. Agent identity scoped with minimum necessary permissions. Auto-rotated credentials, no secrets in code.</div>
+      </div></div>
+      <div class="cloud-card cloud-gcp"><div class="cloud-head"><div class="dot dot-gcp"></div>GCP Agentic Stack</div><div class="cloud-body">
+        <div class="cloud-svc"><strong>Vertex AI Agent Builder:</strong> Playbook-based agent control — define agent behaviour boundaries and fallback paths in structured natural language. No-code agent policy definition.</div>
+        <div class="cloud-svc"><strong>Cloud Workflows:</strong> Serverless durable orchestration with conditional branching, parallel execution, and built-in retry with exponential backoff.</div>
+        <div class="cloud-svc"><strong>Cloud Audit Logs:</strong> Data access and admin activity logs for every agent-invoked API. Immutable, tamper-evident, with BigQuery export for compliance analysis.</div>
+      </div></div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">21 / 28</span></div>
+</div>
+
+<!-- S22 MULTI-AGENT -->
+<div class="slide" id="s22">
+  <div class="hdr"><div class="tag">Agentic Ops · Advanced Patterns</div><div class="title">Multi-Agent Systems — Patterns, Coordination & New Failure Modes</div><div class="sub">When one agent isn't enough — and the operational complexity multiplies non-linearly</div></div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">Multi-agent architecture patterns</div>
+      <div class="card b"><div class="ct">Orchestrator + Subagents</div><div class="cd">One orchestrator delegates tasks to specialist agents. Orchestrator holds the goal; subagents hold the tools. Clean separation of concerns — the most common and most reliable pattern.</div></div>
+      <div class="card p" style="margin-top:6px"><div class="ct">Peer-to-peer agents</div><div class="cd">Multiple agents of equal authority negotiate and check each other's work. Useful for adversarial red-team/blue-team setups or parallel exploration of solution spaces.</div></div>
+      <div class="card g" style="margin-top:6px"><div class="ct">Critic + Actor pattern</div><div class="cd">Actor proposes actions. Critic evaluates them before the Executor runs them. Dramatically reduces hallucinated tool calls and scope creep. ~30% overhead cost, worth it for high-risk actions.</div></div>
+      <div class="tip-box" style="margin-top:6px"><strong>💡 Tip: don't build multi-agent until a single agent is reliable and fully observable.</strong> Complexity compounds. Start simple — add agents only when the single-agent bottleneck is provable.</div>
+    </div>
+    <div class="col">
+      <div class="lbl">New failure modes unique to multi-agent</div>
+      <ul class="L">
+        <li class="warn"><strong>Agent collusion:</strong> Two agents agree on an incorrect plan with no external check. The orchestrator trusts both — no one catches the error.</li>
+        <li class="warn"><strong>Contradictory actions:</strong> Agent A creates a record; Agent B deletes it simultaneously. Race conditions in distributed agent systems are very real.</li>
+        <li class="warn"><strong>Trust propagation:</strong> A compromised or hallucinating subagent poisons the orchestrator's context with bad information that propagates to subsequent steps.</li>
+        <li class="warn"><strong>Attribution failure:</strong> An incident occurs — which agent made the bad decision? Shared tool credentials make forensics impossible.</li>
+        <li class="warn"><strong>Emergent behaviour:</strong> The interaction between agents produces outcomes that neither agent would produce alone and that no one anticipated in design.</li>
+      </ul>
+      <div class="trick-box" style="margin-top:8px"><strong>🔮 Ops rule:</strong> Every agent in a multi-agent system must have its own identity, its own audit trail, and its own blast-radius boundary. Shared identity = shared failure mode. No exceptions — not even for subagents that "only do read operations."</div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">22 / 28</span></div>
+</div>
+
+<!-- S23 AGENTIC TIPS -->
+<div class="slide" id="s23">
+  <div class="hdr"><div class="tag">Agentic Ops · Tips & Pitfalls</div><div class="title">What the Documentation Doesn't Tell You About Agents</div><div class="sub">Hard-won patterns from real agentic deployments — most of them painful to learn</div></div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">Tips that move the needle</div>
+      <ul class="L">
+        <li class="tip"><strong>Tool schemas are your most important prompt.</strong> A well-documented tool schema with clear param descriptions, types, and examples reduces hallucinated tool calls by 60–80%. Treat tool documentation like production API documentation.</li>
+        <li class="tip"><strong>Start with read-only tools.</strong> Build confidence in the agent's planning quality before giving it write access. Agents that can only read are observable, debuggable, and recoverable. Add write tools one at a time with clear risk assessment for each.</li>
+        <li class="tip"><strong>Use Temporal for anything that touches money or data.</strong> Temporal's durable execution model means crashed agents resume from their last checkpoint — not from the beginning. For financial agents, this prevents double-execution of payments on recovery.</li>
+        <li class="tip"><strong>Add a "confidence" field to every tool output.</strong> Tell the agent how much to trust each tool result. Search engines can return irrelevant results. APIs can return stale data. A confidence score lets the agent decide when to verify before acting.</li>
+        <li class="ok"><strong>Log the full reasoning chain, not just actions.</strong> When debugging agent failures, the reasoning trace — the "thinking" before each tool call — is more valuable than the tool call itself. Always capture it, even if it costs extra tokens.</li>
+      </ul>
+    </div>
+    <div class="col">
+      <div class="lbl">Pitfalls that sink agent projects</div>
+      <ul class="L">
+        <li class="warn"><strong>Giving agents too many tools.</strong> Every additional tool increases the probability of choosing the wrong one. Start with the minimum set needed for the task. A focused agent with 5 tools outperforms a capable agent with 50 tools.</li>
+        <li class="warn"><strong>No dry-run mode for destructive operations.</strong> The agent should always be able to simulate an action and show what it <em>would</em> do before doing it. No dry-run = no safe way to test in staging with production-like tasks.</li>
+        <li class="warn"><strong>Trusting agent self-reporting on confidence.</strong> LLMs are notoriously overconfident. Don't ask the agent "are you sure?" — it will say yes. Instead, require independent verification for high-stakes actions: a second tool call that validates the first result.</li>
+        <li class="warn"><strong>No rollback strategy for write operations.</strong> Every write operation an agent performs needs a defined undo procedure. "Delete this record" needs "restore this record." "Send this email" needs an archive + retraction workflow. Design rollback first.</li>
+        <li class="warn"><strong>Testing only the happy path.</strong> Agents fail in adversarial, ambiguous, and unexpected conditions — not the clean test cases you wrote. Red-team your own agent with edge cases, conflicting instructions, and deliberately bad tool outputs before go-live.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">23 / 28</span></div>
+</div>
+
+<!-- S24 AGENTIC MATURITY -->
+<div class="slide" id="s24">
+  <div class="hdr"><div class="tag">Agentic Ops · Maturity Model</div><div class="title">Agentic Ops Maturity — From Assisted to Fully Autonomous</div><div class="sub">Most enterprises are at Level 1. Level 4 is the frontier. Governance gaps are the primary bottleneck.</div></div>
+  <div class="body" style="flex-direction:column;gap:9px">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px">
+      <div class="card b">
+        <div class="ct" style="font-size:13px">Level 1 — Assisted</div>
+        <div class="cd" style="font-size:11px">Human initiates every task. Agent provides suggestions, drafts, or analysis. Human reviews and approves every output before any action is taken.</div>
+        <div class="lbl" style="margin-top:6px">Examples</div>
+        <div class="cd" style="font-size:11px">Copilot tools, drafting assistants, code suggestion, research summarisation</div>
+        <div class="lbl" style="margin-top:4px">Where most orgs are</div>
+        <span class="bdg b">~60% of deployments</span>
+      </div>
+      <div class="card g">
+        <div class="ct" style="font-size:13px">Level 2 — Supervised Automation</div>
+        <div class="cd" style="font-size:11px">Agent completes multi-step tasks autonomously. Human reviews and approves at defined checkpoints. Agent cannot act without explicit approval on gated steps.</div>
+        <div class="lbl" style="margin-top:6px">Examples</div>
+        <div class="cd" style="font-size:11px">Ticket triage + draft response (human sends), invoice matching (human approves payment)</div>
+        <div class="lbl" style="margin-top:4px">Where leaders are</div>
+        <span class="bdg g">~25% of deployments</span>
+      </div>
+      <div class="card a">
+        <div class="ct" style="font-size:13px">Level 3 — Conditional Autonomy</div>
+        <div class="cd" style="font-size:11px">Agent acts autonomously within clearly defined boundaries. Human-on-the-loop for anomalies. Automatic escalation when confidence drops or action type changes.</div>
+        <div class="lbl" style="margin-top:6px">Examples</div>
+        <div class="cd" style="font-size:11px">Auto-approve low-value POs, auto-resolve known incident types, auto-respond to standard customer queries</div>
+        <span class="bdg a">~12% of deployments</span>
+      </div>
+      <div class="card p">
+        <div class="ct" style="font-size:13px">Level 4 — Full Autonomy</div>
+        <div class="cd" style="font-size:11px">Agent operates independently across complex, open-ended tasks. Self-corrects, self-monitors, requests human help only when genuinely stuck. Kill switches + full audit required.</div>
+        <div class="lbl" style="margin-top:6px">Examples</div>
+        <div class="cd" style="font-size:11px">End-to-end software engineering agents, autonomous trading within defined risk parameters</div>
+        <span class="bdg p">~3% — frontier territory</span>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="warn-box"><strong>⚠️ The governance gap:</strong> Most organisations skip from Level 1 directly to Level 3 because the technology is ready. The governance, legal, and compliance frameworks are not. EU AI Act Article 14 requires human oversight for high-risk AI systems. Define your risk classification before choosing your autonomy level.</div>
+      <div class="tip-box"><strong>💡 Earn autonomy incrementally.</strong> Deploy at Level 1. Measure. Show the data. Negotiate Level 2 with legal and compliance. Measure again. Every jump in autonomy level needs to be earned with data — not assumed because the demo worked. This is how you build lasting organisational trust in agentic systems.</div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">24 / 28</span></div>
+</div>
+
+<!-- S25 AGENTIC CLOUD -->
+<div class="slide" id="s25">
+  <div class="hdr"><div class="tag">Agentic Ops · Cloud Platforms</div><div class="title">AWS · Azure · GCP — Agentic Ops Native Services</div><div class="sub">Where each cloud's genuine advantage lies for production agent deployments</div></div>
+  <div class="body" style="flex-direction:column;gap:9px">
+    <div class="cloud-row">
+      <div class="cloud-card cloud-aws"><div class="cloud-head"><div class="dot dot-aws"></div>AWS — Best for control & blast radius management</div><div class="cloud-body">
+        <div class="cloud-svc"><strong>Bedrock Agents + Action Groups:</strong> Define exactly which Lambda functions each agent can call. IAM policies scope each function to minimum necessary permissions. No shared credentials across tool calls.</div>
+        <div class="cloud-svc"><strong>Step Functions + Wait for Callback:</strong> The best human-in-the-loop orchestration available. An agent step can pause indefinitely, waiting for a human to approve via email/Slack before resuming — with full state preservation.</div>
+        <div class="cloud-svc"><strong>CloudTrail + EventBridge:</strong> Every Bedrock API call is logged in CloudTrail. EventBridge rules can trigger alerts or circuit breakers based on agent action patterns — zero custom instrumentation required.</div>
+        <div class="cloud-svc"><strong>Unique advantage:</strong> Finest-grained IAM permissions of any cloud. For financial and regulated agents, this is the control depth you need.</div>
+      </div></div>
+      <div class="cloud-card cloud-azure"><div class="cloud-head"><div class="dot dot-azure"></div>Azure — Best for enterprise connectivity</div><div class="cloud-body">
+        <div class="cloud-svc"><strong>AI Foundry Agents:</strong> Agent-as-a-Service with built-in tool calling, persistent thread memory, safety filters, and tracing. The fastest path from idea to governed production agent for enterprise teams.</div>
+        <div class="cloud-svc"><strong>Logic Apps + 500+ connectors:</strong> The agent can natively reach SAP, Salesforce, Dynamics 365, SharePoint, Teams, and hundreds of other enterprise systems without writing integration code. Unmatched enterprise connectivity.</div>
+        <div class="cloud-svc"><strong>Managed Identity:</strong> Zero-credential architecture. The agent's Azure identity has RBAC-scoped access to exactly the services it needs. Credentials never touch the code. Auto-rotation built in.</div>
+        <div class="cloud-svc"><strong>Unique advantage:</strong> Enterprise system integration depth. If your agent needs to touch existing business systems, Azure has the most connectors by far.</div>
+      </div></div>
+      <div class="cloud-card cloud-gcp"><div class="cloud-head"><div class="dot dot-gcp"></div>GCP — Best for structured reasoning & grounding</div><div class="cloud-body">
+        <div class="cloud-svc"><strong>Vertex AI Agent Builder + Playbooks:</strong> Define agent behaviour boundaries in structured natural language "playbooks." Non-engineers can define what the agent is allowed to do. Unique no-code policy layer.</div>
+        <div class="cloud-svc"><strong>Extensions + Grounding:</strong> Agents can call Google Search, Google Maps, and Google Workspace natively. The best factual grounding of any agent platform — reduces hallucinated tool outputs significantly.</div>
+        <div class="cloud-svc"><strong>Cloud Workflows + Cloud Tasks:</strong> Serverless durable orchestration with async task queues, retry logic, and dead-letter queues. No ops overhead for the workflow engine itself.</div>
+        <div class="cloud-svc"><strong>Unique advantage:</strong> Playbook-based behaviour control and native Google Search grounding. Best for knowledge-intensive agents where factual accuracy is critical.</div>
+      </div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div class="trick-box"><strong>🔮 AWS trick:</strong> Use Step Functions' Wait for Callback + SES email. When an agent hits a high-risk action, pause and email the approver with a single-click approve/reject link. No custom UI needed. The approval token is handled by Step Functions natively.</div>
+      <div class="trick-box"><strong>🔮 Azure trick:</strong> Use Logic Apps' "When an approval response is received" connector to build human-in-the-loop workflows in minutes. Native Teams/Outlook integration means approvers get mobile notifications — no special tooling required.</div>
+      <div class="trick-box"><strong>🔮 GCP trick:</strong> Use Vertex AI Agent Builder's "Playbooks" to define what the agent cannot do in structured natural language, then use Extensions to give it access to verified Google data sources. The combination gives you a well-constrained, factually grounded agent with minimal custom code.</div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">25 / 28</span></div>
+</div>
+
+<!-- S26 COMPARISON -->
+<div class="slide" id="s26">
+  <div class="hdr"><div class="tag">Synthesis</div><div class="title">MLOps · LLMOps · Agentic Ops — The Full Comparison</div><div class="sub">Same goal: reliable AI in production. Fundamentally different threat models and control architectures.</div></div>
+  <div class="body" style="flex-direction:column;gap:9px">
+    <table class="tbl">
+      <tr>
+        <th>Dimension</th>
+        <th style="background:#fff7ed;color:#9a3412">MLOps</th>
+        <th style="background:#f0fdf4;color:#065f46">LLMOps</th>
+        <th style="background:#faf5ff;color:#5b21b6">Agentic Ops</th>
+      </tr>
+      <tr><td><strong>What it operates</strong></td><td>ML model lifecycle — train to retrain</td><td>Language model APIs, prompts & pipelines</td><td>Autonomous agents with tool access and real-world effects</td></tr>
+      <tr><td><strong>Primary failure mode</strong></td><td>Silent drift, stale models, broken pipelines</td><td>Hallucination, cost explosion, silent model drift</td><td>Wrong irreversible action, scope creep, blast radius</td></tr>
+      <tr><td><strong>Determinism</strong></td><td>High — reproducible pipelines with versioning</td><td>Low — LLMs are probabilistic by design</td><td>Very low — non-deterministic multi-step chains</td></tr>
+      <tr><td><strong>Failure detectability</strong></td><td>High — metrics tell you when it breaks</td><td>Medium — hallucinations look like correct answers</td><td>Low — damage may be done before detection</td></tr>
+      <tr><td><strong>Primary monitoring signal</strong></td><td>Feature drift PSI, prediction drift, accuracy decay</td><td>Hallucination rate, cost/token, latency p95, user signal</td><td>Action trace completeness, blast radius, confidence scores</td></tr>
+      <tr><td><strong>Key operational control</strong></td><td>Eval gates + champion/challenger promotion</td><td>Guardrails + evals + cost limits + semantic cache</td><td>Trust boundaries + kill switches + human-in-the-loop gates</td></tr>
+      <tr><td><strong>Rollback</strong></td><td>Easy — promote previous registry version</td><td>Medium — revert prompt version, flush semantic cache</td><td>Hard — actions may already be in the world</td></tr>
+      <tr><td><strong>Primary open source tools</strong></td><td>MLflow, Evidently, ZenML, DVC, Feast</td><td>LangSmith, Ragas, DeepEval, Guardrails AI, Promptfoo</td><td>LangGraph, Temporal, CrewAI, Arize Phoenix, E2B</td></tr>
+    </table>
+    <div class="hl o"><strong>The interdependency:</strong> MLOps is the foundation — reliable model packaging, versioning, and drift detection underpins everything. LLMOps extends MLOps principles to probabilistic, high-cost models. Agentic Ops extends LLMOps to multi-step systems with real-world effects. Each layer demands you master the one below it first.</div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">26 / 28</span></div>
+</div>
+
+<!-- S27 EU AI ACT -->
+<div class="slide" id="s27">
+  <div class="hdr"><div class="tag">Governance & Compliance</div><div class="title">The EU AI Act — What It Means for MLOps, LLMOps & Agentic Ops</div><div class="sub">Fully in force from August 2026. The compliance clock is running.</div></div>
+  <div class="body" style="flex-direction:column;gap:9px">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div class="card r">
+        <div class="ct" style="font-size:13px">⛔ Prohibited Practices</div>
+        <ul class="L" style="margin-top:5px">
+          <li>Social scoring by public authorities</li>
+          <li>Real-time biometric surveillance in public spaces (with narrow exceptions)</li>
+          <li>Subliminal manipulation causing harm</li>
+          <li>Exploiting vulnerabilities of specific groups</li>
+        </ul>
+        <div class="lbl" style="margin-top:5px">Implication for ops teams</div>
+        <div class="cd" style="font-size:11px">Audit your training data and model objectives. If any of these patterns could emerge from your system, it's a prohibited practice problem — not a monitoring problem.</div>
+      </div>
+      <div class="card a">
+        <div class="ct" style="font-size:13px">⚠️ High-Risk AI Systems</div>
+        <ul class="L" style="margin-top:5px">
+          <li>Credit scoring and insurance risk assessment</li>
+          <li>Employment screening and HR decisions</li>
+          <li>Critical infrastructure management</li>
+          <li>Medical devices and diagnostics</li>
+          <li>Law enforcement and judicial decisions</li>
+        </ul>
+        <div class="lbl" style="margin-top:5px">Required for High-Risk</div>
+        <div class="cd" style="font-size:11px">Human oversight (Article 14), audit logs, drift monitoring, conformity assessment, registration in EU database. This is your MLOps checklist.</div>
+      </div>
+      <div class="card b">
+        <div class="ct" style="font-size:13px">📋 GPAI Model Obligations</div>
+        <ul class="L" style="margin-top:5px">
+          <li>Training data transparency and copyright documentation</li>
+          <li>Technical documentation and model cards</li>
+          <li>Energy consumption reporting</li>
+          <li>Systemic risk assessment for frontier models (&gt;10²⁵ FLOPs)</li>
+          <li>Incident reporting for serious incidents to national authorities</li>
+        </ul>
+        <div class="lbl" style="margin-top:5px">What this means for LLMOps</div>
+        <div class="cd" style="font-size:11px">If you fine-tune or deploy GPAI models, you inherit documentation and incident reporting obligations. Build these into your LLMOps pipeline now.</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+      <div class="card g">
+        <div class="ct">Article 14 — Human Oversight</div>
+        <div class="cd">High-risk AI systems must be designed to allow humans to "effectively oversee the AI system during the period of use." This directly defines your Agentic Ops oversight model. Human-in-the-loop for high-risk actions is not optional — it's a legal requirement.</div>
+      </div>
+      <div class="tip-box" style="display:flex;align-items:center">
+        <div><strong>💡 Start your EU AI Act compliance posture today:</strong> (1) Classify all your AI systems into risk tiers, (2) for High-Risk, verify you have audit logs, drift monitoring, and documented human oversight — your MLOps and Agentic Ops controls map directly to EU AI Act requirements, (3) for LLMs/GPAI, build model cards and document training data provenance now.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">27 / 28</span></div>
+</div>
+
+<!-- S28 CLOSING -->
+<div class="slide" id="s28">
+  <div class="hdr"><div class="tag">Course Summary</div><div class="title">Key Takeaways & What to Do Monday Morning</div></div>
+  <div class="body" style="flex-direction:column;gap:9px">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px">
+      <div class="card o">
+        <div class="ct" style="font-size:13px">🟠 MLOps essentials</div>
+        <ul class="L" style="margin-top:4px">
+          <li class="ok">Version every model — registry is non-negotiable</li>
+          <li class="ok">Monitor data drift, concept drift, and model drift separately</li>
+          <li class="ok">Use NannyML for label-free drift detection</li>
+          <li class="ok">Champion/challenger before any promotion to prod</li>
+          <li class="warn">Never overwrite a production model in-place</li>
+        </ul>
+      </div>
+      <div class="card g">
+        <div class="ct" style="font-size:13px">🟢 LLMOps essentials</div>
+        <ul class="L" style="margin-top:4px">
+          <li class="ok">Set max_tokens on every single request. No exceptions.</li>
+          <li class="ok">Hybrid search (BM25 + vector) + reranker for all RAG pipelines</li>
+          <li class="ok">Run evals on every prompt change — treat prompts as code</li>
+          <li class="ok">Start with PGVector. Migrate when you actually outgrow it.</li>
+          <li class="warn">Never log raw user inputs without PII scrubbing first</li>
+        </ul>
+      </div>
+      <div class="card p">
+        <div class="ct" style="font-size:13px">🟣 Agentic Ops essentials</div>
+        <ul class="L" style="margin-top:4px">
+          <li class="ok">Start read-only. Earn write access incrementally.</li>
+          <li class="ok">Document tool schemas as carefully as production APIs</li>
+          <li class="ok">Use Temporal for any agent that touches money or data</li>
+          <li class="ok">Every agent needs its own identity, audit trail, and blast-radius boundary</li>
+          <li class="warn">Never go to Level 3 autonomy without Level 2 working reliably</li>
+        </ul>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+      <div class="card r">
+        <div class="ct" style="font-size:13px">⚖️ The hard truths</div>
+        <ul class="L" style="margin-top:4px">
+          <li class="warn">Most AI failures are engineering failures — not model failures</li>
+          <li class="warn">A model with no drift monitoring is already failing silently</li>
+          <li class="warn">80% of RAG failures are retrieval problems — fix retrieval first</li>
+          <li class="warn">Agentic blast radius is real — design rollback before deployment</li>
+          <li class="warn">EU AI Act compliance is an MLOps and Agentic Ops problem, not a legal problem</li>
+        </ul>
+      </div>
+      <div class="hl g" style="display:flex;flex-direction:column;justify-content:center;">
+        <strong style="font-size:13px">🚀 Your Monday morning checklist</strong>
+        <div style="margin-top:6px;font-size:12px;line-height:1.9">
+          1. Find a model in prod with no drift monitoring → add Evidently today<br/>
+          2. Find the LLM call with no max_tokens → fix it in the next deploy<br/>
+          3. Find the RAG pipeline with fixed-size chunking → test semantic chunking<br/>
+          4. Add one eval to your CI pipeline → LLM-as-judge on your most critical prompt<br/>
+          5. Find the agent with no audit trail → add OpenLLMetry tracing before next release
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">MLOPS · LLMOPS · AGENTIC OPS</span><span class="fn">28 / 28</span></div>
+</div>
+
+</div>
+<script>
+  const TOTAL = 28;
+  let cur = 1;
+  function show(n) {
+    document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+    document.getElementById('s' + n).classList.add('active');
+    document.getElementById('counter').textContent = n + ' / ' + TOTAL;
+    document.getElementById('btnPrev').disabled = n === 1;
+    document.getElementById('btnNext').disabled = n === TOTAL;
+    cur = n;
+  }
+  function next() { if (cur < TOTAL) show(cur + 1); }
+  function prev() { if (cur > 1) show(cur - 1); }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   prev();
+  });
+  show(1);
+</script>
+</body>
+</html>

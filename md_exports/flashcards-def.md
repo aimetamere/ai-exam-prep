@@ -1,135 +1,22 @@
 # AI Exam — Key Terms Glossary
 
-Companion to the main flashcard deck. Each card is a term + definition.
-
----
-
-## Course 1 — AI Foundations
-
-### Term: ANI
-<details><summary>Show answer</summary>
-
-Artificial Narrow Intelligence. AI that performs one specific task well (for example spam filtering or route prediction) without general transfer across domains.
-
-</details>
-
-### Term: AGI
-<details><summary>Show answer</summary>
-
-Artificial General Intelligence. A hypothetical system with human-level capability across many domains that can transfer learning between tasks.
-
-</details>
-
-### Term: ASI
-<details><summary>Show answer</summary>
-
-Artificial Superintelligence. A hypothetical stage where AI exceeds human intelligence across nearly all cognitive tasks.
-
-</details>
-
-### Term: AI Winter
-<details><summary>Show answer</summary>
-
-A period of reduced AI funding and interest after inflated expectations failed to deliver practical outcomes.
-
-</details>
-
-## Course 2 — LLMs
-
-### Term: Token
-<details><summary>Show answer</summary>
-
-The basic text unit a language model processes. Tokens are often subwords and are used for context limits and API billing.
-
-</details>
-
-### Term: Context Window
-<details><summary>Show answer</summary>
-
-The maximum number of tokens a model can consider in one request, including prompt and generated output.
-
-</details>
-
-### Term: Hallucination
-<details><summary>Show answer</summary>
-
-When a model outputs plausible sounding but incorrect or fabricated information.
-
-</details>
-
-### Term: RAG
-<details><summary>Show answer</summary>
-
-Retrieval-Augmented Generation. A method that retrieves relevant documents and injects them into the prompt so answers are grounded in source material.
-
-</details>
-
-## Course 3 — Agentic AI
-
-### Term: AI Agent
-<details><summary>Show answer</summary>
-
-A system that can perceive context, reason over goals, use tools, and take actions across multiple steps.
-
-</details>
-
-### Term: MCP
-<details><summary>Show answer</summary>
-
-Model Context Protocol. A standard interface that lets AI systems connect to external tools and data sources.
-
-</details>
-
-## Course 4 — ML Fundamentals
-
-### Term: Overfitting
-<details><summary>Show answer</summary>
-
-When a model learns training data too specifically and performs poorly on unseen data.
-
-</details>
-
-### Term: Precision
-<details><summary>Show answer</summary>
-
-The fraction of predicted positives that are actually positive: TP / (TP + FP).
-
-</details>
-
-### Term: Recall
-<details><summary>Show answer</summary>
-
-The fraction of actual positives that are correctly identified: TP / (TP + FN).
-
-</details>
-
-### Term: F1 Score
-<details><summary>Show answer</summary>
-
-The harmonic mean of precision and recall, useful when balancing false positives and false negatives.
-
-</details>
-
-## Course 5 — Deep Learning
-
-### Term: Backpropagation
-<details><summary>Show answer</summary>
-
-The algorithm that computes gradients of the loss with respect to model weights so optimization can update parameters.
-
-</details>
-
-### Term: Transformer
-<details><summary>Show answer</summary>
-
-A neural architecture based on attention mechanisms that processes tokens in parallel and powers modern LLMs.
-
-</details>
-# AI Exam — Key Terms Glossary
-
 **Companion to the main flashcard deck. Every term you need to define, organised by topic.**
 
 How to use: read the term, think of the definition, then click **"Show answer"** to reveal. Terms are grouped by course/topic area.
+
+---
+
+## 🎯 Exam Priority — Must-Know Definitions (Courses 1–7)
+
+Use this as your final-pass checklist. If you can define these confidently, you cover the highest-yield concepts from the first seven courses.
+
+- **Course 1 (Foundations):** ANI, AGI, AI Winter, AlexNet
+- **Course 2 (GenAI/LLMs):** LLM, Token, Context Window, Hallucination, RAG, RLHF
+- **Course 3 (Agentic AI):** AI Agent, MCP, ReAct, Prompt Injection, Human-in-the-Loop
+- **Course 4 (ML Fundamentals):** Supervised vs Unsupervised vs RL, Overfitting, Precision/Recall/F1, AUC-ROC, Data Leakage, SHAP
+- **Course 5 (Deep Learning):** Backpropagation, Gradient Descent, Learning Rate, Dropout, Transformer, Self-Attention
+- **Course 6 (NLP):** Tokenisation, Embeddings, Semantic Search, NER, Extractive vs Abstractive Summarisation
+- **Course 7 (Computer Vision):** Classification vs Detection vs Segmentation, YOLO, OCR, CLIP
 
 ---
 
@@ -1007,6 +894,232 @@ Adding **calibrated random noise** to aggregate outputs so no individual record 
 <details><summary>Show answer</summary>
 
 Statistically faithful **fake datasets** generated from real data distributions. No real individual records — generally outside GDPR scope. Used for ML training, third-party sharing, dev/test environments. Growing use in regulated industries.
+
+</details>
+
+---
+
+## ⚙️ Course 9 — AIOps / MLOps / LLMOps / Agentic Ops
+
+### Term: AIOps
+<details><summary>Show answer</summary>
+
+Applying AI to IT operations (logs, metrics, traces, incidents) to detect anomalies, predict outages, and automate remediation. Goal: fewer incidents and faster MTTR.
+
+</details>
+
+### Term: MLOps
+<details><summary>Show answer</summary>
+
+The production discipline for ML systems: experiment tracking, model registry, deployment, drift monitoring, retraining, and rollback. Core principle: models are products, not one-off experiments.
+
+</details>
+
+### Term: LLMOps
+<details><summary>Show answer</summary>
+
+The production discipline for LLM applications: prompt/version control, evals, guardrails, cost controls, and observability. Key difference from classic MLOps: outputs are probabilistic and failure can look fluent.
+
+</details>
+
+### Term: Agentic Ops
+<details><summary>Show answer</summary>
+
+Operating autonomous agents that plan, call tools, and act over multiple steps. Focus is on trust boundaries, blast-radius control, kill switches, and immutable audit trails.
+
+</details>
+
+### Term: Data Drift vs Concept Drift
+<details><summary>Show answer</summary>
+
+**Data drift:** input distribution changes. **Concept drift:** the relationship between input and target changes. Both degrade models, but require different detection and retraining logic.
+
+</details>
+
+### Term: Champion-Challenger
+<details><summary>Show answer</summary>
+
+Safe deployment pattern where a new model (challenger) is tested against the production model (champion), often in shadow/canary mode, before promotion.
+
+</details>
+
+### Term: Shadow Deployment
+<details><summary>Show answer</summary>
+
+Run a new model on real traffic without exposing outputs to users. Used to catch regressions before cutover.
+
+</details>
+
+### Term: LLM Evaluation Dimensions
+<details><summary>Show answer</summary>
+
+High-yield eval dimensions: correctness, groundedness, safety/robustness, consistency, latency, and cost. Exam idea: "accuracy alone is insufficient for LLMs."
+
+</details>
+
+### Term: RAG Quality Pattern
+<details><summary>Show answer</summary>
+
+High-performing production RAG typically uses hybrid retrieval (BM25 + vector) plus reranking. Most failures are retrieval failures, not generation failures.
+
+</details>
+
+### Term: Trust Boundary (Agents)
+<details><summary>Show answer</summary>
+
+Explicit limits on what an agent can access and do (tool allowlists, scoped IAM/RBAC, approval gates). Defines and contains blast radius.
+
+</details>
+
+---
+
+## 🛡️ Course 10 — AI Risk, Governance, and Ethics
+
+### Term: AI Governance
+<details><summary>Show answer</summary>
+
+Operational system that defines who decides, who audits, and who is accountable for AI systems across the lifecycle. Principles alone are not governance.
+
+</details>
+
+### Term: Accountability Gap
+<details><summary>Show answer</summary>
+
+When harm occurs but no single accountable owner is clearly assigned (often distributed across vendor, team, and regulator). A key governance failure mode.
+
+</details>
+
+### Term: Ethical Trade-Off
+<details><summary>Show answer</summary>
+
+A deliberate choice between competing values (e.g., fairness vs performance, transparency vs competitiveness). Ethics in AI is often trade-off design, not binary right/wrong.
+
+</details>
+
+### Term: Human Oversight
+<details><summary>Show answer</summary>
+
+Designing AI systems so humans can effectively supervise, intervene, and override decisions during operation, especially for high-risk use cases.
+
+</details>
+
+### Term: Risk-Based Regulation
+<details><summary>Show answer</summary>
+
+Regulatory model where obligations scale with risk category. High-risk systems face stricter documentation, monitoring, and oversight requirements.
+
+</details>
+
+### Term: Geopolitical AI Governance Models
+<details><summary>Show answer</summary>
+
+High-level framing: EU (trust-first), US (innovation-first), China (coordination/state-led), Africa (access/development-first). Strategy must adapt to jurisdictional differences.
+
+</details>
+
+---
+
+## 🌱 Course 11 — AI Sustainability and ESG
+
+### Term: AI Environmental Footprint
+<details><summary>Show answer</summary>
+
+Total environmental impact of AI systems, including training and inference energy, cooling water usage, and hardware lifecycle/extraction impact.
+
+</details>
+
+### Term: Green AI
+<details><summary>Show answer</summary>
+
+Designing and operating AI for energy and resource efficiency while preserving business value. Includes right-sizing models, efficient prompts, and carbon-aware architecture decisions.
+
+</details>
+
+### Term: ESG-by-Design (for AI)
+<details><summary>Show answer</summary>
+
+Integrating environmental, social, and governance constraints into AI system design from the start, not as post-deployment compliance.
+
+</details>
+
+### Term: AI-ESG Incentive Misalignment
+<details><summary>Show answer</summary>
+
+Common pattern where teams optimize for AI adoption speed/ROI while sustainability costs stay unmeasured, causing emissions and governance risk to rise invisibly.
+
+</details>
+
+### Term: AI-Enabled ESG Reporting
+<details><summary>Show answer</summary>
+
+Using AI (NLP/CV/automation) to convert fragmented sustainability data into continuous, auditable ESG reporting instead of manual periodic reporting.
+
+</details>
+
+### Term: Rebound Effect (AI)
+<details><summary>Show answer</summary>
+
+Efficiency gains lower per-task cost, which can increase total usage and offset sustainability gains unless explicit limits and governance are in place.
+
+</details>
+
+---
+
+## 📈 Course 12 — AI Strategy and Business
+
+### Term: AI-Native Company
+<details><summary>Show answer</summary>
+
+Company where AI is embedded into the core business model, operations, and feedback loops; AI is not an add-on feature but a structural capability.
+
+</details>
+
+### Term: AI Use-Case Scoring
+<details><summary>Show answer</summary>
+
+Prioritization framework using business impact, data readiness, technical feasibility, scalability, and strategic fit to select which AI initiatives should be funded.
+
+</details>
+
+### Term: AI Value Levers
+<details><summary>Show answer</summary>
+
+Three primary value paths: revenue growth, cost reduction, and risk reduction. Mature strategy ties each use case to at least one measurable lever.
+
+</details>
+
+### Term: Build vs Buy vs Partner
+<details><summary>Show answer</summary>
+
+Strategic sourcing decision: build for differentiation, buy for speed/table-stakes capability, partner when capabilities are complementary and shared risk is preferable.
+
+</details>
+
+### Term: Outcome-Based AI Business Model
+<details><summary>Show answer</summary>
+
+Commercial model where customers pay for measurable business outcomes, not tool access. Highest alignment and upside, but requires strong attribution and trust.
+
+</details>
+
+### Term: AI Pricing Models
+<details><summary>Show answer</summary>
+
+Core models: token-based, API-call based, subscription, and outcome-based. Pricing choice is strategic because it shapes behavior, margin, and value capture.
+
+</details>
+
+### Term: Pilot Trap
+<details><summary>Show answer</summary>
+
+Organisation runs many AI pilots but scales none to production due to weak ownership, unclear metrics, or missing operating model.
+
+</details>
+
+### Term: Strategy-Execution Gap (AI)
+<details><summary>Show answer</summary>
+
+Failure mode where AI vision is strong but implementation lacks owners, data readiness, milestones, and measurable targets, so value never materializes.
 
 </details>
 

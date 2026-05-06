@@ -4,6 +4,9 @@ import "./page.css";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import flashcardsMarkdown from "../md_exports/flashcards.md?raw";
 import flashcardsDefinitionsMarkdown from "../md_exports/flashcards-def.md?raw";
+import qcmMarkdown from "../qcm_50_cards_qcm_style.md?raw";
+import qcmMarkdown2 from "../qcm_50_cards_2.md?raw";
+import qcmMarkdown3 from "../qcm_50_cards_3.md?raw";
 
 type Flashcard = {
   id: string;
@@ -11,11 +14,18 @@ type Flashcard = {
   section: string;
   question: string;
   answer: string;
+  qcmOptions?: Array<{ label: string; text: string; raw: string }>;
+  qcmCorrectAnswer?: string;
+  qcmCorrectLabel?: string;
 };
 
-type DeckType = "main" | "definitions";
+type DeckType = "main" | "definitions" | "qcm";
+type QcmCategory = "set1" | "set2" | "set3";
 type CardStatus = "learned" | "not_learned";
 type StatusMap = Record<string, CardStatus>;
+type MenuView = "progress" | "concepts";
+type ProgressFilter = "all" | "learned" | "not_learned";
+type StudyMode = "all" | "learned" | "not_learned";
 
 function shuffle<T>(items: T[]): T[] {
   const copy = [...items];
@@ -175,6 +185,114 @@ function parseDefinitionFlashcards(markdown: string): Flashcard[] {
   return cards;
 }
 
+function parseQcmFlashcards(markdown: string, idPrefix = "qcm"): Flashcard[] {
+  const cards: Flashcard[] = [];
+  const lines = markdown.replace(/\r/g, "").split("\n");
+
+  let currentSection = "QCM";
+  let cardNumber: number | null = null;
+  let question: string | null = null;
+  let answer: string | null = null;
+  let optionsBuffer: string[] = [];
+  let inDetails = false;
+
+  const flush = () => {
+    if (cardNumber !== null && question && answer) {
+      const options = optionsBuffer
+        .map((raw) => {
+          const match = raw.match(/^- ([A-D])\.\s*\*?\s*(.*)$/i);
+          if (!match) return null;
+          return {
+            raw,
+            label: match[1].toUpperCase(),
+            text: match[2].trim(),
+          };
+        })
+        .filter(
+          (option): option is { label: string; text: string; raw: string } =>
+            option !== null,
+        );
+      const answerLabelMatch = answer.trim().match(/^([A-D])(?:\.|\b)/i);
+      const answerLabel = answerLabelMatch
+        ? answerLabelMatch[1].toUpperCase()
+        : undefined;
+      const selectedOption = answerLabel
+        ? options.find((option) => option.label === answerLabel)
+        : undefined;
+      const normalizedAnswer = selectedOption
+        ? `${selectedOption.label}. ${selectedOption.text}`
+        : answer.trim();
+      const formattedAnswer = `**Correct answer:** ${normalizedAnswer}`;
+      cards.push({
+        id: `${idPrefix}-${cardNumber}`,
+        cardNumber,
+        section: currentSection,
+        question: question.trim(),
+        answer: formattedAnswer,
+        qcmOptions: options,
+        qcmCorrectAnswer: normalizedAnswer,
+        qcmCorrectLabel: answerLabel,
+      });
+    }
+    cardNumber = null;
+    question = null;
+    answer = null;
+    optionsBuffer = [];
+    inDetails = false;
+  };
+
+  for (const rawLine of lines) {
+    const line = rawLine;
+
+    const sectionMatch = line.match(/^##\s+(.*)$/);
+    if (sectionMatch && !line.startsWith("### ")) {
+      flush();
+      currentSection = sectionMatch[1].trim();
+      continue;
+    }
+
+    const cardMatch = line.match(/^###\s+Card\s+(\d+)\s*$/i);
+    if (cardMatch) {
+      flush();
+      cardNumber = Number(cardMatch[1]);
+      continue;
+    }
+
+    if (cardNumber === null) continue;
+
+    const qcmMatch = line.match(/^\*\*QCM:\*\*\s*\*?\s*(.*)$/i);
+    if (qcmMatch) {
+      question = qcmMatch[1];
+      continue;
+    }
+
+    if (/^<details>/i.test(line)) {
+      inDetails = true;
+      continue;
+    }
+
+    if (/^<\/details>/i.test(line)) {
+      inDetails = false;
+      continue;
+    }
+
+    if (!inDetails) continue;
+
+    const answerMatch = line.match(/^\*\*Answer:\*\*\s*(.*)$/i);
+    if (answerMatch) {
+      answer = answerMatch[1];
+      continue;
+    }
+
+    if (/^- [A-D]\./.test(line.trim())) {
+      optionsBuffer.push(line.trim());
+    }
+  }
+
+  flush();
+  return cards;
+}
+
 function renderInlineMarkdown(text: string): string {
   const escape = (s: string) =>
     s
@@ -259,6 +377,7 @@ const FLING_VELOCITY_THRESHOLD = 0.55;
 const MAX_DRAG = 260;
 const EXIT_DURATION_MS = 320;
 const USER_ID_STORAGE_KEY = "ai-exam-user-id";
+const STATUS_STORAGE_KEY_PREFIX = "ai-exam-card-status";
 
 function getOrCreateUserId(): string {
   const existing = window.localStorage.getItem(USER_ID_STORAGE_KEY);
@@ -268,8 +387,43 @@ function getOrCreateUserId(): string {
   return id;
 }
 
+function getStatusStorageKey(userId: string, deckType: DeckType): string {
+  return `${STATUS_STORAGE_KEY_PREFIX}:${userId}:${deckType}`;
+}
+
+function readLocalStatuses(userId: string, deckType: DeckType): StatusMap {
+  try {
+    const raw = window.localStorage.getItem(getStatusStorageKey(userId, deckType));
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as unknown;
+    if (!parsed || typeof parsed !== "object") return {};
+    const entries = Object.entries(parsed as Record<string, unknown>).filter(
+      ([, value]) => value === "learned" || value === "not_learned",
+    ) as Array<[string, CardStatus]>;
+    return Object.fromEntries(entries);
+  } catch {
+    return {};
+  }
+}
+
+function writeLocalStatuses(
+  userId: string,
+  deckType: DeckType,
+  statuses: StatusMap,
+): void {
+  try {
+    window.localStorage.setItem(
+      getStatusStorageKey(userId, deckType),
+      JSON.stringify(statuses),
+    );
+  } catch {
+    // Ignore quota/storage errors and keep in-memory state working.
+  }
+}
+
 export default function Page() {
   const [deckType, setDeckType] = useState<DeckType>("main");
+  const [qcmCategory, setQcmCategory] = useState<QcmCategory>("set1");
   const [deck, setDeck] = useState<Flashcard[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [statusByCard, setStatusByCard] = useState<StatusMap>({});
@@ -278,11 +432,23 @@ export default function Page() {
   const [flipped, setFlipped] = useState(false);
   const [drag, setDrag] = useState(0);
   const [exit, setExit] = useState<null | "left" | "right">(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [menuView, setMenuView] = useState<MenuView>("progress");
+  const [menuQuery, setMenuQuery] = useState("");
+  const [progressFilter, setProgressFilter] = useState<ProgressFilter>("all");
+  const [studyMode, setStudyMode] = useState<StudyMode>("all");
+  const [selectedQcmAnswers, setSelectedQcmAnswers] = useState<
+    Record<string, string>
+  >({});
+  const [autoFlipLock, setAutoFlipLock] = useState(false);
   const dragStartX = useRef<number | null>(null);
+  const dragStartY = useRef<number | null>(null);
   const lastPointerX = useRef<number | null>(null);
   const lastPointerTime = useRef<number | null>(null);
   const swipeVelocity = useRef(0);
   const dragMoved = useRef(false);
+  const blockGestureForScroll = useRef(false);
+  const hasPointerCapture = useRef(false);
   const userIdRef = useRef<string | null>(null);
 
   const applyDragResistance = (dx: number) =>
@@ -295,23 +461,46 @@ export default function Page() {
   useEffect(() => {
     try {
       const isDefinitionsDeck = deckType === "definitions";
+      const isQcmDeck = deckType === "qcm";
+      const activeQcmSource =
+        qcmCategory === "set2"
+          ? qcmMarkdown2
+          : qcmCategory === "set3"
+            ? qcmMarkdown3
+            : qcmMarkdown;
+      const activeQcmFileName =
+        qcmCategory === "set2"
+          ? "qcm_50_cards_2.md"
+          : qcmCategory === "set3"
+            ? "qcm_50_cards_3.md"
+            : "qcm_50_cards_qcm_style.md";
+      const activeQcmPrefix =
+        qcmCategory === "set2" ? "qcm2" : qcmCategory === "set3" ? "qcm3" : "qcm1";
       const source = isDefinitionsDeck
         ? flashcardsDefinitionsMarkdown
-        : flashcardsMarkdown;
+        : isQcmDeck
+          ? activeQcmSource
+          : flashcardsMarkdown;
       if (!source.trim()) {
         throw new Error(
           isDefinitionsDeck
             ? "flashcards-def.md is empty."
+            : isQcmDeck
+              ? `${activeQcmFileName} is empty.`
             : "flashcards.md is empty.",
         );
       }
       const parsed = isDefinitionsDeck
         ? parseDefinitionFlashcards(source)
-        : parseFlashcards(source);
+        : isQcmDeck
+          ? parseQcmFlashcards(source, activeQcmPrefix)
+          : parseFlashcards(source);
       if (parsed.length === 0) {
         throw new Error(
           isDefinitionsDeck
             ? "No cards parsed from flashcards-def.md."
+            : isQcmDeck
+              ? `No cards parsed from ${activeQcmFileName}.`
             : "No cards parsed from flashcards.md.",
         );
       }
@@ -323,15 +512,23 @@ export default function Page() {
       setFlipped(false);
       setDrag(0);
       setExit(null);
+      setStudyMode("all");
+      setSelectedQcmAnswers({});
+      setAutoFlipLock(false);
     } catch (err) {
       setDeck([]);
       setLoadError(err instanceof Error ? err.message : "Unknown error");
     }
-  }, [deckType]);
+  }, [deckType, qcmCategory]);
 
   useEffect(() => {
     if (!userIdRef.current || deck.length === 0) return;
     const aborter = new AbortController();
+    const userId = userIdRef.current;
+
+    // Load from local storage first so progress is available offline.
+    const localStatuses = readLocalStatuses(userId, deckType);
+    setStatusByCard(localStatuses);
 
     const loadStatuses = async () => {
       try {
@@ -346,12 +543,17 @@ export default function Page() {
           throw new Error(`Status load failed (${response.status})`);
         }
         const payload = (await response.json()) as { statuses?: StatusMap };
-        setStatusByCard(payload.statuses ?? {});
+        // Keep local values if both local and remote contain a card.
+        const merged = { ...(payload.statuses ?? {}), ...localStatuses };
+        setStatusByCard(merged);
+        writeLocalStatuses(userId, deckType, merged);
         setStatusError(null);
       } catch (err) {
         if (aborter.signal.aborted) return;
         setStatusError(
-          err instanceof Error ? err.message : "Could not load statuses",
+          err instanceof Error
+            ? `${err.message}. Using local progress.`
+            : "Could not load statuses. Using local progress.",
         );
       }
     };
@@ -360,9 +562,73 @@ export default function Page() {
     return () => aborter.abort();
   }, [deck, deckType]);
 
-  const card = deck[index];
-  const upcoming = deck[index + 1];
-  const total = deck.length;
+  const learnedCards = useMemo(
+    () => deck.filter((item) => statusByCard[item.id] === "learned"),
+    [deck, statusByCard],
+  );
+  const notLearnedCards = useMemo(
+    () => deck.filter((item) => statusByCard[item.id] === "not_learned"),
+    [deck, statusByCard],
+  );
+  const activeDeck = useMemo(() => {
+    if (studyMode === "learned") return learnedCards;
+    if (studyMode === "not_learned") return notLearnedCards;
+    return deck;
+  }, [deck, learnedCards, notLearnedCards, studyMode]);
+  const card = activeDeck[index];
+  const upcoming = activeDeck[index + 1];
+  const total = activeDeck.length;
+
+  useEffect(() => {
+    if (index < total) return;
+    setIndex(0);
+    setFlipped(false);
+    setDrag(0);
+    setExit(null);
+  }, [index, total]);
+
+  const goToCard = (cardId: string) => {
+    let nextIndex = activeDeck.findIndex((item) => item.id === cardId);
+    if (nextIndex < 0) {
+      setStudyMode("all");
+      nextIndex = deck.findIndex((item) => item.id === cardId);
+    }
+    if (nextIndex < 0) return;
+    setIndex(nextIndex);
+    setFlipped(false);
+    setDrag(0);
+    setExit(null);
+    setIsMenuOpen(false);
+  };
+
+  const menuCards = useMemo(() => {
+    const normalizedQuery = menuQuery.trim().toLowerCase();
+    let source = deck;
+    if (menuView === "progress") {
+      if (progressFilter === "learned") source = learnedCards;
+      else if (progressFilter === "not_learned") source = notLearnedCards;
+    }
+    if (!normalizedQuery) return source;
+    return source.filter((item) =>
+      item.question.toLowerCase().includes(normalizedQuery),
+    );
+  }, [
+    menuQuery,
+    menuView,
+    progressFilter,
+    deck,
+    learnedCards,
+    notLearnedCards,
+  ]);
+
+  const setStudyModeFromMenu = (mode: StudyMode) => {
+    setStudyMode(mode);
+    setIndex(0);
+    setFlipped(false);
+    setDrag(0);
+    setExit(null);
+    setIsMenuOpen(false);
+  };
 
   const goNext = () => {
     if (index + 1 >= total) return;
@@ -396,9 +662,11 @@ export default function Page() {
 
   const setCardStatus = async (nextStatus: CardStatus) => {
     if (!card || !userIdRef.current) return;
+    const userId = userIdRef.current;
     const cardId = card.id;
-    const previous = statusByCard[cardId];
-    setStatusByCard((current) => ({ ...current, [cardId]: nextStatus }));
+    const nextStatuses = { ...statusByCard, [cardId]: nextStatus };
+    setStatusByCard(nextStatuses);
+    writeLocalStatuses(userId, deckType, nextStatuses);
     setStatusError(null);
 
     try {
@@ -406,7 +674,7 @@ export default function Page() {
         method: "POST",
         headers: {
           "content-type": "application/json",
-          "x-user-id": userIdRef.current,
+          "x-user-id": userId,
         },
         body: JSON.stringify({
           cardId,
@@ -418,14 +686,10 @@ export default function Page() {
         throw new Error(`Status save failed (${response.status})`);
       }
     } catch (err) {
-      setStatusByCard((current) => {
-        const copy = { ...current };
-        if (previous) copy[cardId] = previous;
-        else delete copy[cardId];
-        return copy;
-      });
       setStatusError(
-        err instanceof Error ? err.message : "Could not save status",
+        err instanceof Error
+          ? `${err.message}. Saved locally.`
+          : "Could not save status to server. Saved locally.",
       );
     }
   };
@@ -449,18 +713,44 @@ export default function Page() {
   }, [index, total]);
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (exit) return;
+    if (exit || autoFlipLock) return;
     dragStartX.current = e.clientX;
+    dragStartY.current = e.clientY;
     lastPointerX.current = e.clientX;
     lastPointerTime.current = performance.now();
     swipeVelocity.current = 0;
     dragMoved.current = false;
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    blockGestureForScroll.current = false;
+    hasPointerCapture.current = false;
+
+    // For QCM touch, defer pointer capture so vertical scroll still works.
+    if (!(deckType === "qcm" && e.pointerType === "touch")) {
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+      hasPointerCapture.current = true;
+    }
   };
 
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (dragStartX.current === null || exit) return;
+    if (dragStartX.current === null || exit || autoFlipLock) return;
     const dx = e.clientX - dragStartX.current;
+    const dy = dragStartY.current === null ? 0 : e.clientY - dragStartY.current;
+
+    if (deckType === "qcm" && e.pointerType === "touch" && !hasPointerCapture.current) {
+      // Decide intent: vertical scroll vs horizontal swipe.
+      if (Math.abs(dy) > 12 && Math.abs(dy) > Math.abs(dx)) {
+        blockGestureForScroll.current = true;
+        setDrag(0);
+        return;
+      }
+      if (Math.abs(dx) > 12 && Math.abs(dx) >= Math.abs(dy)) {
+        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+        hasPointerCapture.current = true;
+      } else {
+        return;
+      }
+    }
+
+    if (blockGestureForScroll.current) return;
     const now = performance.now();
     if (lastPointerX.current !== null && lastPointerTime.current !== null) {
       const dt = Math.max(now - lastPointerTime.current, 1);
@@ -474,13 +764,29 @@ export default function Page() {
   };
 
   const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (blockGestureForScroll.current) {
+      blockGestureForScroll.current = false;
+      dragStartX.current = null;
+      dragStartY.current = null;
+      lastPointerX.current = null;
+      lastPointerTime.current = null;
+      hasPointerCapture.current = false;
+      return;
+    }
+
     if (dragStartX.current === null) return;
     const dx = e.clientX - dragStartX.current;
     dragStartX.current = null;
+    dragStartY.current = null;
     lastPointerX.current = null;
     lastPointerTime.current = null;
+    hasPointerCapture.current = false;
 
     if (!dragMoved.current) {
+      if (deckType === "qcm" && !selectedQcmAnswer) {
+        setDrag(0);
+        return;
+      }
       setFlipped((f) => !f);
       setDrag(0);
       return;
@@ -550,6 +856,20 @@ export default function Page() {
   }
 
   if (!card) {
+    if (total === 0) {
+      return (
+        <main className="stage">
+          <p className="hint">No cards in this filter yet.</p>
+          <button
+            type="button"
+            className="restart"
+            onClick={() => setStudyMode("all")}
+          >
+            Show all cards
+          </button>
+        </main>
+      );
+    }
     return (
       <main className="stage">
         <p className="hint">Loading…</p>
@@ -560,6 +880,16 @@ export default function Page() {
   const isDone = index >= total - 1 && exit === "left";
   const progress = ((index + 1) / total) * 100;
   const activeStatus = card ? statusByCard[card.id] : null;
+  const isQcmCard = deckType === "qcm";
+  const selectedQcmAnswer = card ? selectedQcmAnswers[card.id] : undefined;
+  const selectedQcmLabel = selectedQcmAnswer
+    ? selectedQcmAnswer.match(/^([A-D])\./i)?.[1]?.toUpperCase()
+    : undefined;
+  const isQcmCorrect =
+    isQcmCard &&
+    Boolean(selectedQcmLabel) &&
+    Boolean(card.qcmCorrectLabel) &&
+    selectedQcmLabel === card.qcmCorrectLabel;
 
   return (
     <main className="stage">
@@ -577,30 +907,250 @@ export default function Page() {
           aria-label="Shuffle deck"
           title="Shuffle deck"
         >
-          ↻
+          Shuffle
         </button>
         <button
           type="button"
-          className="deck-switch"
-          onClick={() =>
-            setDeckType((current) =>
-              current === "main" ? "definitions" : "main",
-            )
-          }
-          aria-label={
-            deckType === "main"
-              ? "Switch to definition cards"
-              : "Switch to main cards"
-          }
-          title={
-            deckType === "main"
-              ? "Switch to definition cards"
-              : "Switch to main cards"
-          }
+          className="icon-btn"
+          onClick={() => {
+            setMenuView("progress");
+            setIsMenuOpen(true);
+          }}
+          aria-label="Open learned and not learned cards"
+          title="Open learned and not learned cards"
         >
-          {deckType === "main" ? "Definitions" : "Main"}
+          Menu
         </button>
+        {deckType === "definitions" && (
+          <button
+            type="button"
+            className="icon-btn"
+            onClick={() => {
+              setMenuView("concepts");
+              setIsMenuOpen(true);
+            }}
+            aria-label="Open concepts menu"
+            title="Open concepts menu"
+          >
+            Concepts
+          </button>
+        )}
+        <div className="deck-toggle" role="tablist" aria-label="Deck type">
+          <button
+            type="button"
+            className={`deck-switch ${deckType === "main" ? "is-active" : ""}`}
+            onClick={() => setDeckType("main")}
+            aria-label="Switch to main cards"
+            aria-selected={deckType === "main"}
+            role="tab"
+            title="Main cards"
+          >
+            Main
+          </button>
+          <button
+            type="button"
+            className={`deck-switch ${deckType === "definitions" ? "is-active" : ""}`}
+            onClick={() => setDeckType("definitions")}
+            aria-label="Switch to definition cards"
+            aria-selected={deckType === "definitions"}
+            role="tab"
+            title="Definition cards"
+          >
+            Definitions
+          </button>
+          <button
+            type="button"
+            className={`deck-switch ${deckType === "qcm" ? "is-active" : ""}`}
+            onClick={() => setDeckType("qcm")}
+            aria-label="Switch to QCM cards"
+            aria-selected={deckType === "qcm"}
+            role="tab"
+            title="QCM cards"
+          >
+            QCM
+          </button>
+        </div>
+        {deckType === "qcm" && (
+          <div className="deck-toggle" role="tablist" aria-label="QCM category">
+            <button
+              type="button"
+              className={`deck-switch ${qcmCategory === "set1" ? "is-active" : ""}`}
+              onClick={() => setQcmCategory("set1")}
+              aria-label="Switch to QCM set 1"
+              aria-selected={qcmCategory === "set1"}
+              role="tab"
+              title="QCM set 1"
+            >
+              QCM 1
+            </button>
+            <button
+              type="button"
+              className={`deck-switch ${qcmCategory === "set2" ? "is-active" : ""}`}
+              onClick={() => setQcmCategory("set2")}
+              aria-label="Switch to QCM set 2"
+              aria-selected={qcmCategory === "set2"}
+              role="tab"
+              title="QCM set 2"
+            >
+              QCM 2
+            </button>
+            <button
+              type="button"
+              className={`deck-switch ${qcmCategory === "set3" ? "is-active" : ""}`}
+              onClick={() => setQcmCategory("set3")}
+              aria-label="Switch to QCM set 3"
+              aria-selected={qcmCategory === "set3"}
+              role="tab"
+              title="QCM set 3"
+            >
+              QCM 3
+            </button>
+          </div>
+        )}
       </div>
+
+      {isMenuOpen && (
+        <div
+          className="menu-overlay"
+          onClick={() => setIsMenuOpen(false)}
+          role="presentation"
+        >
+          <section
+            className="menu-sheet"
+            onClick={(e) => e.stopPropagation()}
+            aria-label="Card menu"
+          >
+            <div className="menu-header">
+              <h2 className="menu-title">
+                {menuView === "progress" ? "Progress" : "Concepts"}
+              </h2>
+              <button
+                type="button"
+                className="menu-close"
+                onClick={() => setIsMenuOpen(false)}
+                aria-label="Close menu"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="menu-toolbar">
+              <div className="menu-tabs" role="tablist" aria-label="Menu views">
+                <button
+                  type="button"
+                  className={`menu-tab ${menuView === "progress" ? "is-active" : ""}`}
+                  onClick={() => setMenuView("progress")}
+                >
+                  Progress
+                </button>
+                {deckType === "definitions" && (
+                  <button
+                    type="button"
+                    className={`menu-tab ${menuView === "concepts" ? "is-active" : ""}`}
+                    onClick={() => setMenuView("concepts")}
+                  >
+                    Concepts
+                  </button>
+                )}
+              </div>
+              {menuView === "progress" && (
+                <div className="menu-tabs menu-tabs--sub" role="tablist" aria-label="Progress filters">
+                  <button
+                    type="button"
+                    className={`menu-tab ${progressFilter === "all" ? "is-active" : ""}`}
+                    onClick={() => setProgressFilter("all")}
+                  >
+                    All
+                  </button>
+                  <button
+                    type="button"
+                    className={`menu-tab ${progressFilter === "learned" ? "is-active" : ""}`}
+                    onClick={() => setProgressFilter("learned")}
+                  >
+                    Learned
+                  </button>
+                  <button
+                    type="button"
+                    className={`menu-tab ${progressFilter === "not_learned" ? "is-active" : ""}`}
+                    onClick={() => setProgressFilter("not_learned")}
+                  >
+                    Not learned
+                  </button>
+                </div>
+              )}
+              <input
+                className="menu-search"
+                value={menuQuery}
+                onChange={(e) => setMenuQuery(e.target.value)}
+                placeholder={
+                  menuView === "concepts" ? "Search concepts..." : "Search cards..."
+                }
+                aria-label="Search cards in menu"
+              />
+            </div>
+
+            <div className="menu-summary">
+              <span>Learned: {learnedCards.length}</span>
+              <span>Not learned: {notLearnedCards.length}</span>
+              <span>Total: {deck.length}</span>
+              <span>
+                View:{" "}
+                {studyMode === "all"
+                  ? "All"
+                  : studyMode === "learned"
+                    ? "Learned"
+                    : "Not learned"}
+              </span>
+            </div>
+            {menuView === "progress" && (
+              <div className="menu-study-actions">
+                <button
+                  type="button"
+                  className="menu-tab"
+                  onClick={() => setStudyModeFromMenu("all")}
+                >
+                  Study all
+                </button>
+                <button
+                  type="button"
+                  className="menu-tab"
+                  onClick={() => setStudyModeFromMenu("learned")}
+                >
+                  Study learned
+                </button>
+                <button
+                  type="button"
+                  className="menu-tab"
+                  onClick={() => setStudyModeFromMenu("not_learned")}
+                >
+                  Study not learned
+                </button>
+              </div>
+            )}
+            <div className="menu-list">
+              {menuCards.length === 0 && (
+                <p className="menu-empty">No cards match your filter.</p>
+              )}
+              {menuCards.map((item) => {
+                const status = statusByCard[item.id];
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={`menu-item ${
+                      status === "learned"
+                        ? "menu-item--learned"
+                        : "menu-item--not-learned"
+                    }`}
+                    onClick={() => goToCard(item.id)}
+                  >
+                    {item.question}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        </div>
+      )}
 
       <div className="deck">
         {upcoming && (
@@ -631,14 +1181,63 @@ export default function Page() {
                 className="card-q"
                 dangerouslySetInnerHTML={{ __html: questionHtml }}
               />
+              {isQcmCard && card.qcmOptions && card.qcmOptions.length > 0 && (
+                <div className="qcm-options">
+                  {card.qcmOptions.map((option) => {
+                    const isSelected = selectedQcmAnswer === option.raw;
+                    return (
+                      <button
+                        key={option.raw}
+                        type="button"
+                        className={`qcm-option-btn ${isSelected ? "is-selected" : ""}`}
+                        onPointerDown={(e) => e.stopPropagation()}
+                        onPointerUp={(e) => e.stopPropagation()}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedQcmAnswers((prev) => ({
+                            ...prev,
+                            [card.id]: option.raw,
+                          }));
+                          setAutoFlipLock(true);
+                          window.setTimeout(() => {
+                            setFlipped(true);
+                            setAutoFlipLock(false);
+                          }, 180);
+                        }}
+                      >
+                        <span className="qcm-option-label">{option.label}</span>
+                        <span className="qcm-option-text">{option.text}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             <div className="card-face card-face--back">
               <span className="card-tag card-tag--back">Answer</span>
-              <div
-                className="card-a"
-                dangerouslySetInnerHTML={{ __html: answerHtml }}
-              />
+              {isQcmCard ? (
+                <div className="card-a qcm-answer">
+                  {selectedQcmAnswer && (
+                    <p className={`qcm-result ${isQcmCorrect ? "is-correct" : "is-wrong"}`}>
+                      {isQcmCorrect ? "Correct" : "Incorrect"}
+                    </p>
+                  )}
+                  <p>
+                    <strong>Your choice:</strong>{" "}
+                    {selectedQcmAnswer ?? "Not selected"}
+                  </p>
+                  <p>
+                    <strong>Correct answer:</strong>{" "}
+                    {card.qcmCorrectAnswer ?? card.answer}
+                  </p>
+                </div>
+              ) : (
+                <div
+                  className="card-a"
+                  dangerouslySetInnerHTML={{ __html: answerHtml }}
+                />
+              )}
               <div className="card-actions">
                 <button
                   type="button"
@@ -671,7 +1270,9 @@ export default function Page() {
       </div>
 
       <p className="hint">
-        Tap to flip · swipe for next · ← → arrows · space to flip
+        {deckType === "qcm"
+          ? "Select an option to reveal answer · swipe for next · ← → arrows"
+          : "Tap to flip · swipe for next · ← → arrows · space to flip"}
       </p>
       {statusError && <p className="hint">{statusError}</p>}
 

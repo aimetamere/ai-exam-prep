@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AI Risk · Governance · Ethics</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #e8edf2; font-family: 'Segoe UI', sans-serif; color: #1a2332; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+  #nav { width: 960px; max-width: 98vw; display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
+  #nav button { background: #fff; border: 1px solid #c8d0db; color: #1a2332; padding: 7px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+  #nav button:hover { background: #0f4c81; border-color: #0f4c81; color: #fff; }
+  #nav button:disabled { opacity: 0.35; cursor: default; }
+  #counter { font-size: 14px; color: #5a6a7e; font-weight: 600; }
+  .slide-wrap { width: 960px; max-width: 98vw; }
+  .slide { width: 100%; aspect-ratio: 16/9; background: #fff; border: 1px solid #c8d0db; border-radius: 10px; overflow: hidden; display: none; flex-direction: column; box-shadow: 0 2px 16px rgba(0,0,0,.1); }
+  .slide.active { display: flex; }
+  .hdr { padding: 16px 30px 9px; border-bottom: 2px solid #f0f3f7; }
+  .tag { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #0f4c81; margin-bottom: 4px; }
+  .title { font-size: 21px; font-weight: 800; color: #0f172a; line-height: 1.2; }
+  .sub { font-size: 12px; color: #5a6a7e; margin-top: 3px; }
+  .body { flex: 1; padding: 10px 30px 10px; display: flex; gap: 14px; overflow: hidden; }
+  .foot { padding: 5px 30px; border-top: 1px solid #e8edf2; display: flex; justify-content: space-between; background: #f8fafc; }
+  .fl { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: #0f4c81; }
+  .fn { font-size: 10px; color: #8896a5; }
+  .col { flex: 1; display: flex; flex-direction: column; gap: 7px; }
+  .col2 { flex: 2; }
+  strong { color: #0f172a; }
+  .lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #5a6a7e; margin-bottom: 2px; }
+  .card { background: #f8fafc; border: 1px solid #dde3ec; border-radius: 8px; padding: 8px 11px; }
+  .card.b { border-color: #93c5fd; background: #eff6ff; }
+  .card.g { border-color: #6ee7b7; background: #f0fdf4; }
+  .card.p { border-color: #c4b5fd; background: #faf5ff; }
+  .card.a { border-color: #fcd34d; background: #fffbeb; }
+  .card.r { border-color: #fca5a5; background: #fef2f2; }
+  .card.n { border-color: #a5b4fc; background: #eef2ff; }
+  .ct { font-size: 11px; font-weight: 700; margin-bottom: 3px; color: #0f172a; }
+  .cd { font-size: 11px; color: #4b5a6e; line-height: 1.45; }
+  ul.L { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+  ul.L li { font-size: 12px; line-height: 1.4; padding-left: 15px; position: relative; color: #1a2332; }
+  ul.L li::before { content: '▸'; position: absolute; left: 0; color: #0f4c81; font-size: 10px; top: 2px; }
+  ul.L li.warn::before { content: '▲'; font-size: 10px; top: 2px; color: #dc2626; }
+  ul.L li.ok::before { content: '◆'; font-size: 9px; top: 3px; color: #059669; }
+  ul.L li.q::before { content: '?'; font-size: 11px; font-weight: 700; top: 1px; color: #7c3aed; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .tbl th { background: #f0f4f9; color: #3d5068; padding: 5px 8px; text-align: left; border: 1px solid #dde3ec; font-weight: 700; }
+  .tbl td { padding: 5px 8px; border: 1px solid #dde3ec; vertical-align: top; color: #1a2332; }
+  .tbl tr:nth-child(even) td { background: #f8fafc; }
+  .bdg { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; margin: 1px; }
+  .bdg.b { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+  .bdg.g { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+  .bdg.p { background: #ede9fe; color: #5b21b6; border: 1px solid #c4b5fd; }
+  .bdg.a { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+  .bdg.r { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+  .bdg.n { background: #e0e7ff; color: #3730a3; border: 1px solid #a5b4fc; }
+  .warn-box { background: #fef2f2; border: 1px solid #fca5a5; border-left: 4px solid #dc2626; border-radius: 0 8px 8px 0; padding: 7px 11px; font-size: 11px; color: #1a2332; line-height: 1.45; }
+  .info-box { background: #eff6ff; border: 1px solid #93c5fd; border-left: 4px solid #0f4c81; border-radius: 0 8px 8px 0; padding: 7px 11px; font-size: 11px; color: #1a2332; line-height: 1.45; }
+  .tip-box { background: #f0fdf4; border: 1px solid #6ee7b7; border-left: 4px solid #059669; border-radius: 0 8px 8px 0; padding: 7px 11px; font-size: 11px; color: #1a2332; line-height: 1.45; }
+  .trick-box { background: #faf5ff; border: 1px solid #c4b5fd; border-left: 4px solid #7c3aed; border-radius: 0 8px 8px 0; padding: 7px 11px; font-size: 11px; color: #1a2332; line-height: 1.45; }
+  .ts { background: #fff; }
+  .ts-c { display: flex; flex-direction: column; height: 100%; padding: 32px 50px; justify-content: center; position: relative; }
+  .ts-main { font-size: 36px; font-weight: 900; line-height: 1.1; color: #0f172a; }
+  .ts-accent { color: #0f4c81; }
+  .ts-sub { font-size: 14px; color: #5a6a7e; margin-top: 8px; max-width: 500px; line-height: 1.6; }
+  .ts-pills { position: absolute; right: 50px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; }
+  .tsp { background: #f0f4f9; border: 1px solid #c8d0db; border-radius: 12px; padding: 5px 14px; font-size: 11px; color: #5a6a7e; }
+  .tsp span { color: #0f4c81; font-weight: 700; }
+  .ss { background: #fff; border-left: 8px solid #0f4c81; }
+  .ss-c { display: flex; flex-direction: column; height: 100%; padding: 0 50px; justify-content: center; }
+  .ss-n { font-size: 80px; font-weight: 900; color: #e8edf2; line-height: 1; }
+  .ss-t { font-size: 28px; font-weight: 800; margin-top: -10px; color: #0f172a; }
+  .ss-d { font-size: 13px; color: #5a6a7e; margin-top: 6px; max-width: 540px; line-height: 1.6; }
+  .ss-tags { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+  .ss-dark { background: #0f172a; border-left: 8px solid #7c3aed; }
+  .ss-dark .ss-n { color: #1e293b; }
+  .ss-dark .ss-t { color: #f1f5f9; }
+  .ss-dark .ss-d { color: #94a3b8; }
+  .ss-red { background: #fff; border-left: 8px solid #dc2626; }
+  .ss-red .ss-n { color: #fee2e2; }
+  .stat-row { display: flex; gap: 10px; }
+  .stat { flex: 1; background: #f8fafc; border: 1px solid #dde3ec; border-radius: 8px; padding: 9px 10px; text-align: center; }
+  .stat.r { border-color: #fca5a5; background: #fef2f2; }
+  .stat.b { border-color: #93c5fd; background: #eff6ff; }
+  .stat.a { border-color: #fcd34d; background: #fffbeb; }
+  .stat-num { font-size: 20px; font-weight: 900; color: #0f4c81; line-height: 1; }
+  .stat-num.r { color: #dc2626; }
+  .stat-num.a { color: #d97706; }
+  .stat-lbl { font-size: 10px; color: #5a6a7e; margin-top: 3px; line-height: 1.3; }
+  .flow { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+  .fb { background: #f8fafc; border: 1px solid #dde3ec; border-radius: 6px; padding: 5px 9px; font-size: 11px; color: #1a2332; }
+  .fb.b { background: #eff6ff; border-color: #93c5fd; color: #1d4ed8; font-weight: 600; }
+  .fb.g { background: #f0fdf4; border-color: #6ee7b7; color: #065f46; font-weight: 600; }
+  .fb.r { background: #fef2f2; border-color: #fca5a5; color: #991b1b; font-weight: 600; }
+  .fb.a { background: #fffbeb; border-color: #fcd34d; color: #92400e; font-weight: 600; }
+  .fb.p { background: #faf5ff; border-color: #c4b5fd; color: #5b21b6; font-weight: 600; }
+  .arr { font-size: 13px; color: #94a3b8; }
+  .close-slide { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #312e81 100%); }
+  .close-q { font-size: 17px; font-weight: 800; color: #fff; line-height: 1.4; max-width: 580px; margin-top: 14px; border-left: 4px solid #7c3aed; padding-left: 16px; }
+  .close-chips { display: flex; gap: 7px; margin-top: 12px; flex-wrap: wrap; }
+  .close-chip { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); border-radius: 20px; padding: 4px 12px; font-size: 10px; color: #cbd5e1; }
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .progress-bar-wrap { width: 960px; max-width: 98vw; height: 4px; background: #dde3ec; border-radius: 2px; margin-bottom: 4px; }
+  .progress-bar { height: 4px; background: #0f4c81; border-radius: 2px; transition: width 0.3s; }
+  .region-row { display: flex; align-items: flex-start; gap: 8px; background: #f8fafc; border: 1px solid #dde3ec; border-radius: 7px; padding: 6px 9px; margin-bottom: 5px; }
+  .region-flag { font-size: 17px; line-height: 1.2; min-width: 22px; }
+  .region-name { font-size: 11px; font-weight: 700; color: #0f172a; margin-bottom: 1px; }
+  .region-desc { font-size: 10px; color: #4b5a6e; line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar-wrap"><div class="progress-bar" id="pbar" style="width:8.33%"></div></div>
+<div id="nav">
+  <button id="btnPrev" onclick="prev()" disabled>← Prev</button>
+  <span id="counter">1 / 12</span>
+  <button id="btnNext" onclick="next()">Next →</button>
+</div>
+<div class="slide-wrap">
+
+<!-- S1: TITLE -->
+<div class="slide active ts" id="s1">
+  <div class="ts-c">
+    <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7c3aed;margin-bottom:10px;">CODE University of Applied Sciences</div>
+    <div class="ts-main">AI Risk ·<br/><span class="ts-accent">Governance</span><br/>&amp; Ethics</div>
+    <div class="ts-sub">AI is not just a technology. It is a system of power — and the leaders who understand its risks, governance structures, and ethical trade-offs will shape how it is used.</div>
+    <div style="display:flex;gap:7px;margin-top:16px;flex-wrap:wrap;">
+      <span class="bdg r">Risk &amp; Failures</span>
+      <span class="bdg p">Governance &amp; Control</span>
+      <span class="bdg n">Ethics &amp; Trade-offs</span>
+      <span class="bdg a">Global Regulation</span>
+      <span class="bdg b">Leadership Challenge</span>
+    </div>
+  </div>
+  <div class="ts-pills">
+    <div class="tsp"><span>Guest Lecturer</span> Firas Ben Hassan</div>
+    <div class="tsp">12 Slides · 3h</div>
+    <div class="tsp"><span>Parts 1–3</span> Risk</div>
+    <div class="tsp"><span>Parts 4–5</span> Governance &amp; Ethics</div>
+    <div class="tsp"><span>Parts 6–8</span> Regulation &amp; Leadership</div>
+    <div class="tsp"><span>Parts 9–10</span> Exercise &amp; Mandate</div>
+  </div>
+</div>
+
+<!-- S2: PARTS 1+2 — NEW REALITY + RISK LANDSCAPE -->
+<div class="slide" id="s2">
+  <div class="hdr">
+    <div class="tag">Parts 1 &amp; 2 — The New Reality · AI Is Not Just Technology — It Is Power</div>
+    <div class="title">AI has become the primary lever of economic competition, political control, and systemic risk — at the same time.</div>
+    <div class="sub">Companies do not fail because of AI errors. They fail because they underestimated AI risk until it became a crisis.</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">Three roles AI now plays</div>
+      <div class="card b">
+        <div class="ct">Economic driver</div>
+        <div class="cd">AI projected to add $15.7 trillion to the global economy by 2030 (PwC). Companies leading on AI deployment compound their advantage in cost, speed, and market share.</div>
+      </div>
+      <div class="card r">
+        <div class="ct">Political tool</div>
+        <div class="cd">Governments use AI for surveillance, military systems, election influence, and border control. AI is now a core instrument of state power — which is why its regulation has become geopolitical.</div>
+      </div>
+      <div class="card g">
+        <div class="ct">ESG disruptor</div>
+        <div class="cd">AI threatens ESG goals (energy, bias, opacity) and enables them (climate modelling, fraud detection, supply chain transparency). Leaders who treat these as separate fail at both.</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="lbl">Five categories of AI risk — all systemic</div>
+      <table class="tbl">
+        <tr><th>Type</th><th>What it means</th><th>Real example</th></tr>
+        <tr><td><span class="bdg r">Technical</span></td><td>Hallucinations, drift, adversarial attacks</td><td>Air Canada chatbot gave wrong refund policy — upheld by court</td></tr>
+        <tr><td><span class="bdg b">Social</span></td><td>Bias, discrimination, misinformation</td><td>Amazon AI hiring tool downgraded women's CVs systematically</td></tr>
+        <tr><td><span class="bdg a">Economic</span></td><td>Job displacement, market concentration</td><td>Goldman Sachs: 300M jobs exposed to automation by 2030</td></tr>
+        <tr><td><span class="bdg g">Environmental</span></td><td>Energy, water, hardware waste</td><td>One large model training = lifetime emissions of five cars</td></tr>
+        <tr><td><span class="bdg p">Strategic</span></td><td>Loss of oversight, vendor lock-in</td><td>Single AI vendor failure cascades across critical infrastructure</td></tr>
+      </table>
+      <div class="warn-box" style="margin-top:6px;">
+        <strong>The compounding problem:</strong> A biased model deployed at scale by a board that did not ask questions in a jurisdiction with no law yet — that is how AI crises actually happen. These risks do not stay in separate boxes.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Risk · Governance · Ethics</span><span class="fn">Slide 2 / 12</span></div>
+</div>
+
+<!-- S3: PART 3 — WHEN AI FAILS -->
+<div class="slide" id="s3">
+  <div class="hdr">
+    <div class="tag">Part 3 — When AI Fails · From Innovation to Crisis · 20 min</div>
+    <div class="title">Every major AI failure follows the same pattern: the gap between what the system was intended to do and what it actually did.</div>
+    <div class="sub">This gap is not a bug. It is a design choice — made by humans who did not ask the right questions before deployment.</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">Three failure archetypes</div>
+      <div class="card r">
+        <div class="ct">Biased systems — Amazon hiring AI</div>
+        <div class="cd">Amazon trained a recruiter AI on 10 years of CVs — predominantly male. The model learned to penalise CVs containing words associated with women. Scrapped after internal audit. <strong>Intent: efficiency. Impact: systemic discrimination.</strong></div>
+      </div>
+      <div class="card r">
+        <div class="ct">Misinformation at scale — AI in the 2024 elections</div>
+        <div class="cd">AI-generated political content reached hundreds of millions of people across platforms. No single bad actor — just misaligned incentives, absent governance, and no accountability structure.</div>
+      </div>
+      <div class="card r">
+        <div class="ct">Autonomous errors — contested accountability</div>
+        <div class="cd">When an autonomous vehicle or medical AI causes harm, accountability is disputed between manufacturer, software provider, and regulator. Nobody designed accountability in — so nobody owns it when it fails.</div>
+      </div>
+    </div>
+    <div class="col" style="max-width:270px;">
+      <div class="lbl">The common failure pattern</div>
+      <div class="flow" style="flex-direction:column;align-items:flex-start;gap:5px;">
+        <div class="fb" style="width:100%;">Optimistic deployment — "it works in testing"</div>
+        <div class="arr" style="padding-left:8px;">leads to</div>
+        <div class="fb a" style="width:100%;">No production monitoring — "someone would flag it"</div>
+        <div class="arr" style="padding-left:8px;">leads to</div>
+        <div class="fb r" style="width:100%;">Public crisis — visible, reputational, costly</div>
+        <div class="arr" style="padding-left:8px;">then</div>
+        <div class="fb p" style="width:100%;">Reactive governance — "we need a policy now"</div>
+      </div>
+      <div class="info-box" style="margin-top:7px;">
+        <strong>The lesson:</strong> Ask before any deployment — "What could this do that we do not want, and to whom?" Intention does not equal impact.
+      </div>
+      <div class="trick-box" style="margin-top:5px;">
+        <strong>Group exercise (20 min):</strong> Pick one failure. Map the intention vs. impact gap. Who should have caught it, and at what stage?
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Risk · Governance · Ethics</span><span class="fn">Slide 3 / 12</span></div>
+</div>
+
+<!-- S4: PART 4 SECTION DIVIDER — GOVERNANCE -->
+<div class="slide ss-dark" id="s4">
+  <div class="ss-c">
+    <div class="ss-n">04</div>
+    <div class="ss-t">Why Control Systems Are Lagging Behind</div>
+    <div class="ss-d">Governance is the bottleneck. Most firms have AI principles. Almost none have the enforcement mechanisms, accountability structures, or audit processes to make those principles operational in production.</div>
+    <div class="ss-tags">
+      <span class="bdg p">Internal Governance</span>
+      <span class="bdg b">External Regulation</span>
+      <span class="bdg r">Accountability Gap</span>
+      <span class="bdg a">30 min</span>
+    </div>
+  </div>
+</div>
+
+<!-- S5: PART 4 CONTENT — GOVERNANCE -->
+<div class="slide" id="s5">
+  <div class="hdr">
+    <div class="tag">Part 4 — AI Governance</div>
+    <div class="title">Having AI principles is not governance. Governance is who decides, who audits, and who is personally accountable — with consequences.</div>
+    <div class="sub">The gap between principle and enforcement is where AI crises are born.</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">Internal governance — the three questions every firm must answer</div>
+      <div class="card p">
+        <div class="ct">Who decides?</div>
+        <div class="cd">Who has authority to approve an AI system for production? If the answer is "it depends," governance does not yet exist. EU AI Act requires a named decision-maker for every high-risk AI system.</div>
+      </div>
+      <div class="card p">
+        <div class="ct">Who audits?</div>
+        <div class="cd">Who checks whether deployed AI behaves as intended — continuously, not just at launch? Most firms have no post-deployment monitoring. This is where silent failures accumulate undetected.</div>
+      </div>
+      <div class="card p">
+        <div class="ct">Who is accountable?</div>
+        <div class="cd">When an AI system causes harm, which individual is personally accountable? Not which team. Not which process. Which person. Most firms cannot answer this question today.</div>
+      </div>
+      <div class="lbl" style="margin-top:4px;">Governance maturity ladder</div>
+      <div class="flow" style="gap:4px;">
+        <div class="fb" style="font-size:10px;padding:4px 7px;">No policy</div>
+        <div class="arr">→</div>
+        <div class="fb a" style="font-size:10px;padding:4px 7px;">Principles only</div>
+        <div class="arr">→</div>
+        <div class="fb b" style="font-size:10px;padding:4px 7px;">Process &amp; roles</div>
+        <div class="arr">→</div>
+        <div class="fb g" style="font-size:10px;padding:4px 7px;">Audit &amp; enforce</div>
+      </div>
+    </div>
+    <div class="col" style="max-width:275px;">
+      <div class="lbl">External governance landscape</div>
+      <ul class="L">
+        <li><strong>EU AI Act (2025):</strong> world's first binding AI law — risk-based, fines up to 7% of global revenue</li>
+        <li><strong>ISO 42001:</strong> AI management system standard — voluntary but investor-referenced</li>
+        <li><strong>NIST AI RMF:</strong> US framework — guidance only, no enforcement</li>
+        <li class="warn">Most jurisdictions have guidelines, not laws — most AI deployed today is effectively ungoverned</li>
+      </ul>
+      <div class="warn-box" style="margin-top:7px;">
+        <strong>72%</strong> of companies have no formal AI risk framework (MIT Sloan, 2024). <strong>56%</strong> deployed GenAI in production with no audit process. Only <strong>1 in 4</strong> boards discusses AI risk at every meeting.
+      </div>
+      <div class="tip-box" style="margin-top:5px;">
+        <strong>Leader action:</strong> Before any AI deployment, require a one-pager: who decided, who will audit, who is accountable, and what the escalation path is if something goes wrong.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Risk · Governance · Ethics</span><span class="fn">Slide 5 / 12</span></div>
+</div>
+
+<!-- S6: PART 5 — ETHICS -->
+<div class="slide" id="s6">
+  <div class="hdr">
+    <div class="tag">Part 5 — AI Ethics · 25 min</div>
+    <div class="title">There is no ethical AI — only ethical trade-offs. The question is not whether to make them, but who makes them and whether they are visible.</div>
+    <div class="sub">Ethics in AI is not about being right. It is about being honest about which risks you accept — and to whom those risks fall.</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">Three core dilemmas — no clean answer</div>
+      <div class="card a">
+        <div class="ct">Fairness vs. performance</div>
+        <div class="cd">A credit model with 94% overall accuracy may have 78% accuracy for a specific demographic. Improving fairness often reduces aggregate performance. Which do you optimise for — and who decides?</div>
+      </div>
+      <div class="card a">
+        <div class="ct">Transparency vs. competitiveness</div>
+        <div class="cd">Explaining how your model works may expose your competitive advantage. But opacity in consequential decisions — loan denials, hiring, medical diagnosis — violates the rights of those affected. Where is the line?</div>
+      </div>
+      <div class="card a">
+        <div class="ct">Innovation vs. control</div>
+        <div class="cd">Moving fast captures the market. Moving carefully protects people. The answer depends on what the system does and who it affects — not on a universal principle that resolves the tension.</div>
+      </div>
+    </div>
+    <div class="col" style="max-width:270px;">
+      <div class="lbl">How to think about AI ethics — practically</div>
+      <ul class="L">
+        <li>Ethics = decisions under constraints, not abstract philosophy</li>
+        <li>Every AI product has a beneficiary — identify them</li>
+        <li>Every AI product has a risk-bearer — identify them too</li>
+        <li class="warn">The beneficiary and the risk-bearer are often different people</li>
+        <li class="q">Who did not have a seat at the table when this was designed?</li>
+      </ul>
+      <div class="warn-box" style="margin-top:7px;">
+        <strong>The most dangerous position:</strong> "We are just building a tool." Tools have designers. Designers make choices. Choices have consequences. Neutrality is a fiction.
+      </div>
+      <div class="trick-box" style="margin-top:5px;">
+        <strong>Ethics is not about being right.</strong> It is about choosing which risk you accept, being transparent about that choice, and building accountability into the system before something goes wrong.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Risk · Governance · Ethics</span><span class="fn">Slide 6 / 12</span></div>
+</div>
+
+<!-- S7: PART 6 SECTION DIVIDER — GLOBAL REGULATION -->
+<div class="slide ss" id="s7">
+  <div class="ss-c">
+    <div class="ss-n">06</div>
+    <div class="ss-t">One Technology — Four Worlds</div>
+    <div class="ss-d">The regulation of AI is not a technical question. It is a geopolitical one. The EU, US, China, and Africa represent four fundamentally different answers to who controls AI — and in whose interest.</div>
+    <div class="ss-tags">
+      <span class="bdg b">EU — Trust First</span>
+      <span class="bdg r">US — Innovation First</span>
+      <span class="bdg a">China — Coordination First</span>
+      <span class="bdg g">Africa — Access First</span>
+      <span class="bdg a">35 min</span>
+    </div>
+  </div>
+</div>
+
+<!-- S8: PART 6 CONTENT — GLOBAL REGULATION -->
+<div class="slide" id="s8">
+  <div class="hdr">
+    <div class="tag">Part 6 — Global AI Regulation Benchmark</div>
+    <div class="title">There is no global AI model — only competing visions. Understanding which regulatory world your business operates in is now a core leadership competency.</div>
+    <div class="sub">This is not just about compliance. It is geopolitics encoded in law.</div>
+  </div>
+  <div class="body">
+    <div class="col col2">
+      <div class="region-row">
+        <div class="region-flag">🇪🇺</div>
+        <div>
+          <div class="region-name">European Union — "Trust First" &nbsp;<span class="bdg b">Strength: global standard-setter, ESG-aligned</span> <span class="bdg r">Risk: compliance weight, slower speed</span></div>
+          <div class="region-desc">EU AI Act (2025): world's first binding AI law. Risk-based: banned systems (social scoring, real-time biometric surveillance) → high-risk (hiring, credit, medical) → limited/minimal risk. Mandatory transparency, accountability, named responsible person per system. Fines up to 7% of global annual revenue.</div>
+        </div>
+      </div>
+      <div class="region-row">
+        <div class="region-flag">🇺🇸</div>
+        <div>
+          <div class="region-name">United States — "Innovation First" &nbsp;<span class="bdg g">Strength: fastest innovation, strongest ecosystem</span> <span class="bdg r">Risk: inconsistency, weaker safeguards</span></div>
+          <div class="region-desc">No single federal AI law. Mix of executive orders, sector rules (FDA for medical AI, FTC for consumer AI), and state laws (California SB 1047). Regulatory arbitrage is possible — but class action risk and reputational exposure are real and growing rapidly.</div>
+        </div>
+      </div>
+      <div class="region-row">
+        <div class="region-flag">🇨🇳</div>
+        <div>
+          <div class="region-name">China — "Coordination-Led AI" &nbsp;<span class="bdg a">Strength: speed, scale, and national coherence</span> <span class="bdg r">Consideration: data sovereignty and cross-border constraints</span></div>
+          <div class="region-desc">China has developed one of the world's most structured AI governance frameworks — algorithm regulations (2022), generative AI rules (2023), and mandatory filings create clear and predictable rules for domestic operators. AI strategy is integrated with national development goals, enabling fast coordinated deployment at scale. Cross-border data flows and external auditability are restricted, which creates specific compliance requirements for international businesses operating in the Chinese market.</div>
+        </div>
+      </div>
+      <div class="region-row">
+        <div class="region-flag">🌍</div>
+        <div>
+          <div class="region-name">Africa — "Access &amp; Development First" &nbsp;<span class="bdg g">Strength: leapfrogging potential, high-impact use cases</span> <span class="bdg r">Risk: regulatory gaps, dependency</span></div>
+          <div class="region-desc">No unified continental regulation. National strategies in Kenya, Nigeria, Rwanda, South Africa. EU regulatory influence growing. Strong potential in financial inclusion, agriculture, and public services — but regulatory capacity gaps and foreign AI infrastructure dependency are real risks.</div>
+        </div>
+      </div>
+    </div>
+    <div class="col" style="max-width:190px;">
+      <div class="lbl">At a glance</div>
+      <table class="tbl">
+        <tr><th>Region</th><th>Priority</th><th>Main risk</th></tr>
+        <tr><td>EU</td><td>Trust &amp; rights</td><td>Slow speed</td></tr>
+        <tr><td>US</td><td>Innovation</td><td>Weak control</td></tr>
+        <tr><td>China</td><td>Coordination &amp; scale</td><td>Cross-border limits</td></tr>
+        <tr><td>Africa</td><td>Access &amp; dev.</td><td>Dependency</td></tr>
+      </table>
+      <div class="warn-box" style="margin-top:7px;">
+        <strong>This is not regulation — it is geopolitics.</strong> These differences reflect competing values about who AI serves and who controls it. Future leaders must navigate all four simultaneously.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Risk · Governance · Ethics</span><span class="fn">Slide 8 / 12</span></div>
+</div>
+
+<!-- S9: PARTS 7+8 — TRADE-OFF + LEADERSHIP -->
+<div class="slide" id="s9">
+  <div class="hdr">
+    <div class="tag">Parts 7 &amp; 8 — The Regulation Trade-off · AI Leadership Challenge · 45 min</div>
+    <div class="title">Bad regulation kills innovation. No regulation kills trust. Future AI leaders must operate across both — without a clean answer.</div>
+    <div class="sub">Regulation is not a barrier. It is a strategic variable. The leaders who understand where it is heading will move faster than those who react to it.</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">The debate — and what the evidence says</div>
+      <div class="card b">
+        <div class="ct">EU position — regulate first, innovate within constraints</div>
+        <div class="cd">Clear rules reduce investor uncertainty. Interoperable standards lower fragmentation. Trust increases enterprise adoption. GDPR was called an innovation-killer in 2018 — EU digital economy has grown steadily since.</div>
+      </div>
+      <div class="card r">
+        <div class="ct">US position — innovate first, regulate reactively</div>
+        <div class="cd">Faster time-to-market, lower upfront compliance cost. But reactive regulation is more disruptive (sudden bans, retroactive fines) and trust deficits slow enterprise adoption in the long run.</div>
+      </div>
+      <div class="tip-box" style="margin-top:4px;">
+        <strong>Practical conclusion:</strong> Well-designed, stable regulation increases innovation by reducing uncertainty. Build to the highest standard (typically EU) and you unlock the most trust-sensitive markets. Treat compliance as design input — not a post-deployment constraint.
+      </div>
+    </div>
+    <div class="col" style="max-width:270px;">
+      <div class="lbl">Four capabilities that define AI leadership</div>
+      <div class="card n">
+        <div class="ct">Understand global regulation differences</div>
+        <div class="cd">Regulatory literacy is now a C-suite skill. Know what EU AI Act requires for high-risk systems. Know where your data flows and what law governs it.</div>
+      </div>
+      <div class="card n">
+        <div class="ct">Anticipate risk — do not react to it</div>
+        <div class="cd">Build pre-deployment risk assessments into every AI product cycle. Red teams, bias audits, failure mode analysis — before launch.</div>
+      </div>
+      <div class="card n">
+        <div class="ct">Align AI with ESG strategy</div>
+        <div class="cd">AI decisions have environmental, social, and governance consequences. These are not separate workstreams. An AI leader who cannot articulate the ESG profile of their AI portfolio will face growing investor pressure.</div>
+      </div>
+      <div class="card n">
+        <div class="ct">Make decisions under genuine uncertainty</div>
+        <div class="cd">Leaders who wait for certainty will always be behind. Make defensible decisions with incomplete information — and document the reasoning.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Risk · Governance · Ethics</span><span class="fn">Slide 9 / 12</span></div>
+</div>
+
+<!-- S10: PART 9 SECTION DIVIDER — EXERCISE -->
+<div class="slide ss-dark" id="s10">
+  <div class="ss-c">
+    <div class="ss-n">09</div>
+    <div class="ss-t">You Are the AI Leader</div>
+    <div class="ss-d">You have built a predictive AI product that analyses customer behaviour to personalise insurance offers and detect fraud. You must now decide where and how to launch it. The decision you make defines your governance structure, ethical commitments, and risk appetite for the next three years.</div>
+    <div class="ss-tags">
+      <span class="bdg b">EU Launch</span>
+      <span class="bdg r">US Launch</span>
+      <span class="bdg a">China Launch</span>
+      <span class="bdg g">Africa Launch</span>
+      <span class="bdg p">20 min</span>
+    </div>
+  </div>
+</div>
+
+<!-- S11: PART 9 CONTENT — EXERCISE -->
+<div class="slide" id="s11">
+  <div class="hdr">
+    <div class="tag">Part 9 — Decision Exercise · Groups of 4 · 15 min work + 5 min present</div>
+    <div class="title">Your AI product is ready. Four markets are waiting. Each demands a different version of your governance — and a different set of trade-offs.</div>
+    <div class="sub">Pick one market. Work through the questions. Present your decision and your reasoning — not just what you would do, but what you chose not to do and why.</div>
+  </div>
+  <div class="body">
+    <div class="col col2">
+      <div class="g2">
+        <div class="card b">
+          <div class="ct">EU — What you must do</div>
+          <div class="cd">Register as high-risk under EU AI Act. Conformity assessment, technical documentation, human oversight mechanism. Designate a named accountable person. Explain every individual decision to anyone who asks.<br/><br/><strong>Decide:</strong> What do you disclose? How do you handle a customer denied coverage by your model?</div>
+        </div>
+        <div class="card r">
+          <div class="ct">US — What you must navigate</div>
+          <div class="cd">No unified law — but FTC unfair practice rules apply. California requires bias audits for automated credit decisions. No mandatory explainability, but class action risk is real if disparate impact is provable.<br/><br/><strong>Decide:</strong> Do you build to the legal minimum or to a higher bar? What is the reputational cost of each?</div>
+        </div>
+        <div class="card a">
+          <div class="ct">China — What you must understand</div>
+          <div class="cd">China has a comprehensive and structured AI governance framework. Mandatory algorithm filing with the Cyberspace Administration of China. Specific rules for generative AI content. Data localisation requirements mean data stays within China. The framework is predictable for domestic operators — but requires careful planning for international businesses.<br/><br/><strong>Decide:</strong> How do you design your product to meet local regulatory requirements while maintaining your global governance standards? What does data localisation mean for your architecture?</div>
+        </div>
+        <div class="card g">
+          <div class="ct">Africa — What you must build from scratch</div>
+          <div class="cd">No AI regulation yet. No local audit firms with AI expertise. You may be the first system of this type in this market.<br/><br/><strong>Decide:</strong> What governance do you build from zero? How do you serve underserved populations without exploiting the regulatory gap?</div>
+        </div>
+      </div>
+    </div>
+    <div class="col" style="max-width:195px;">
+      <div class="lbl">Questions every group must answer</div>
+      <ul class="L">
+        <li class="q">Where do you launch first — and why?</li>
+        <li class="q">What do you adapt for each market?</li>
+        <li class="q">What risks do you accept?</li>
+        <li class="q">What risks do you refuse — regardless of legality?</li>
+        <li class="q">Who is accountable if the model causes harm?</li>
+      </ul>
+      <div class="info-box" style="margin-top:8px;">
+        There is no correct answer. The exercise tests whether you can reason through trade-offs — between speed and safety, compliance and competitiveness, local law and global ethics — and defend your choices out loud.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Risk · Governance · Ethics</span><span class="fn">Slide 11 / 12</span></div>
+</div>
+
+<!-- S12: PART 10 — CONCLUSION -->
+<div class="slide close-slide" id="s12">
+  <div class="ts-c">
+    <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin-bottom:10px;">Part 10 — The New Mandate for AI Leaders</div>
+    <div class="ts-main" style="font-size:26px;color:#f1f5f9;">AI is not a tool.<br/>It is a <span style="color:#a78bfa;">system of power.</span><br/>You are about to lead it.</div>
+    <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:620px;">
+      <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:8px 12px;font-size:11px;color:#e2e8f0;"><strong style="color:#fff;">AI is a system of power.</strong> The decisions it makes and the people it affects are political and economic choices — not technical ones. Do not let anyone tell you otherwise.</div>
+      <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:8px 12px;font-size:11px;color:#e2e8f0;"><strong style="color:#fff;">Regulation is a strategic variable.</strong> The leaders who understand where it is heading will move faster than those who react to it. Build compliance in — never on.</div>
+      <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:8px 12px;font-size:11px;color:#e2e8f0;"><strong style="color:#fff;">Ethics is a leadership responsibility.</strong> There is no ethical AI — only ethical trade-offs. Someone has to own them. After today, you have no excuse not to.</div>
+      <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:8px 12px;font-size:11px;color:#e2e8f0;"><strong style="color:#fff;">Governance is infrastructure.</strong> Companies that build accountability into AI architecture early will outperform those that retrofit it after a crisis. Always.</div>
+    </div>
+    <div class="close-q">Will you lead AI — or will AI lead you?</div>
+    <div class="close-chips">
+      <span class="close-chip">EU AI Act</span>
+      <span class="close-chip">ISO 42001</span>
+      <span class="close-chip">NIST AI RMF</span>
+      <span class="close-chip">AI Ethics</span>
+      <span class="close-chip">Global Regulation</span>
+      <span class="close-chip">Responsible AI Leadership</span>
+    </div>
+  </div>
+</div>
+
+</div><!-- end slide-wrap -->
+
+<script>
+  let cur = 0;
+  const total = 12;
+  const slides = document.querySelectorAll('.slide');
+
+  function show(n) {
+    slides[cur].classList.remove('active');
+    cur = n;
+    slides[cur].classList.add('active');
+    document.getElementById('counter').textContent = (cur + 1) + ' / ' + total;
+    document.getElementById('btnPrev').disabled = cur === 0;
+    document.getElementById('btnNext').disabled = cur === total - 1;
+    document.getElementById('pbar').style.width = ((cur + 1) / total * 100) + '%';
+  }
+
+  function next() { if (cur < total - 1) show(cur + 1); }
+  function prev() { if (cur > 0) show(cur - 1); }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prev();
+  });
+</script>
+</body>
+</html>

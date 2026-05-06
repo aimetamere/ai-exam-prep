@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AI Strategy &amp; Business</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #e8edf2; font-family: 'Segoe UI', sans-serif; color: #1a2332; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+  #nav { width: 960px; max-width: 98vw; display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
+  #nav button { background: #fff; border: 1px solid #c8d0db; color: #1a2332; padding: 7px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+  #nav button:hover { background: #0f4c81; border-color: #0f4c81; color: #fff; }
+  #nav button:disabled { opacity: 0.35; cursor: default; }
+  #counter { font-size: 14px; color: #5a6a7e; font-weight: 600; }
+  .slide-wrap { width: 960px; max-width: 98vw; }
+  .slide { width: 100%; aspect-ratio: 16/9; background: #fff; border: 1px solid #c8d0db; border-radius: 10px; overflow: hidden; display: none; flex-direction: column; box-shadow: 0 2px 16px rgba(0,0,0,.1); }
+  .slide.active { display: flex; }
+  .hdr { padding: 15px 30px 8px; border-bottom: 2px solid #f0f3f7; }
+  .tag { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #0f4c81; margin-bottom: 3px; }
+  .title { font-size: 20px; font-weight: 800; color: #0f172a; line-height: 1.2; }
+  .sub { font-size: 11.5px; color: #5a6a7e; margin-top: 3px; }
+  .body { flex: 1; padding: 9px 30px 9px; display: flex; gap: 13px; overflow: hidden; }
+  .foot { padding: 5px 30px; border-top: 1px solid #e8edf2; display: flex; justify-content: space-between; background: #f8fafc; }
+  .fl { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: #0f4c81; }
+  .fn { font-size: 10px; color: #8896a5; }
+  .col { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .col2 { flex: 2; }
+  strong { color: #0f172a; }
+  .lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #5a6a7e; margin-bottom: 2px; }
+  .card { background: #f8fafc; border: 1px solid #dde3ec; border-radius: 8px; padding: 7px 10px; }
+  .card.b { border-color: #93c5fd; background: #eff6ff; }
+  .card.g { border-color: #6ee7b7; background: #f0fdf4; }
+  .card.p { border-color: #c4b5fd; background: #faf5ff; }
+  .card.a { border-color: #fcd34d; background: #fffbeb; }
+  .card.r { border-color: #fca5a5; background: #fef2f2; }
+  .card.o { border-color: #fdba74; background: #fff7ed; }
+  .card.n { border-color: #a5b4fc; background: #eef2ff; }
+  .card.t { border-color: #67e8f9; background: #ecfeff; }
+  .ct { font-size: 11px; font-weight: 700; margin-bottom: 2px; color: #0f172a; }
+  .cd { font-size: 11px; color: #4b5a6e; line-height: 1.4; }
+  ul.L { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+  ul.L li { font-size: 11.5px; line-height: 1.4; padding-left: 15px; position: relative; color: #1a2332; }
+  ul.L li::before { content: '▸'; position: absolute; left: 0; color: #0f4c81; font-size: 10px; top: 2px; }
+  ul.L li.warn::before { content: '▲'; font-size: 10px; top: 2px; color: #dc2626; }
+  ul.L li.ok::before { content: '◆'; font-size: 9px; top: 3px; color: #059669; }
+  ul.L li.q::before { content: '?'; font-size: 11px; font-weight: 700; top: 1px; color: #7c3aed; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .tbl th { background: #f0f4f9; color: #3d5068; padding: 5px 7px; text-align: left; border: 1px solid #dde3ec; font-weight: 700; }
+  .tbl td { padding: 5px 7px; border: 1px solid #dde3ec; vertical-align: top; color: #1a2332; }
+  .tbl tr:nth-child(even) td { background: #f8fafc; }
+  .bdg { display: inline-block; padding: 2px 7px; border-radius: 20px; font-size: 10px; font-weight: 700; margin: 1px; }
+  .bdg.b { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+  .bdg.g { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+  .bdg.p { background: #ede9fe; color: #5b21b6; border: 1px solid #c4b5fd; }
+  .bdg.a { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+  .bdg.r { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+  .bdg.o { background: #ffedd5; color: #9a3412; border: 1px solid #fdba74; }
+  .bdg.n { background: #e0e7ff; color: #3730a3; border: 1px solid #a5b4fc; }
+  .warn-box { background: #fef2f2; border: 1px solid #fca5a5; border-left: 4px solid #dc2626; border-radius: 0 8px 8px 0; padding: 6px 10px; font-size: 11px; color: #1a2332; line-height: 1.4; }
+  .info-box { background: #eff6ff; border: 1px solid #93c5fd; border-left: 4px solid #0f4c81; border-radius: 0 8px 8px 0; padding: 6px 10px; font-size: 11px; color: #1a2332; line-height: 1.4; }
+  .tip-box { background: #f0fdf4; border: 1px solid #6ee7b7; border-left: 4px solid #059669; border-radius: 0 8px 8px 0; padding: 6px 10px; font-size: 11px; color: #1a2332; line-height: 1.4; }
+  .trick-box { background: #faf5ff; border: 1px solid #c4b5fd; border-left: 4px solid #7c3aed; border-radius: 0 8px 8px 0; padding: 6px 10px; font-size: 11px; color: #1a2332; line-height: 1.4; }
+  /* Title */
+  .ts { background: #fff; }
+  .ts-c { display: flex; flex-direction: column; height: 100%; padding: 30px 50px; justify-content: center; position: relative; }
+  .ts-main { font-size: 34px; font-weight: 900; line-height: 1.1; color: #0f172a; }
+  .ts-accent { color: #0f4c81; }
+  .ts-sub { font-size: 14px; color: #5a6a7e; margin-top: 8px; max-width: 500px; line-height: 1.6; }
+  .ts-pills { position: absolute; right: 50px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 7px; }
+  .tsp { background: #f0f4f9; border: 1px solid #c8d0db; border-radius: 12px; padding: 5px 13px; font-size: 10px; color: #5a6a7e; }
+  .tsp span { color: #0f4c81; font-weight: 700; }
+  /* Section dividers */
+  .ss { background: #fff; border-left: 8px solid #0f4c81; }
+  .ss-c { display: flex; flex-direction: column; height: 100%; padding: 0 50px; justify-content: center; }
+  .ss-n { font-size: 76px; font-weight: 900; color: #e8edf2; line-height: 1; }
+  .ss-t { font-size: 26px; font-weight: 800; margin-top: -10px; color: #0f172a; }
+  .ss-d { font-size: 13px; color: #5a6a7e; margin-top: 6px; max-width: 560px; line-height: 1.6; }
+  .ss-tags { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .ss-dark { background: #0f172a; border-left: 8px solid #059669; }
+  .ss-dark .ss-n { color: #1e293b; }
+  .ss-dark .ss-t { color: #f1f5f9; }
+  .ss-dark .ss-d { color: #94a3b8; }
+  .ss-blue { background: #0f172a; border-left: 8px solid #0f4c81; }
+  .ss-blue .ss-n { color: #1e293b; }
+  .ss-blue .ss-t { color: #f1f5f9; }
+  .ss-blue .ss-d { color: #94a3b8; }
+  .ss-amber { background: #fff; border-left: 8px solid #d97706; }
+  .ss-amber .ss-n { color: #fef3c7; }
+  /* Stats */
+  .stat-row { display: flex; gap: 8px; }
+  .stat { flex: 1; background: #f8fafc; border: 1px solid #dde3ec; border-radius: 8px; padding: 8px 9px; text-align: center; }
+  .stat.r { border-color: #fca5a5; background: #fef2f2; }
+  .stat.g { border-color: #6ee7b7; background: #f0fdf4; }
+  .stat.b { border-color: #93c5fd; background: #eff6ff; }
+  .stat.a { border-color: #fcd34d; background: #fffbeb; }
+  .stat.p { border-color: #c4b5fd; background: #faf5ff; }
+  .stat-num { font-size: 19px; font-weight: 900; color: #0f4c81; line-height: 1; }
+  .stat-num.r { color: #dc2626; }
+  .stat-num.g { color: #059669; }
+  .stat-num.a { color: #d97706; }
+  .stat-num.p { color: #7c3aed; }
+  .stat-lbl { font-size: 10px; color: #5a6a7e; margin-top: 2px; line-height: 1.3; }
+  /* Flow */
+  .flow { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .fb { background: #f8fafc; border: 1px solid #dde3ec; border-radius: 6px; padding: 4px 8px; font-size: 11px; color: #1a2332; }
+  .fb.b { background: #eff6ff; border-color: #93c5fd; color: #1d4ed8; font-weight: 600; }
+  .fb.g { background: #f0fdf4; border-color: #6ee7b7; color: #065f46; font-weight: 600; }
+  .fb.r { background: #fef2f2; border-color: #fca5a5; color: #991b1b; font-weight: 600; }
+  .fb.a { background: #fffbeb; border-color: #fcd34d; color: #92400e; font-weight: 600; }
+  .fb.p { background: #faf5ff; border-color: #c4b5fd; color: #5b21b6; font-weight: 600; }
+  .fb.o { background: #fff7ed; border-color: #fdba74; color: #9a3412; font-weight: 600; }
+  .arr { font-size: 13px; color: #94a3b8; }
+  /* Closing */
+  .close-slide { background: linear-gradient(135deg, #0f172a 0%, #052e16 60%, #064e3b 100%); }
+  .close-q { font-size: 16px; font-weight: 800; color: #fff; line-height: 1.4; max-width: 600px; margin-top: 14px; border-left: 4px solid #059669; padding-left: 16px; }
+  .close-chips { display: flex; gap: 7px; margin-top: 12px; flex-wrap: wrap; }
+  .close-chip { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); border-radius: 20px; padding: 4px 11px; font-size: 10px; color: #cbd5e1; }
+  /* Grid */
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+  .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px; }
+  /* Pricing card */
+  .pc { border-radius: 8px; padding: 8px 10px; border: 1px solid #dde3ec; }
+  .pc-title { font-size: 11px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+  .pc-pro { font-size: 10px; color: #065f46; line-height: 1.4; }
+  .pc-con { font-size: 10px; color: #991b1b; line-height: 1.4; margin-top: 3px; }
+  /* Progress bar */
+  .progress-bar-wrap { width: 960px; max-width: 98vw; height: 4px; background: #dde3ec; border-radius: 2px; margin-bottom: 4px; }
+  .progress-bar { height: 4px; background: #0f4c81; border-radius: 2px; transition: width 0.3s; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar-wrap"><div class="progress-bar" id="pbar" style="width:3.33%"></div></div>
+<div id="nav">
+  <button id="btnPrev" onclick="prev()" disabled>← Prev</button>
+  <span id="counter">1 / 30</span>
+  <button id="btnNext" onclick="next()">Next →</button>
+</div>
+<div class="slide-wrap">
+
+<!-- ═══ S1: TITLE ═══ -->
+<div class="slide active ts" id="s1">
+  <div class="ts-c">
+    <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#059669;margin-bottom:10px;">CODE University of Applied Sciences</div>
+    <div class="ts-main">AI Strategy<br/>&amp; <span class="ts-accent">Business</span></div>
+    <div class="ts-sub">AI does not create value by itself — strategy does. This course teaches you how to design, price, and lead AI as a core business capability, not a technology project.</div>
+    <div style="display:flex;gap:7px;margin-top:14px;flex-wrap:wrap;">
+      <span class="bdg b">Strategic Shift</span>
+      <span class="bdg g">Use Case Design</span>
+      <span class="bdg a">Value Creation</span>
+      <span class="bdg p">Business Models</span>
+      <span class="bdg o">Pricing</span>
+      <span class="bdg n">Leadership</span>
+    </div>
+  </div>
+  <div class="ts-pills">
+    <div class="tsp"><span>Guest Lecturer</span> Firas Ben Hassan</div>
+    <div class="tsp">30 Slides · 3.5h</div>
+    <div class="tsp"><span>Parts 1–3</span> Strategy &amp; Value</div>
+    <div class="tsp"><span>Parts 4–5</span> Models &amp; Pricing</div>
+    <div class="tsp"><span>Parts 6–7</span> Decisions &amp; Failures</div>
+    <div class="tsp"><span>Parts 8–9</span> Future &amp; Leadership</div>
+  </div>
+</div>
+
+<!-- ═══ S2: PART 1 SECTION ═══ -->
+<div class="slide ss" id="s2">
+  <div class="ss-c">
+    <div class="ss-n">01</div>
+    <div class="ss-t">AI Is Not a Technology Strategy — It Is a Business Strategy</div>
+    <div class="ss-d">The companies winning with AI are not the ones with the best models. They are the ones that redesigned their strategy around AI — cost structures, value chains, and competitive advantage included.</div>
+    <div class="ss-tags">
+      <span class="bdg b">AI-Native Companies</span>
+      <span class="bdg g">Value Chains</span>
+      <span class="bdg a">Competitive Advantage</span>
+      <span class="bdg n">15 min</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S3: PART 1 — THE SHIFT ═══ -->
+<div class="slide" id="s3">
+  <div class="hdr">
+    <div class="tag">Part 1 — The Strategic Shift</div>
+    <div class="title">From digital transformation to AI-native: the companies that treat AI as a business redesign — not a technology deployment — are pulling ahead permanently.</div>
+    <div class="sub">The shift is structural. Digital transformation automated processes. AI transformation redesigns the logic of the business itself.</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">What changes when AI becomes the strategy</div>
+      <div class="card b">
+        <div class="ct">Cost structures</div>
+        <div class="cd">AI does not just reduce costs incrementally — it collapses entire cost categories. Customer service, document processing, and code review are moving from headcount costs to inference costs. The economics of the firm change fundamentally.</div>
+      </div>
+      <div class="card g">
+        <div class="ct">Value chains</div>
+        <div class="cd">AI compresses or eliminates steps in traditional value chains. Distribution, personalisation, demand forecasting, and supplier management can all be AI-mediated — removing intermediaries and changing who captures value.</div>
+      </div>
+      <div class="card p">
+        <div class="ct">Competitive advantage</div>
+        <div class="cd">In a digital world, competitive advantage came from software. In an AI world, it comes from proprietary data, model quality, feedback loops, and the speed at which the system learns from production. The moat has shifted.</div>
+      </div>
+    </div>
+    <div class="col" style="max-width:275px;">
+      <div class="lbl">From digital to AI-native — the three stages</div>
+      <div class="flow" style="flex-direction:column;align-items:flex-start;gap:5px;">
+        <div class="fb" style="width:100%;">Digital: automate existing processes</div>
+        <div class="arr" style="padding-left:8px;">becomes</div>
+        <div class="fb b" style="width:100%;">Data-driven: use data to optimise decisions</div>
+        <div class="arr" style="padding-left:8px;">becomes</div>
+        <div class="fb g" style="width:100%;">AI-native: redesign the business model around AI capabilities</div>
+      </div>
+      <div class="info-box" style="margin-top:7px;">
+        <strong>AI-native companies</strong> are not companies that use AI. They are companies where AI is inseparable from the product, the operation, and the strategy. Netflix, Stripe, and Spotify are not tech companies that use AI — they are AI systems that happen to deliver entertainment, payments, and music.
+      </div>
+      <div class="trick-box" style="margin-top:5px;">
+        <strong>Class prompt:</strong> Name a company in your industry. Is AI a tool they use — or is it their business model? What would it take to make the shift?
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Strategy &amp; Business</span><span class="fn">Slide 3 / 30</span></div>
+</div>
+
+<!-- ═══ S4: PART 1 — COMPETITIVE ADVANTAGE DEEP DIVE ═══ -->
+<div class="slide" id="s4">
+  <div class="hdr">
+    <div class="tag">Part 1 — The Strategic Shift · Competitive Advantage</div>
+    <div class="title">AI does not create competitive advantage by itself. Strategy does — by deciding where to deploy AI, how to build data moats, and what feedback loops to design.</div>
+    <div class="sub">The companies that win are not the ones with access to the best foundation models. Those are commodities. The winners control what feeds those models.</div>
+  </div>
+  <div class="body">
+    <div class="col col2">
+      <div class="stat-row" style="margin-bottom:7px;">
+        <div class="stat b">
+          <div class="stat-num">$15.7T</div>
+          <div class="stat-lbl">AI's projected contribution to global GDP by 2030 (PwC)</div>
+        </div>
+        <div class="stat g">
+          <div class="stat-num g">45%</div>
+          <div class="stat-lbl">of that value from product personalisation and consumer experience gains</div>
+        </div>
+        <div class="stat a">
+          <div class="stat-num a">5x</div>
+          <div class="stat-lbl">productivity differential between AI-leading and AI-lagging firms in the same sector (McKinsey)</div>
+        </div>
+      </div>
+      <table class="tbl">
+        <tr><th>Source of advantage</th><th>Digital era</th><th>AI era</th></tr>
+        <tr><td>Core asset</td><td>Software &amp; platforms</td><td>Proprietary data + trained models</td></tr>
+        <tr><td>Moat</td><td>Network effects</td><td>Data feedback loops at scale</td></tr>
+        <tr><td>Speed</td><td>Release cycles (months)</td><td>Continuous model retraining (hours)</td></tr>
+        <tr><td>Talent</td><td>Engineers &amp; product managers</td><td>AI engineers + domain experts who can frame AI problems</td></tr>
+        <tr><td>Barrier to entry</td><td>Capital and code</td><td>Labelled data + inference infrastructure + trust</td></tr>
+      </table>
+      <div class="info-box" style="margin-top:6px;">
+        <strong>The strategic implication:</strong> If your competitors have access to the same foundation models (OpenAI, Anthropic, Google), your advantage cannot come from the model. It must come from what you feed it, how you fine-tune it, and how fast your system learns from real users.
+      </div>
+    </div>
+    <div class="col" style="max-width:210px;">
+      <div class="lbl">What future leaders must decide</div>
+      <ul class="L">
+        <li class="q">Where in our value chain does AI create the most leverage?</li>
+        <li class="q">What data do we have that competitors do not?</li>
+        <li class="q">Are we building a data moat — or just renting someone else's?</li>
+        <li class="ok">Own the data → own the advantage</li>
+        <li class="ok">Own the feedback loop → own the improvement</li>
+        <li class="warn">AI tools without strategic intent create parity, not advantage</li>
+      </ul>
+      <div class="trick-box" style="margin-top:7px;">
+        <strong>Core idea to carry forward:</strong> AI does not create value by itself. Strategy does. The rest of this course is about how to design that strategy.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Strategy &amp; Business</span><span class="fn">Slide 4 / 30</span></div>
+</div>
+
+<!-- ═══ S5: PART 2 SECTION ═══ -->
+<div class="slide ss-dark" id="s5">
+  <div class="ss-c">
+    <div class="ss-n">02</div>
+    <div class="ss-t">From Ideas to High-Value Use Cases</div>
+    <div class="ss-d">Most AI initiatives fail not because the technology does not work — but because the use case was poorly defined. Learning to identify, design, and prioritise high-value AI use cases is the most practical skill in this course.</div>
+    <div class="ss-tags">
+      <span class="bdg g">Use Case Design</span>
+      <span class="bdg b">Data Readiness</span>
+      <span class="bdg a">Measurable Impact</span>
+      <span class="bdg p">30 min</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S6: PART 2 — WHAT MAKES A STRONG USE CASE ═══ -->
+<div class="slide" id="s6">
+  <div class="hdr">
+    <div class="tag">Part 2 — AI Use-Case Design · What Makes a Strong Use Case</div>
+    <div class="title">A strong AI use case has four qualities — and most organisations skip at least two of them before starting to build.</div>
+    <div class="sub">The question is not "can we apply AI here?" It is "should we — and can we do it well enough to matter?"</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">The four criteria for a high-value AI use case</div>
+      <div class="card b">
+        <div class="ct">1. Clear business problem</div>
+        <div class="cd">The problem must be specific, measurable, and tied to a business outcome. "Improve customer experience" is not a problem. "Reduce first-response time from 48h to 4h for tier-1 complaints" is.</div>
+      </div>
+      <div class="card g">
+        <div class="ct">2. Data availability</div>
+        <div class="cd">The right data must exist, be accessible, and be of sufficient quality. A use case with a clear problem but no usable data is an idea, not an initiative. Data readiness is assessed before design, not after.</div>
+      </div>
+      <div class="card a">
+        <div class="ct">3. Scalability</div>
+        <div class="cd">The use case must be capable of delivering value beyond the pilot. A solution that works for 100 cases but breaks at 10,000 is not a business solution — it is a proof of concept with a cost problem.</div>
+      </div>
+      <div class="card p">
+        <div class="ct">4. Measurable impact</div>
+        <div class="cd">Value must be quantifiable before deployment: cost saved, revenue generated, risk reduced, time recovered. If you cannot measure it before building, you cannot manage it after deploying.</div>
+      </div>
+    </div>
+    <div class="col" style="max-width:265px;">
+      <div class="lbl">Three types of AI use cases</div>
+      <div class="card o">
+        <div class="ct">Efficiency — automate and reduce cost</div>
+        <div class="cd">Document processing, invoice extraction, code generation, customer service routing. High certainty of value, lower strategic differentiation.</div>
+      </div>
+      <div class="card b">
+        <div class="ct">Augmentation — support better decisions</div>
+        <div class="cd">Risk scoring, medical diagnosis support, pricing recommendation, fraud detection. Human remains in the loop — AI improves accuracy and speed.</div>
+      </div>
+      <div class="card g">
+        <div class="ct">Innovation — create new products and services</div>
+        <div class="cd">Personalised products, AI-native workflows, new market access through AI agents. Highest strategic value, highest uncertainty, longest timeline.</div>
+      </div>
+      <div class="tip-box" style="margin-top:5px;">
+        <strong>Portfolio rule:</strong> Most firms should run 70% efficiency, 20% augmentation, 10% innovation at any given time. Innovating without efficiency gains first usually means the organisation lacks the data and process maturity to sustain it.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Strategy &amp; Business</span><span class="fn">Slide 6 / 30</span></div>
+</div>
+
+<!-- ═══ S7: PART 2 — USE CASE SCORING ═══ -->
+<div class="slide" id="s7">
+  <div class="hdr">
+    <div class="tag">Part 2 — AI Use-Case Design · Prioritisation Framework</div>
+    <div class="title">Not all AI ideas deserve resources. A simple scoring model separates high-value initiatives from expensive distractions.</div>
+    <div class="sub">Prioritisation is the most underdeveloped AI capability in most organisations — because everyone wants to build, and nobody wants to say no.</div>
+  </div>
+  <div class="body">
+    <div class="col col2">
+      <table class="tbl">
+        <tr>
+          <th>Criterion</th>
+          <th>Score 1 — Weak</th>
+          <th>Score 3 — Moderate</th>
+          <th>Score 5 — Strong</th>
+        </tr>
+        <tr>
+          <td><strong>Business impact</strong></td>
+          <td>Nice to have, unclear owner</td>
+          <td>Solves known pain point, owner identified</td>
+          <td>Material revenue, cost, or risk impact — quantified</td>
+        </tr>
+        <tr>
+          <td><strong>Data readiness</strong></td>
+          <td>Data does not exist or is inaccessible</td>
+          <td>Data exists but needs significant cleaning</td>
+          <td>Clean, labelled, accessible data at sufficient volume</td>
+        </tr>
+        <tr>
+          <td><strong>Technical feasibility</strong></td>
+          <td>Requires research-level AI capability</td>
+          <td>Requires fine-tuning of existing models</td>
+          <td>Solvable with current tools and team skills</td>
+        </tr>
+        <tr>
+          <td><strong>Scalability</strong></td>
+          <td>Works only in narrow context</td>
+          <td>Can expand with effort</td>
+          <td>Designed for scale from the start</td>
+        </tr>
+        <tr>
+          <td><strong>Strategic fit</strong></td>
+          <td>Unrelated to business priorities</td>
+          <td>Supports one business unit</td>
+          <td>Directly enables a company-level strategic goal</td>
+        </tr>
+      </table>
+      <div class="info-box" style="margin-top:6px;">
+        <strong>How to use it:</strong> Score every proposed use case on these five criteria (1–5). Total score out of 25. Prioritise 20+, park 15–19, retire below 15. Run this exercise quarterly as the data and technology landscape changes.
+      </div>
+    </div>
+    <div class="col" style="max-width:210px;">
+      <div class="lbl">Mini exercise — 15 min</div>
+      <div class="trick-box" style="margin-bottom:6px;">
+        <strong>In groups of 3:</strong> Design one AI use case for a company in your industry. Score it on all five criteria. Present: the use case, the score, and the biggest gap you identified.
+      </div>
+      <div class="lbl">What to include</div>
+      <ul class="L">
+        <li class="q">What is the specific business problem?</li>
+        <li class="q">What data exists and in what state?</li>
+        <li class="q">What is the expected value — in euros or hours?</li>
+        <li class="q">Who is the business owner?</li>
+        <li class="warn">No use case is valid without a measurable success metric defined upfront</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Strategy &amp; Business</span><span class="fn">Slide 7 / 30</span></div>
+</div>
+
+<!-- ═══ S8: PART 3 SECTION ═══ -->
+<div class="slide ss-amber" id="s8">
+  <div class="ss-c">
+    <div class="ss-n">03</div>
+    <div class="ss-t">Where Does AI Actually Create Value?</div>
+    <div class="ss-d">Most AI projects fail not because the technology does not work — but because the value was never clearly defined, credibly quantified, or honestly tracked. Value creation requires deliberate design, not optimism.</div>
+    <div class="ss-tags">
+      <span class="bdg g">Revenue Growth</span>
+      <span class="bdg b">Cost Reduction</span>
+      <span class="bdg r">Risk Reduction</span>
+      <span class="bdg a">30 min</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S9: PART 3 — THREE VALUE LEVERS ═══ -->
+<div class="slide" id="s9">
+  <div class="hdr">
+    <div class="tag">Part 3 — Value Creation · Three Levers</div>
+    <div class="title">AI creates value through three levers — and most organisations over-invest in the most visible one while ignoring the two that compound over time.</div>
+    <div class="sub">The question is not "can AI do this?" but "which value lever does this activate, and how do we measure it?"</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">Lever 1 — Revenue growth</div>
+      <div class="card g">
+        <div class="ct">Personalisation, upsell, new market access</div>
+        <div class="cd">AI-driven personalisation increases conversion rates by 10–30% in e-commerce (McKinsey). In financial services, AI underwriting enables access to previously uninsurable customer segments — new revenue from risk that can now be priced. Dynamic pricing in airlines and hotels adds 2–5% revenue per available unit.</div>
+      </div>
+      <div class="lbl" style="margin-top:4px;">Lever 2 — Cost reduction</div>
+      <div class="card b">
+        <div class="ct">Automation, efficiency, headcount reallocation</div>
+        <div class="cd">AI-driven document processing reduces manual review time by 60–80%. AI customer service agents handle 40–70% of tier-1 inquiries without human intervention. Code generation tools (GitHub Copilot) increase developer output by 35–55%. These are not incremental gains — they are structural cost shifts.</div>
+      </div>
+      <div class="lbl" style="margin-top:4px;">Lever 3 — Risk reduction</div>
+      <div class="card r">
+        <div class="ct">Fraud detection, compliance, predictive maintenance</div>
+        <div class="cd">AI fraud detection models in banking reduce false negatives by 20–40% over rule-based systems. Predictive maintenance in manufacturing reduces unplanned downtime by 30–50%. AI compliance monitoring catches regulatory breaches before they become fines.</div>
+      </div>
+    </div>
+    <div class="col" style="max-width:265px;">
+      <div class="lbl">Why most AI projects fail to deliver value</div>
+      <div class="warn-box" style="margin-bottom:6px;">
+        <strong>85% of AI projects</strong> do not reach production or do not deliver the value projected (Gartner, 2024). The most common reason: value was defined as "AI capability" not "business outcome."
+      </div>
+      <div class="lbl">The four value-destruction patterns</div>
+      <ul class="L">
+        <li class="warn">Building AI solutions for problems that do not cost enough to matter</li>
+        <li class="warn">Measuring outputs (model accuracy) instead of outcomes (revenue impact)</li>
+        <li class="warn">Overstating value in the business case to get budget approved</li>
+        <li class="warn">No baseline measurement — so improvement cannot be proven</li>
+      </ul>
+      <div class="tip-box" style="margin-top:6px;">
+        <strong>Value design rule:</strong> Define the baseline, the target, the measurement method, and the ownership — before the first line of code. If any of the four is missing, the project is not ready.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Strategy &amp; Business</span><span class="fn">Slide 9 / 30</span></div>
+</div>
+
+<!-- ═══ S10: PART 3 — VALUE MEASUREMENT ═══ -->
+<div class="slide" id="s10">
+  <div class="hdr">
+    <div class="tag">Part 3 — Value Creation · Measurement</div>
+    <div class="title">Value that cannot be measured cannot be managed — and cannot be defended when budgets come under pressure.</div>
+    <div class="sub">Building the measurement framework before the solution is not bureaucracy. It is the only way to know if the investment worked.</div>
+  </div>
+  <div class="body">
+    <div class="col col2">
+      <table class="tbl">
+        <tr><th>AI application</th><th>Value lever</th><th>What to measure</th><th>Realistic range</th></tr>
+        <tr><td>Customer churn prediction</td><td><span class="bdg g">Revenue</span></td><td>Reduction in churn rate, retention revenue saved</td><td>5–15% churn reduction</td></tr>
+        <tr><td>Automated invoice processing</td><td><span class="bdg b">Cost</span></td><td>Hours saved per invoice, error rate reduction</td><td>60–80% time reduction</td></tr>
+        <tr><td>AI fraud detection</td><td><span class="bdg r">Risk</span></td><td>False negative rate, fraud losses avoided</td><td>20–40% loss reduction</td></tr>
+        <tr><td>Personalised recommendations</td><td><span class="bdg g">Revenue</span></td><td>Conversion rate lift, average order value</td><td>10–30% conversion lift</td></tr>
+        <tr><td>Predictive maintenance</td><td><span class="bdg r">Risk</span> <span class="bdg b">Cost</span></td><td>Unplanned downtime avoided, maintenance cost reduction</td><td>30–50% downtime reduction</td></tr>
+        <tr><td>AI-assisted code review</td><td><span class="bdg b">Cost</span></td><td>Developer hours per feature, defect rate</td><td>35–55% productivity gain</td></tr>
+        <tr><td>Demand forecasting</td><td><span class="bdg b">Cost</span> <span class="bdg g">Revenue</span></td><td>Inventory carrying cost, stockout frequency</td><td>10–20% inventory reduction</td></tr>
+      </table>
+      <div class="warn-box" style="margin-top:6px;">
+        <strong>The overhype trap:</strong> Business cases in AI are systematically overstated because teams use best-case figures from vendor white papers. Use the low end of realistic ranges for your business case — and treat anything above it as upside, not expectation.
+      </div>
+    </div>
+    <div class="col" style="max-width:200px;">
+      <div class="lbl">Value measurement checklist</div>
+      <ul class="L">
+        <li class="ok">Baseline metric defined and measured before launch</li>
+        <li class="ok">Target metric agreed with business owner</li>
+        <li class="ok">Measurement method documented</li>
+        <li class="ok">Named person responsible for tracking</li>
+        <li class="ok">Review cadence set (monthly minimum)</li>
+        <li class="warn">No AI project should reach production without all five in place</li>
+      </ul>
+      <div class="info-box" style="margin-top:7px;">
+        <strong>The uncomfortable truth:</strong> Most organisations have no idea whether their AI investments are working because they never defined what "working" looks like in numbers.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Strategy &amp; Business</span><span class="fn">Slide 10 / 30</span></div>
+</div>
+
+<!-- ═══ S11: PART 4 SECTION ═══ -->
+<div class="slide ss-blue" id="s11">
+  <div class="ss-c">
+    <div class="ss-n">04</div>
+    <div class="ss-t">How AI Reshapes Business Models</div>
+    <div class="ss-d">AI is not just optimising existing business models — it is enabling entirely new ones. The shift from products to services to outcomes is the most important commercial transformation of the decade.</div>
+    <div class="ss-tags">
+      <span class="bdg b">Data-Driven Models</span>
+      <span class="bdg g">Platform Ecosystems</span>
+      <span class="bdg a">AI-as-a-Service</span>
+      <span class="bdg p">Outcome-Based Models</span>
+      <span class="bdg n">25 min</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S12: PART 4 — FOUR MODELS ═══ -->
+<div class="slide" id="s12">
+  <div class="hdr">
+    <div class="tag">Part 4 — AI Business Models · Four Archetypes</div>
+    <div class="title">Four AI business model archetypes are reshaping how companies create, deliver, and capture value — often simultaneously.</div>
+    <div class="sub">Understanding which model your company is running — or should run — is a strategic decision, not a product decision.</div>
+  </div>
+  <div class="body">
+    <div class="col col2">
+      <div class="g2">
+        <div class="card b">
+          <div class="ct">1. Data-driven model</div>
+          <div class="cd"><strong>Core logic:</strong> data is the primary competitive asset. The business generates proprietary data through its operations, uses AI to extract insight, and monetises the insight directly or indirectly.<br/><br/><strong>Examples:</strong> Bloomberg (financial data + AI analytics), Palantir (operational data + AI decision tools), John Deere (agricultural data + precision farming AI).<br/><br/><strong>Key challenge:</strong> data quality, governance, and exclusivity are harder to maintain than they look.</div>
+        </div>
+        <div class="card g">
+          <div class="ct">2. Platform ecosystems</div>
+          <div class="cd"><strong>Core logic:</strong> build the infrastructure that others build on. The platform captures data from all participants, uses AI to improve the platform, and creates network effects that compound over time.<br/><br/><strong>Examples:</strong> OpenAI (API + ecosystem of applications), Google (search + ads + cloud AI), AWS (cloud infrastructure + AI services).<br/><br/><strong>Key challenge:</strong> winner-takes-most dynamics — very few platforms achieve sufficient scale.</div>
+        </div>
+        <div class="card a">
+          <div class="ct">3. AI-as-a-Service (AIaaS)</div>
+          <div class="cd"><strong>Core logic:</strong> package AI capability as a subscription product. Customers buy access to intelligence — without needing to build or maintain the underlying model.<br/><br/><strong>Examples:</strong> Salesforce Einstein, HubSpot AI, Anthropic Claude API, Cohere for enterprise NLP.<br/><br/><strong>Key challenge:</strong> commoditisation risk — if the underlying model is replaceable, pricing power erodes quickly.</div>
+        </div>
+        <div class="card p">
+          <div class="ct">4. Outcome-based model</div>
+          <div class="cd"><strong>Core logic:</strong> customers pay for results, not tools. The vendor owns the AI, delivers the outcome, and charges based on measurable impact rather than access.<br/><br/><strong>Examples:</strong> AI legal services (pay per case resolution), AI diagnostics (pay per confirmed diagnosis), AI-driven energy optimisation (pay per kWh saved).<br/><br/><strong>Key challenge:</strong> requires deep trust, rigorous measurement, and shared risk tolerance.</div>
+        </div>
+      </div>
+    </div>
+    <div class="col" style="max-width:195px;">
+      <div class="lbl">The strategic shift</div>
+      <div class="flow" style="flex-direction:column;align-items:flex-start;gap:5px;">
+        <div class="fb" style="width:100%;">Products — sell a thing</div>
+        <div class="arr" style="padding-left:8px;">becomes</div>
+        <div class="fb b" style="width:100%;">Services — sell access</div>
+        <div class="arr" style="padding-left:8px;">becomes</div>
+        <div class="fb g" style="width:100%;">Outcomes — sell results</div>
+      </div>
+      <div class="info-box" style="margin-top:7px;">
+        <strong>Why it matters:</strong> Outcome-based models command the highest pricing power and the deepest customer relationships — but they require the highest level of AI maturity and business trust to execute.
+      </div>
+      <div class="trick-box" style="margin-top:5px;">
+        <strong>Discussion:</strong> Which of these four models is your company currently running? Which one should it be running in five years — and what would need to change?
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Strategy &amp; Business</span><span class="fn">Slide 12 / 30</span></div>
+</div>
+
+<!-- ═══ S13: PART 4 — BUSINESS MODEL CANVAS FOR AI ═══ -->
+<div class="slide" id="s13">
+  <div class="hdr">
+    <div class="tag">Part 4 — AI Business Models · Strategic Design</div>
+    <div class="title">Choosing the right AI business model requires answering five strategic questions — and being honest about what your organisation can actually sustain.</div>
+    <div class="sub">The graveyard of AI strategy is full of companies that chose the aspirational model rather than the realistic one.</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">Five questions that determine your model</div>
+      <div class="card n">
+        <div class="ct">1. What is our primary asset?</div>
+        <div class="cd">If your primary asset is data no one else has → data-driven model. If it is distribution and integration capability → AIaaS. If it is deep domain expertise → outcome-based. Start here — the model follows the asset.</div>
+      </div>
+      <div class="card n">
+        <div class="ct">2. Where do we sit in the AI value chain?</div>
+        <div class="cd">Foundation model layer (huge capital, winner-takes-most) vs. application layer (domain-specific, defensible niches) vs. services layer (deployment and integration, commoditising fast). Most organisations belong in the application or services layer.</div>
+      </div>
+      <div class="card n">
+        <div class="ct">3. Who captures the value we create?</div>
+        <div class="cd">If your AI creates value for a customer but you charge a flat fee, you are leaving money on the table. Outcome-based pricing aligns your revenue with the value you actually deliver — but requires measurement capability and commercial trust.</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card n">
+        <div class="ct">4. How do we build defensibility?</div>
+        <div class="cd">In a world where foundation models are accessible to everyone, defensibility comes from: proprietary training data, deep customer integration (switching costs), workflow embedding, and continuous model improvement from production feedback. None of these appear overnight.</div>
+      </div>
+      <div class="card n">
+        <div class="ct">5. What does our governance structure support?</div>
+        <div class="cd">Outcome-based models require sharing risk with customers. Platform models require managing third-party developers and data. AIaaS models require continuous model investment. The governance and financial structure of the organisation must match the model it is trying to run.</div>
+      </div>
+      <div class="tip-box" style="margin-top:5px;">
+        <strong>The honest test:</strong> Write down which of the four AI business models you are running today. Write down which one you aspire to run. If there is a gap, write down the three most concrete things that stand in the way. That list is your AI strategy agenda.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Strategy &amp; Business</span><span class="fn">Slide 13 / 30</span></div>
+</div>
+
+<!-- ═══ S14: PART 5 SECTION ═══ -->
+<div class="slide ss" id="s14">
+  <div class="ss-c">
+    <div class="ss-n">05</div>
+    <div class="ss-t">The New Economics of AI</div>
+    <div class="ss-d">How you price AI is not a financial decision — it is a strategic one. Pricing shapes customer behaviour, signals your positioning, determines your margins, and defines your relationship with the value you create.</div>
+    <div class="ss-tags">
+      <span class="bdg b">Token-Based</span>
+      <span class="bdg g">API Call-Based</span>
+      <span class="bdg a">Subscription</span>
+      <span class="bdg p">Outcome-Based</span>
+      <span class="bdg n">25 min</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S15: PART 5 — FOUR PRICING MODELS ═══ -->
+<div class="slide" id="s15">
+  <div class="hdr">
+    <div class="tag">Part 5 — AI Pricing Models · Four Approaches</div>
+    <div class="title">Four AI pricing models dominate the market — each reflecting a different assumption about where value is created and who should bear the cost of uncertainty.</div>
+    <div class="sub">The right model depends on your business model, your customer's buying behaviour, and your ability to measure the value you deliver.</div>
+  </div>
+  <div class="body">
+    <div class="col col2">
+      <div class="g2">
+        <div class="pc" style="background:#eff6ff;border-color:#93c5fd;">
+          <div class="pc-title">1. Token-Based Pricing &nbsp;<span class="bdg b">OpenAI · Anthropic</span></div>
+          <div class="pc-pro"><strong style="color:#065f46;">Pros:</strong> Highly scalable. Pay-per-use matches value delivery closely. Flexible for variable workloads. No upfront commitment — low barrier to adoption.</div>
+          <div class="pc-con"><strong style="color:#991b1b;">Cons:</strong> Costs are unpredictable at scale — a single agentic workflow can consume 100x the expected tokens. Hard for non-technical buyers to understand or budget for. Expensive for high-volume, low-complexity tasks.</div>
+        </div>
+        <div class="pc" style="background:#f0fdf4;border-color:#6ee7b7;">
+          <div class="pc-title">2. API Call-Based Pricing &nbsp;<span class="bdg g">AWS · Google Cloud</span></div>
+          <div class="pc-pro"><strong style="color:#065f46;">Pros:</strong> Simple to track and integrate into billing. Familiar model for engineering teams. Easy to compare across vendors.</div>
+          <div class="pc-con"><strong style="color:#991b1b;">Cons:</strong> Costs grow non-linearly with usage — engineers optimise features, not calls. Encourages inefficient usage patterns. Does not reflect the actual complexity or value of different calls.</div>
+        </div>
+        <div class="pc" style="background:#fffbeb;border-color:#fcd34d;">
+          <div class="pc-title">3. Subscription Model &nbsp;<span class="bdg a">Most SaaS AI products</span></div>
+          <div class="pc-pro"><strong style="color:#065f46;">Pros:</strong> Predictable revenue for the vendor — supports investment planning. Simple for buyers to budget. Encourages adoption and daily habit formation.</div>
+          <div class="pc-con"><strong style="color:#991b1b;">Cons:</strong> Creates misalignment — heavy users subsidise light users or vice versa. Margin risk if AI inference costs grow faster than subscription revenue. Does not scale revenue with the value delivered to high-value customers.</div>
+        </div>
+        <div class="pc" style="background:#faf5ff;border-color:#c4b5fd;">
+          <div class="pc-title">4. Outcome-Based Pricing &nbsp;<span class="bdg p">Emerging · High-value</span></div>
+          <div class="pc-pro"><strong style="color:#065f46;">Pros:</strong> Strongest value alignment — customer only pays for results. Highest willingness to pay when outcomes are large and measurable. Deepest customer relationships.</div>
+          <div class="pc-con"><strong style="color:#991b1b;">Cons:</strong> Requires robust measurement infrastructure — disputes arise when attribution is unclear. Risk shifts to vendor — dangerous if model performance varies. Difficult to implement in complex, multi-factor environments.</div>
+        </div>
+      </div>
+    </div>
+    <div class="col" style="max-width:195px;">
+      <div class="lbl">Pricing strategy matrix</div>
+      <table class="tbl">
+        <tr><th>Model</th><th>Best for</th></tr>
+        <tr><td>Token</td><td>Developer tools, LLM APIs</td></tr>
+        <tr><td>API call</td><td>Cloud AI services, infrastructure</td></tr>
+        <tr><td>Subscription</td><td>SMB tools, productivity AI</td></tr>
+        <tr><td>Outcome</td><td>Enterprise, high-stakes decisions</td></tr>
+      </table>
+      <div class="info-box" style="margin-top:7px;">
+        <strong>Core insight:</strong> Pricing is not financial — it is strategic. The model you choose signals what you believe about where value lives, who bears risk, and what relationship you want with your customer.
+      </div>
+      <div class="warn-box" style="margin-top:5px;">
+        Most AI companies start with token or subscription pricing and discover too late that it misaligns with how their customers actually measure value.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Strategy &amp; Business</span><span class="fn">Slide 15 / 30</span></div>
+</div>
+
+<!-- ═══ S16: PART 5 — PRICING STRATEGY ═══ -->
+<div class="slide" id="s16">
+  <div class="hdr">
+    <div class="tag">Part 5 — AI Pricing Models · Strategic Design</div>
+    <div class="title">Choosing your pricing model is choosing your strategy — who you serve, what behaviour you incentivise, and how your revenue scales with the value you create.</div>
+    <div class="sub">The best AI pricing models evolve: start with subscription to reduce friction, layer in usage-based pricing at scale, and move toward outcome-based for your highest-value customers.</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">How pricing models evolve with AI maturity</div>
+      <div class="flow" style="flex-direction:column;align-items:flex-start;gap:5px;margin-bottom:7px;">
+        <div class="fb" style="width:100%;">Early stage: subscription — reduce friction, drive adoption</div>
+        <div class="arr" style="padding-left:8px;">scale</div>
+        <div class="fb b" style="width:100%;">Growth stage: usage-based — align revenue with actual consumption</div>
+        <div class="arr" style="padding-left:8px;">mature</div>
+        <div class="fb p" style="width:100%;">Enterprise stage: outcome-based — align revenue with delivered value</div>
+      </div>
+      <div class="lbl">The hidden cost of wrong pricing</div>
+      <div class="card r">
+        <div class="ct">Underpricing destroys margins and signals low value</div>
+        <div class="cd">If your AI delivers $500K of value and you charge $5K/year, you are leaving 99% of the value on the table — and signalling to the customer that your product is a commodity, not a strategic investment.</div>
+      </div>
+      <div class="card r">
+        <div class="ct">Overpricing kills adoption and creates resentment</div>
+        <div class="cd">Enterprise AI tools priced for headline ROI but delivering incremental value lose renewal battles. The gap between promised and delivered value is the most common reason AI contracts are not renewed.</div>
+      </div>
+    </div>
+    <div class="col" style="max-width:270px;">
+      <div class="lbl">Five questions to design your pricing</div>
+      <ul class="L">
+        <li class="q">What outcome does the customer buy AI to achieve?</li>
+        <li class="q">How does the customer measure success — in their language, not ours?</li>
+        <li class="q">What is the customer's willingness to pay relative to the value delivered?</li>
+        <li class="q">Can we measure the outcome reliably enough to price against it?</li>
+        <li class="q">What pricing model best aligns our incentives with the customer's success?</li>
+      </ul>
+      <div class="tip-box" style="margin-top:6px;">
+        <strong>The strategic principle:</strong> Price as close to value as your measurement capability and customer trust allow. Every gap between price and value is either margin you are leaving on the table or a customer relationship you are damaging.
+      </div>
+      <div class="trick-box" style="margin-top:5px;">
+        <strong>Discussion:</strong> Take the use case you designed in Part 2. Which pricing model fits it best — and why? What would need to be true for you to move to outcome-based pricing for that use case?
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Strategy &amp; Business</span><span class="fn">Slide 16 / 30</span></div>
+</div>
+
+<!-- ═══ S17: PART 6 SECTION ═══ -->
+<div class="slide ss-dark" id="s17">
+  <div class="ss-c">
+    <div class="ss-n">06</div>
+    <div class="ss-t">Where to Play and How to Win with AI</div>
+    <div class="ss-d">Strategic AI decisions are not about technology choices — they are about positioning choices. Build vs. buy vs. partner. Scale vs. experiment. Centralised vs. decentralised. The hardest AI decisions are trade-offs, not choices.</div>
+    <div class="ss-tags">
+      <span class="bdg b">Build vs Buy vs Partner</span>
+      <span class="bdg g">Scale vs Experiment</span>
+      <span class="bdg a">Centralised vs Decentralised</span>
+      <span class="bdg n">25 min</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S18: PART 6 — THREE KEY DECISIONS ═══ -->
+<div class="slide" id="s18">
+  <div class="hdr">
+    <div class="tag">Part 6 — Strategic Decision-Making · Three Key Decisions</div>
+    <div class="title">Three decisions define your AI strategic posture — and most organisations make them reactively rather than deliberately.</div>
+    <div class="sub">Getting these wrong early is expensive. Getting them right early is compounding.</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">Decision 1 — Build vs. Buy vs. Partner</div>
+      <div class="card b">
+        <div class="ct">When to build</div>
+        <div class="cd">Your competitive advantage requires a capability no vendor offers. You have the data, talent, and time to do it properly. The build cost is justified by the strategic value of ownership and the data moat it creates.</div>
+      </div>
+      <div class="card a">
+        <div class="ct">When to buy</div>
+        <div class="cd">The capability is not a source of differentiation — it is table stakes. Off-the-shelf solutions are 80% of what you need and can be deployed in weeks, not months. The opportunity cost of building is too high.</div>
+      </div>
+      <div class="card g">
+        <div class="ct">When to partner</div>
+        <div class="cd">You need domain expertise you do not have internally, or you want to share risk and investment. Partnerships work when both parties have complementary assets and aligned incentives — and fail when the power imbalance is too large.</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="lbl">Decision 2 — Scale vs. Experiment</div>
+      <div class="card p">
+        <div class="ct">The experimentation trap</div>
+        <div class="cd">Many organisations have 50 AI pilots and 0 AI products in production. Experimentation without a clear path to scale is a budget consumption strategy, not an AI strategy. Define the criteria for scaling before the pilot starts.</div>
+      </div>
+      <div class="card p">
+        <div class="ct">The premature scaling trap</div>
+        <div class="cd">Scaling an unproven use case because of executive enthusiasm is the fastest way to a high-profile AI failure. Scale follows proof of value — always. Define the proof threshold before committing scale resources.</div>
+      </div>
+      <div class="lbl" style="margin-top:4px;">Decision 3 — Centralised vs. Decentralised AI</div>
+      <div class="info-box">
+        <strong>Centralised:</strong> single AI team, shared infrastructure, governance oversight — slower but consistent and governed. <strong>Decentralised:</strong> AI capabilities distributed in business units — faster but fragmented, with duplication and risk. <strong>Most effective:</strong> federated model — central platform and governance, distributed execution. This is where most mature organisations land.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Strategy &amp; Business</span><span class="fn">Slide 18 / 30</span></div>
+</div>
+
+<!-- ═══ S19: PART 6 — KEY TENSIONS ═══ -->
+<div class="slide" id="s19">
+  <div class="hdr">
+    <div class="tag">Part 6 — Strategic Decision-Making · Key Tensions</div>
+    <div class="title">The hardest AI decisions are not choices between good and bad options — they are trade-offs between genuinely competing goods.</div>
+    <div class="sub">Leaders who cannot articulate the trade-off they are making have not actually made a decision. They have deferred one.</div>
+  </div>
+  <div class="body">
+    <div class="col col2">
+      <table class="tbl">
+        <tr><th style="width:20%;">Tension</th><th>One side</th><th>The other side</th><th>How to navigate it</th></tr>
+        <tr>
+          <td><strong>Speed vs. control</strong></td>
+          <td>Deploy fast — capture the market, learn from production, compound the advantage</td>
+          <td>Deploy carefully — avoid harm, maintain trust, ensure auditability</td>
+          <td>Define which decisions are reversible (move fast) and which are not (move carefully). Speed is a virtue for reversible decisions; caution is mandatory for irreversible ones.</td>
+        </tr>
+        <tr>
+          <td><strong>Innovation vs. risk</strong></td>
+          <td>New AI capabilities can create entirely new markets and revenue streams</td>
+          <td>New AI capabilities introduce technical, reputational, and regulatory risk</td>
+          <td>Portfolio the risk: pursue innovation in areas where failure is recoverable. Never bet the company's reputation on an unproven AI system in a customer-facing context.</td>
+        </tr>
+        <tr>
+          <td><strong>Cost vs. value</strong></td>
+          <td>AI infrastructure is expensive — pressure to cut costs is constant</td>
+          <td>Underinvesting in data quality, model performance, and governance creates invisible costs that appear later as failures</td>
+          <td>Invest in infrastructure that compounds: data quality, feedback loops, governance. Cut experiments. Never cut foundations.</td>
+        </tr>
+      </table>
+      <div class="trick-box" style="margin-top:6px;">
+        <strong>Class exercise:</strong> Pick one of these three tensions as it applies to a company you know. Which side is currently winning — and what is the cost of that imbalance?
+      </div>
+    </div>
+    <div class="col" style="max-width:190px;">
+      <div class="lbl">The strategic decision framework</div>
+      <ul class="L">
+        <li class="q">Is this decision reversible? → move fast</li>
+        <li class="q">Is this decision irreversible? → move carefully</li>
+        <li class="ok">Name the trade-off explicitly before deciding</li>
+        <li class="ok">Document the reasoning — not just the decision</li>
+        <li class="warn">Decisions made under time pressure without explicit trade-off analysis are the source of most AI strategy regrets</li>
+      </ul>
+      <div class="info-box" style="margin-top:7px;">
+        <strong>The insight:</strong> The hardest AI decisions are trade-offs, not choices. The skill of an AI leader is not knowing the right answer — it is reasoning through the tension out loud and making a defensible call.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Strategy &amp; Business</span><span class="fn">Slide 19 / 30</span></div>
+</div>
+
+<!-- ═══ S20: PART 7 SECTION ═══ -->
+<div class="slide ss-amber" id="s20">
+  <div class="ss-c">
+    <div class="ss-n">07</div>
+    <div class="ss-t">From Ambition to Reality — Why AI Strategies Fail</div>
+    <div class="ss-d">AI fails when strategy is disconnected from execution. The gap between a compelling AI vision and working AI in production is wider than most organisations expect — and is filled with specific, avoidable mistakes.</div>
+    <div class="ss-tags">
+      <span class="bdg r">Common Pitfalls</span>
+      <span class="bdg a">Execution Gaps</span>
+      <span class="bdg b">Recovery Patterns</span>
+      <span class="bdg n">15 min</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S21: PART 7 — WHY AI FAILS ═══ -->
+<div class="slide" id="s21">
+  <div class="hdr">
+    <div class="tag">Part 7 — Why AI Strategies Fail</div>
+    <div class="title">85% of AI projects do not reach production or do not deliver their projected value. The reasons are almost always strategic and organisational — not technical.</div>
+    <div class="sub">The technology works. The strategy, the data, the leadership alignment, and the execution discipline usually do not.</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">The five most common failure patterns</div>
+      <div class="card r">
+        <div class="ct">1. No clear business objective</div>
+        <div class="cd">The initiative starts with a technology ("we should use LLMs") rather than a problem ("claims processing costs €180/case and takes 14 days"). Without a clear problem, there is no definition of success — and no moment where anyone can say it worked.</div>
+      </div>
+      <div class="card r">
+        <div class="ct">2. Poor data quality</div>
+        <div class="cd">Most organisations discover their data quality problems during AI projects — not before. Labels are missing, formats are inconsistent, historical data reflects old business rules that no longer apply. Data readiness is the most underestimated prerequisite in AI.</div>
+      </div>
+      <div class="card r">
+        <div class="ct">3. Lack of leadership alignment</div>
+        <div class="cd">AI projects that live only in the IT or data team die at the first budget review. Without a business sponsor who owns the outcome, defends the investment, and changes the process around the AI output, the project is an expensive experiment.</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card r">
+        <div class="ct">4. Overhyped expectations</div>
+        <div class="cd">AI pilots are often sold internally with best-case figures from vendor benchmarks. When production performance is 60% of the promised figure — which is common — the project is declared a failure, the team loses credibility, and the organisation becomes risk-averse about the next initiative.</div>
+      </div>
+      <div class="card r">
+        <div class="ct">5. Strategy disconnected from execution</div>
+        <div class="cd">A compelling AI strategy deck that was never operationalised. The strategy defined what to do. Nobody defined who would do it, with what data, in what timeline, measured against what target. The gap between strategy and execution is where most AI value disappears.</div>
+      </div>
+      <div class="tip-box" style="margin-top:5px;">
+        <strong>The recovery pattern:</strong> Start smaller than you think you need to. Define success in numbers before starting. Name one business owner accountable for the outcome. Measure ruthlessly. Scale only what works in production — not what looks good in testing.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Strategy &amp; Business</span><span class="fn">Slide 21 / 30</span></div>
+</div>
+
+<!-- ═══ S22: PART 8 SECTION ═══ -->
+<div class="slide ss-dark" id="s22">
+  <div class="ss-c">
+    <div class="ss-n">08</div>
+    <div class="ss-t">What Will Companies Look Like in 10 Years?</div>
+    <div class="ss-d">AI is not just changing what companies do — it is redefining what a company is. The organisation of the future will be a system of human judgment and AI execution, continuously learning, continuously adapting.</div>
+    <div class="ss-tags">
+      <span class="bdg b">AI-Native Firms</span>
+      <span class="bdg g">Autonomous Operations</span>
+      <span class="bdg a">Human-AI Collaboration</span>
+      <span class="bdg p">20 min</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S23: PART 8 — THREE TRENDS ═══ -->
+<div class="slide" id="s23">
+  <div class="hdr">
+    <div class="tag">Part 8 — The Future of AI &amp; Business · Three Defining Trends</div>
+    <div class="title">Three trends will define what companies look like in 2035 — and leaders who understand them now will design organisations that can operate in that world.</div>
+    <div class="sub">These are not distant predictions. They are extrapolations of what is already happening in leading organisations today.</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">Trend 1 — AI-native firms</div>
+      <div class="card b">
+        <div class="ct">The company as a learning system</div>
+        <div class="cd">AI-native firms are not organised around departments and functions — they are organised around data flows and model improvement cycles. Every customer interaction generates training data. Every product decision generates feedback. The organisation learns continuously, not annually. Competitive advantage compounds automatically.</div>
+      </div>
+      <div class="lbl" style="margin-top:5px;">Trend 2 — Autonomous operations</div>
+      <div class="card g">
+        <div class="ct">AI agents replace entire operational workflows</div>
+        <div class="cd">Agentic AI systems are already handling end-to-end workflows — procurement, customer onboarding, regulatory filing, software deployment — with minimal human intervention. By 2030, most routine operational decisions in large organisations will be made by AI systems. The human role shifts to defining goals, setting constraints, and handling exceptions.</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="lbl">Trend 3 — Human-AI collaboration</div>
+      <div class="card a">
+        <div class="ct">The new division of labour</div>
+        <div class="cd">The most valuable employees in an AI-native organisation are not those who can do tasks AI can also do. They are those who can frame problems AI cannot frame, evaluate outputs AI cannot evaluate, and make judgments that require accountability AI cannot take. The premium is on judgment, context, and responsibility — not execution.</div>
+      </div>
+      <div class="lbl" style="margin-top:5px;">The leaders shaping this future</div>
+      <div class="card n">
+        <div class="ct">Sam Altman — OpenAI</div>
+        <div class="cd">Building toward AGI as a deliberate commercial and civilisational strategy. The bet: that AI systems smarter than humans will be net positive if developed carefully and governed well. The risk: that the pace outstrips both the governance and society's capacity to adapt.</div>
+      </div>
+      <div class="card n">
+        <div class="ct">Satya Nadella — Microsoft</div>
+        <div class="cd">The thesis that AI is a productivity multiplier embedded in every workflow — not a separate product. Copilot across Office, Azure, and GitHub is the practical expression of that thesis. The question it raises: what happens to knowledge work when every tool has AI built in?</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Strategy &amp; Business</span><span class="fn">Slide 23 / 30</span></div>
+</div>
+
+<!-- ═══ S24: PART 8 — FUTURE OF WORK ═══ -->
+<div class="slide" id="s24">
+  <div class="hdr">
+    <div class="tag">Part 8 — The Future of AI &amp; Business · Future of Work</div>
+    <div class="title">The question is not whether AI will replace jobs. It already is. The question is which roles will be redesigned, which will disappear, and which new ones will emerge.</div>
+    <div class="sub">The leaders who prepare their organisations for this transition will outperform those who wait to react to it.</div>
+  </div>
+  <div class="body">
+    <div class="col col2">
+      <table class="tbl">
+        <tr><th>Role category</th><th>AI impact</th><th>What changes</th><th>What remains human</th></tr>
+        <tr><td><strong>Routine cognitive</strong><br/><span style="font-size:10px;color:#5a6a7e;">Data entry, standard reporting, basic analysis</span></td><td><span class="bdg r">High automation</span></td><td>Volume tasks automated; headcount reduces in these functions</td><td>Oversight, exception handling, quality control</td></tr>
+        <tr><td><strong>Knowledge work</strong><br/><span style="font-size:10px;color:#5a6a7e;">Research, writing, code, financial analysis</span></td><td><span class="bdg a">Augmentation</span></td><td>Output per person increases significantly; fewer people needed for same output volume</td><td>Judgment, framing, client relationships, accountability</td></tr>
+        <tr><td><strong>Creative work</strong><br/><span style="font-size:10px;color:#5a6a7e;">Design, strategy, innovation</span></td><td><span class="bdg b">Collaboration</span></td><td>AI generates options at speed; humans curate, evaluate, and direct</td><td>Taste, context, ethical judgment, vision</td></tr>
+        <tr><td><strong>Leadership &amp; governance</strong><br/><span style="font-size:10px;color:#5a6a7e;">Decisions, accountability, culture</span></td><td><span class="bdg g">Expansion</span></td><td>More decisions per leader; AI provides better and faster information</td><td>Accountability, judgment under uncertainty, trust-building</td></tr>
+      </table>
+      <div class="info-box" style="margin-top:6px;">
+        <strong>The reskilling imperative:</strong> Goldman Sachs estimates 300M jobs are exposed to automation by 2030. Organisations that invest in reskilling now — not when the disruption is visible — will retain talent, maintain capability, and avoid the human cost of sudden displacement.
+      </div>
+    </div>
+    <div class="col" style="max-width:195px;">
+      <div class="lbl">What this means for you</div>
+      <ul class="L">
+        <li class="ok">The premium skill is problem-framing — not problem-solving</li>
+        <li class="ok">Judgment and accountability cannot be delegated to AI</li>
+        <li class="ok">Working with AI systems is now a baseline competency for all knowledge workers</li>
+        <li class="warn">Expertise in tasks AI does well is depreciating faster than most people expect</li>
+        <li class="q">Which of your current skills are in the "augmentation" column — and which are in the "automation" column?</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Strategy &amp; Business</span><span class="fn">Slide 24 / 30</span></div>
+</div>
+
+<!-- ═══ S25: PART 9 SECTION ═══ -->
+<div class="slide ss" id="s25">
+  <div class="ss-c">
+    <div class="ss-n">09</div>
+    <div class="ss-t">What Future Leaders Must Master</div>
+    <div class="ss-d">AI leadership is not a technical role. It is a strategic, commercial, and human role that requires deep AI fluency. The leaders who will shape the next decade are those who can bridge the gap between AI capability and business value — consistently, at scale.</div>
+    <div class="ss-tags">
+      <span class="bdg b">Strategic Fluency</span>
+      <span class="bdg g">Value Design</span>
+      <span class="bdg a">Commercial Judgment</span>
+      <span class="bdg p">Ethical Leadership</span>
+      <span class="bdg n">25 min</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S26: PART 9 — FIVE CAPABILITIES ═══ -->
+<div class="slide" id="s26">
+  <div class="hdr">
+    <div class="tag">Part 9 — AI Leadership Skills · Five Capabilities</div>
+    <div class="title">Five capabilities separate AI leaders who create lasting value from those who preside over expensive experiments.</div>
+    <div class="sub">These are not technical skills. They are business and judgment skills that happen to require AI fluency to execute well.</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <div class="card b">
+        <div class="ct">1. Strategic AI fluency</div>
+        <div class="cd">Understanding what AI can and cannot do — not at the model level, but at the business capability level. Identifying where AI creates genuine leverage in a value chain, and where it creates complexity without value. The rarest and most valuable capability in the market today.</div>
+      </div>
+      <div class="card g">
+        <div class="ct">2. Value design and measurement</div>
+        <div class="cd">Translating AI capabilities into business outcomes — and measuring them rigorously. Building credible business cases, setting realistic baselines, and tracking value delivery without manipulation or optimism. The skill that prevents the 85% failure rate.</div>
+      </div>
+      <div class="card a">
+        <div class="ct">3. Build, buy, partner decisions</div>
+        <div class="cd">Knowing when to invest in building proprietary AI capability, when to buy a proven solution, and when to partner with a specialist — and having the commercial judgment to negotiate each option effectively.</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card p">
+        <div class="ct">4. Human-AI team design</div>
+        <div class="cd">Designing workflows where AI handles what it does well and humans handle what requires judgment, accountability, and relationship. The skill is not replacing humans with AI — it is redesigning the team so that both operate at their best simultaneously.</div>
+      </div>
+      <div class="card n">
+        <div class="ct">5. Ethical and governance judgment</div>
+        <div class="cd">Making defensible decisions about how AI is deployed — who benefits, who bears risk, what trade-offs are acceptable, and what accountability structures are required. This is not legal compliance. It is a leadership responsibility that cannot be delegated to a policy document.</div>
+      </div>
+      <div class="tip-box" style="margin-top:5px;">
+        <strong>The leadership test:</strong> Can you walk into a board meeting and explain — in business terms — what your AI portfolio is doing, what it is worth, what the risks are, and who is accountable? If not, you are not yet leading AI. You are managing it.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Strategy &amp; Business</span><span class="fn">Slide 26 / 30</span></div>
+</div>
+
+<!-- ═══ S27: PART 9 — LEADERSHIP IN PRACTICE ═══ -->
+<div class="slide" id="s27">
+  <div class="hdr">
+    <div class="tag">Part 9 — AI Leadership Skills · In Practice</div>
+    <div class="title">AI leadership is exercised in specific moments — not in strategy documents. These are the moments that matter most.</div>
+    <div class="sub">The difference between an AI leader and an AI manager is what they do when things are uncertain, contested, or uncomfortable.</div>
+  </div>
+  <div class="body">
+    <div class="col">
+      <div class="lbl">The moments that define AI leadership</div>
+      <div class="card n">
+        <div class="ct">When the pilot works but production does not scale</div>
+        <div class="cd">An AI leader does not blame the technology. They diagnose: data distribution shift? Governance failure? Unrealistic expectations set at pilot stage? They fix the root cause — not the symptom — and rebuild confidence with evidence, not promises.</div>
+      </div>
+      <div class="card n">
+        <div class="ct">When the board asks if AI is "working"</div>
+        <div class="cd">An AI leader can answer this in one sentence with a number. "Our AI portfolio generated €4.2M in cost savings this year against a €1.1M investment — with two use cases at scale and three in deployment." If you cannot say this, you do not have an AI strategy. You have an AI activity log.</div>
+      </div>
+      <div class="card n">
+        <div class="ct">When a vendor promises transformational results</div>
+        <div class="cd">An AI leader says: "Show me a customer in our sector, with our data maturity, who achieved that result — and let me talk to them directly." Benchmark claims from vendors are best-case results from best-case customers. Require evidence before committing budget.</div>
+      </div>
+    </div>
+    <div class="col" style="max-width:265px;">
+      <div class="lbl">Six signals of AI leadership maturity</div>
+      <ul class="L">
+        <li class="ok">AI strategy is inseparable from business strategy — same document, same owner</li>
+        <li class="ok">Every AI initiative has a named business owner, a baseline, and a target</li>
+        <li class="ok">The organisation can scale what works and kill what does not — without politics</li>
+        <li class="ok">AI risk is on the board agenda alongside financial and operational risk</li>
+        <li class="warn">Pilots are not confused with products — the organisation knows the difference</li>
+        <li class="warn">Vendor claims are tested, not trusted</li>
+      </ul>
+      <div class="info-box" style="margin-top:7px;">
+        <strong>The question to ask yourself:</strong> Which of these six signals exist in your current or target organisation today — and which do not? The gap between what exists and what is needed is your AI leadership agenda.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Strategy &amp; Business</span><span class="fn">Slide 27 / 30</span></div>
+</div>
+
+<!-- ═══ S28: COURSE SYNTHESIS ═══ -->
+<div class="slide" id="s28">
+  <div class="hdr">
+    <div class="tag">Course Synthesis — Connecting the Nine Parts</div>
+    <div class="title">Each part of this course is a layer in the same argument: AI is only as valuable as the strategy, the execution, and the leadership behind it.</div>
+    <div class="sub">Strategy without use case design is vision without traction. Use cases without value measurement are experiments without accountability. Business models without pricing strategy are products without commercial logic.</div>
+  </div>
+  <div class="body">
+    <div class="col col2">
+      <table class="tbl">
+        <tr><th>Part</th><th>Core question</th><th>The answer this course gives</th></tr>
+        <tr><td><span class="bdg b">1</span> Strategic Shift</td><td>Is AI a tech project or a business strategy?</td><td>AI-native companies redesign the business — not just the technology</td></tr>
+        <tr><td><span class="bdg g">2</span> Use Case Design</td><td>How do we find the right AI opportunities?</td><td>Score on impact, data, feasibility, scalability, and fit — before building</td></tr>
+        <tr><td><span class="bdg a">3</span> Value Creation</td><td>Where does AI actually create value?</td><td>Revenue, cost, and risk — measured from a defined baseline against a defined target</td></tr>
+        <tr><td><span class="bdg p">4</span> Business Models</td><td>How does AI change commercial models?</td><td>From products to services to outcomes — the model follows the asset and the moat</td></tr>
+        <tr><td><span class="bdg o">5</span> Pricing</td><td>How do we price AI?</td><td>Price as close to value as measurement and trust allow</td></tr>
+        <tr><td><span class="bdg n">6</span> Strategic Decisions</td><td>Build, buy, partner? Scale or experiment?</td><td>Trade-offs, not choices — name them explicitly, document the reasoning</td></tr>
+        <tr><td><span class="bdg r">7</span> Why AI Fails</td><td>What kills AI strategies?</td><td>Strategy disconnected from execution — every time</td></tr>
+        <tr><td><span class="bdg b">8</span> Future of Business</td><td>What does the AI-native company look like?</td><td>A learning system where judgment is the scarce resource</td></tr>
+        <tr><td><span class="bdg g">9</span> Leadership Skills</td><td>What must AI leaders master?</td><td>Strategic fluency, value design, commercial judgment, human-AI teaming, ethics</td></tr>
+      </table>
+    </div>
+    <div class="col" style="max-width:195px;">
+      <div class="lbl">The one thing to remember</div>
+      <div class="trick-box" style="margin-bottom:7px;">
+        AI does not create value by itself. Strategy does. Execution does. Leadership does. The technology is the least scarce resource in the equation.
+      </div>
+      <div class="lbl">Your personal AI strategy</div>
+      <ul class="L">
+        <li class="q">What is the highest-value AI opportunity in your target industry?</li>
+        <li class="q">What data moat would give you durable advantage?</li>
+        <li class="q">Which pricing model fits the value you want to deliver?</li>
+        <li class="q">What leadership capability do you most need to develop?</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Strategy &amp; Business</span><span class="fn">Slide 28 / 30</span></div>
+</div>
+
+<!-- ═══ S29: FINAL EXERCISE ═══ -->
+<div class="slide" id="s29">
+  <div class="hdr">
+    <div class="tag">Final Exercise — 30 min · Individual or Pairs</div>
+    <div class="title">Design a complete AI business strategy for a company of your choice — using every framework from this course.</div>
+    <div class="sub">This is not a technology proposal. It is a business strategy that happens to use AI as its primary capability lever.</div>
+  </div>
+  <div class="body">
+    <div class="col col2">
+      <div class="g2">
+        <div class="card b">
+          <div class="ct">Step 1 — Strategic position (Part 1)</div>
+          <div class="cd">Choose a company and an industry. Describe how AI changes the competitive dynamics of that industry. Is your company the disruptor or the disrupted — and what is the data moat it needs to build?</div>
+        </div>
+        <div class="card g">
+          <div class="ct">Step 2 — Use case selection (Part 2)</div>
+          <div class="cd">Identify two AI use cases. Score both on the five-criteria framework. Select one to develop. State the specific business problem, the data required, and the measurable success metric.</div>
+        </div>
+        <div class="card a">
+          <div class="ct">Step 3 — Value case (Part 3)</div>
+          <div class="cd">Which value lever does your use case activate — revenue, cost, or risk? What is the baseline today? What is the realistic target? How will you measure it? Who owns the outcome?</div>
+        </div>
+        <div class="card p">
+          <div class="ct">Step 4 — Business model and pricing (Parts 4+5)</div>
+          <div class="cd">Which of the four AI business model archetypes fits this use case? Which pricing model best aligns with the value you are delivering? Justify both — and name the alternative you rejected and why.</div>
+        </div>
+        <div class="card n">
+          <div class="ct">Step 5 — Strategic decision (Part 6)</div>
+          <div class="cd">Build, buy, or partner? What is the key trade-off you are making — speed vs. control, cost vs. value, or innovation vs. risk? State it explicitly and document your reasoning.</div>
+        </div>
+        <div class="card r">
+          <div class="ct">Step 6 — Failure risk (Part 7)</div>
+          <div class="cd">What is the most likely reason this AI strategy would fail for this company? Which of the five failure patterns applies — and what specific action would you take to prevent it?</div>
+        </div>
+      </div>
+    </div>
+    <div class="col" style="max-width:190px;">
+      <div class="lbl">Deliverable</div>
+      <div class="info-box" style="margin-bottom:6px;">
+        A one-page AI strategy memo: the use case, the value case, the business model, the pricing approach, the key strategic decision, and the primary failure risk — with your mitigation.
+      </div>
+      <div class="lbl">Presentation (5 min each)</div>
+      <ul class="L">
+        <li class="q">What is your AI use case?</li>
+        <li class="q">What value does it create — in numbers?</li>
+        <li class="q">What business model and pricing did you choose?</li>
+        <li class="q">What is the biggest risk and how do you mitigate it?</li>
+      </ul>
+      <div class="trick-box" style="margin-top:7px;">
+        You will be challenged on your numbers. That is the point. Defending a value case under pressure is the most useful skill you will leave this course with.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">AI Strategy &amp; Business</span><span class="fn">Slide 29 / 30</span></div>
+</div>
+
+<!-- ═══ S30: CLOSING ═══ -->
+<div class="slide close-slide" id="s30">
+  <div class="ts-c">
+    <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#6ee7b7;margin-bottom:10px;">The New Mandate for AI Business Leaders</div>
+    <div class="ts-main" style="font-size:26px;color:#f1f5f9;">AI does not create value.<br/><span style="color:#6ee7b7;">Strategy does.</span><br/>Execution does.<br/>Leadership does.</div>
+    <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;max-width:720px;">
+      <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:8px 11px;font-size:11px;color:#e2e8f0;"><strong style="color:#fff;">Strategy first.</strong> Define the business problem before the AI solution. The technology is the least scarce resource in the equation.</div>
+      <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:8px 11px;font-size:11px;color:#e2e8f0;"><strong style="color:#fff;">Measure everything.</strong> Value that is not measured cannot be defended. Define baselines before you build and targets before you deploy.</div>
+      <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:8px 11px;font-size:11px;color:#e2e8f0;"><strong style="color:#fff;">Price for value.</strong> Pricing is not financial — it is strategic. Price as close to the value you deliver as measurement and trust allow.</div>
+      <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:8px 11px;font-size:11px;color:#e2e8f0;"><strong style="color:#fff;">Own the trade-offs.</strong> The hardest AI decisions are not choices between good and bad — they are trade-offs between competing goods. Name them. Document them. Own them.</div>
+      <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:8px 11px;font-size:11px;color:#e2e8f0;"><strong style="color:#fff;">Build for judgment.</strong> AI handles execution. You handle judgment. The scarce resource in an AI-native organisation is the human who can frame problems, evaluate trade-offs, and be accountable for outcomes.</div>
+      <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:8px 11px;font-size:11px;color:#e2e8f0;"><strong style="color:#fff;">Connect strategy to execution.</strong> AI fails when the strategy is a deck and the execution is an afterthought. The gap between vision and production is where most value disappears.</div>
+    </div>
+    <div class="close-q">Will you use AI — or will you lead it?</div>
+    <div class="close-chips">
+      <span class="close-chip">AI Strategy</span>
+      <span class="close-chip">Use Case Design</span>
+      <span class="close-chip">Value Creation</span>
+      <span class="close-chip">AI Business Models</span>
+      <span class="close-chip">Pricing Strategy</span>
+      <span class="close-chip">AI Leadership</span>
+      <span class="close-chip">Human-AI Collaboration</span>
+    </div>
+  </div>
+</div>
+
+</div><!-- end slide-wrap -->
+
+<script>
+  let cur = 0;
+  const total = 30;
+  const slides = document.querySelectorAll('.slide');
+
+  function show(n) {
+    slides[cur].classList.remove('active');
+    cur = n;
+    slides[cur].classList.add('active');
+    document.getElementById('counter').textContent = (cur + 1) + ' / ' + total;
+    document.getElementById('btnPrev').disabled = cur === 0;
+    document.getElementById('btnNext').disabled = cur === total - 1;
+    document.getElementById('pbar').style.width = ((cur + 1) / total * 100) + '%';
+  }
+
+  function next() { if (cur < total - 1) show(cur + 1); }
+  function prev() { if (cur > 0) show(cur - 1); }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prev();
+  });
+</script>
+</body>
+</html>
