@@ -4,6 +4,8 @@ import "./page.css";
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import flashcardsMarkdown from "../md_exports/flashcards.md?raw";
 import flashcardsDefinitionsMarkdown from "../md_exports/flashcards-def.md?raw";
+import flashcardsDefinitionsMarkdown2 from "./public/def2.md?raw";
+import flashcardsDefinitionsMarkdown3 from "./public/def3.md?raw";
 import qcmMarkdown from "../qcm_50_cards_qcm_style.md?raw";
 import qcmMarkdown2 from "../qcm_50_cards_2.md?raw";
 import qcmMarkdown3 from "../qcm_50_cards_3.md?raw";
@@ -21,6 +23,7 @@ type Flashcard = {
 };
 
 type DeckType = "main" | "definitions" | "qcm";
+type DefinitionCategory = "set1" | "set2" | "set3";
 type QcmCategory = "set1" | "set2" | "set3" | "set4";
 type CardStatus = "learned" | "not_learned";
 type StatusMap = Record<string, CardStatus>;
@@ -113,7 +116,7 @@ function parseFlashcards(markdown: string): Flashcard[] {
   return cards;
 }
 
-function parseDefinitionFlashcards(markdown: string): Flashcard[] {
+function parseDefinitionFlashcards(markdown: string, idPrefix = "def"): Flashcard[] {
   const cards: Flashcard[] = [];
   const lines = markdown.replace(/\r/g, "").split("\n");
 
@@ -136,7 +139,7 @@ function parseDefinitionFlashcards(markdown: string): Flashcard[] {
         ? rawAnswer
         : `**${normalizedTerm}** — ${rawAnswer}`;
       cards.push({
-        id: `def-${runningNumber}`,
+        id: `${idPrefix}-${runningNumber}`,
         cardNumber: runningNumber,
         section: currentSection,
         question: normalizedTerm,
@@ -422,6 +425,8 @@ function writeLocalStatuses(
 
 export default function Page() {
   const [deckType, setDeckType] = useState<DeckType>("main");
+  const [definitionCategory, setDefinitionCategory] =
+    useState<DefinitionCategory>("set1");
   const [qcmCategory, setQcmCategory] = useState<QcmCategory>("set1");
   const [deck, setDeck] = useState<Flashcard[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -465,6 +470,24 @@ export default function Page() {
     try {
       const isDefinitionsDeck = deckType === "definitions";
       const isQcmDeck = deckType === "qcm";
+      const activeDefinitionSource =
+        definitionCategory === "set2"
+          ? flashcardsDefinitionsMarkdown2
+          : definitionCategory === "set3"
+            ? flashcardsDefinitionsMarkdown3
+            : flashcardsDefinitionsMarkdown;
+      const activeDefinitionFileName =
+        definitionCategory === "set2"
+          ? "public/def2.md"
+          : definitionCategory === "set3"
+            ? "public/def3.md"
+            : "md_exports/flashcards-def.md";
+      const activeDefinitionPrefix =
+        definitionCategory === "set2"
+          ? "def2"
+          : definitionCategory === "set3"
+            ? "def3"
+            : "def";
       const activeQcmSource =
         qcmCategory === "set2"
           ? qcmMarkdown2
@@ -490,28 +513,28 @@ export default function Page() {
               ? "qcm4"
               : "qcm1";
       const source = isDefinitionsDeck
-        ? flashcardsDefinitionsMarkdown
+        ? activeDefinitionSource
         : isQcmDeck
           ? activeQcmSource
           : flashcardsMarkdown;
       if (!source.trim()) {
         throw new Error(
           isDefinitionsDeck
-            ? "flashcards-def.md is empty."
+            ? `${activeDefinitionFileName} is empty.`
             : isQcmDeck
               ? `${activeQcmFileName} is empty.`
             : "flashcards.md is empty.",
         );
       }
       const parsed = isDefinitionsDeck
-        ? parseDefinitionFlashcards(source)
+        ? parseDefinitionFlashcards(source, activeDefinitionPrefix)
         : isQcmDeck
           ? parseQcmFlashcards(source, activeQcmPrefix)
           : parseFlashcards(source);
       if (parsed.length === 0) {
         throw new Error(
           isDefinitionsDeck
-            ? "No cards parsed from flashcards-def.md."
+            ? `No cards parsed from ${activeDefinitionFileName}.`
             : isQcmDeck
               ? `No cards parsed from ${activeQcmFileName}.`
             : "No cards parsed from flashcards.md.",
@@ -532,7 +555,7 @@ export default function Page() {
       setDeck([]);
       setLoadError(err instanceof Error ? err.message : "Unknown error");
     }
-  }, [deckType, qcmCategory]);
+  }, [deckType, definitionCategory, qcmCategory]);
 
   useEffect(() => {
     if (!userIdRef.current || deck.length === 0) return;
@@ -627,7 +650,15 @@ export default function Page() {
       window.cancelAnimationFrame(raf);
       window.removeEventListener("resize", measure);
     };
-  }, [index, selectedQcmAnswers, deckType, qcmCategory, flipped, total]);
+  }, [
+    index,
+    selectedQcmAnswers,
+    deckType,
+    definitionCategory,
+    qcmCategory,
+    flipped,
+    total,
+  ]);
 
   const goToCard = (cardId: string) => {
     let nextIndex = activeDeck.findIndex((item) => item.id === cardId);
@@ -765,8 +796,8 @@ export default function Page() {
     blockGestureForScroll.current = false;
     hasPointerCapture.current = false;
 
-    // For QCM touch, defer pointer capture so vertical scroll still works.
-    if (!(deckType === "qcm" && e.pointerType === "touch")) {
+    // On touch devices, defer pointer capture until horizontal intent is clear.
+    if (e.pointerType !== "touch") {
       (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
       hasPointerCapture.current = true;
     }
@@ -777,7 +808,7 @@ export default function Page() {
     const dx = e.clientX - dragStartX.current;
     const dy = dragStartY.current === null ? 0 : e.clientY - dragStartY.current;
 
-    if (deckType === "qcm" && e.pointerType === "touch" && !hasPointerCapture.current) {
+    if (e.pointerType === "touch" && !hasPointerCapture.current) {
       // Decide intent: vertical scroll vs horizontal swipe.
       if (Math.abs(dy) > 12 && Math.abs(dy) > Math.abs(dx)) {
         blockGestureForScroll.current = true;
@@ -1016,6 +1047,7 @@ export default function Page() {
             role="tab"
             title="QCM cards"
           >
+          
             QCM
           </button>
         </div>
@@ -1064,6 +1096,43 @@ export default function Page() {
               title="QCM set 4"
             >
               QCM 4
+            </button>
+          </div>
+        )}
+        {deckType === "definitions" && (
+          <div className="deck-toggle" role="tablist" aria-label="Definition category">
+            <button
+              type="button"
+              className={`deck-switch ${definitionCategory === "set1" ? "is-active" : ""}`}
+              onClick={() => setDefinitionCategory("set1")}
+              aria-label="Switch to definition set 1"
+              aria-selected={definitionCategory === "set1"}
+              role="tab"
+              title="Definition set 1"
+            >
+              Def 1
+            </button>
+            <button
+              type="button"
+              className={`deck-switch ${definitionCategory === "set2" ? "is-active" : ""}`}
+              onClick={() => setDefinitionCategory("set2")}
+              aria-label="Switch to definition set 2"
+              aria-selected={definitionCategory === "set2"}
+              role="tab"
+              title="Definition set 2"
+            >
+              Def 2
+            </button>
+            <button
+              type="button"
+              className={`deck-switch ${definitionCategory === "set3" ? "is-active" : ""}`}
+              onClick={() => setDefinitionCategory("set3")}
+              aria-label="Switch to definition set 3"
+              aria-selected={definitionCategory === "set3"}
+              role="tab"
+              title="Definition set 3"
+            >
+              Def 3
             </button>
           </div>
         )}
