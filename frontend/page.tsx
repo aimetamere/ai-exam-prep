@@ -5,11 +5,13 @@ import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "re
 import flashcardsMarkdown from "../md_exports/flashcards.md?raw";
 import flashcardsDefinitionsMarkdown from "../md_exports/flashcards-def.md?raw";
 import flashcardsDefinitionsMarkdown2 from "./public/def2.md?raw";
-import flashcardsDefinitionsMarkdown3 from "./public/def3.md?raw";
 import qcmMarkdown from "../qcm_50_cards_qcm_style.md?raw";
 import qcmMarkdown2 from "../qcm_50_cards_2.md?raw";
 import qcmMarkdown3 from "../qcm_50_cards_3.md?raw";
 import qcmMarkdown4 from "../qcm_50_cards_4.md?raw";
+import qcmMarkdown5 from "../qcm_teacher.md?raw";
+import qcmMarkdown6 from "../qcm_teacher2.md?raw";
+import qcmMarkdown7 from "../qcm_teacher3.md?raw";
 
 type Flashcard = {
   id: string;
@@ -20,11 +22,19 @@ type Flashcard = {
   qcmOptions?: Array<{ label: string; text: string; raw: string }>;
   qcmCorrectAnswer?: string;
   qcmCorrectLabel?: string;
+  qcmContext?: string;
 };
 
 type DeckType = "main" | "definitions" | "qcm";
 type DefinitionCategory = "set1" | "set2" | "set3";
-type QcmCategory = "set1" | "set2" | "set3" | "set4";
+type QcmCategory =
+  | "set1"
+  | "set2"
+  | "set3"
+  | "set4"
+  | "set5"
+  | "set6"
+  | "set7";
 type CardStatus = "learned" | "not_learned";
 type StatusMap = Record<string, CardStatus>;
 type MenuView = "progress" | "concepts";
@@ -196,6 +206,7 @@ function parseQcmFlashcards(markdown: string, idPrefix = "qcm"): Flashcard[] {
   let currentSection = "QCM";
   let cardNumber: number | null = null;
   let question: string | null = null;
+  let context: string | null = null;
   let answer: string | null = null;
   let optionsBuffer: string[] = [];
   let inDetails = false;
@@ -236,10 +247,12 @@ function parseQcmFlashcards(markdown: string, idPrefix = "qcm"): Flashcard[] {
         qcmOptions: options,
         qcmCorrectAnswer: normalizedAnswer,
         qcmCorrectLabel: answerLabel,
+        qcmContext: context ? context.trim() : undefined,
       });
     }
     cardNumber = null;
     question = null;
+    context = null;
     answer = null;
     optionsBuffer = [];
     inDetails = false;
@@ -288,6 +301,18 @@ function parseQcmFlashcards(markdown: string, idPrefix = "qcm"): Flashcard[] {
 
     if (/^- [A-D]\./.test(line.trim())) {
       optionsBuffer.push(line.trim());
+      continue;
+    }
+
+    // Capture the italic case-study paragraph that sits between the QCM
+    // question and the <details> block (single-asterisk italics, e.g.
+    // "*SunHarvest Agriculture deploys ...*"). Skip bold (`**...**`).
+    if (question && !inDetails && context === null) {
+      const trimmed = line.trim();
+      const italicMatch = trimmed.match(/^\*([^*].*[^*])\*$/);
+      if (italicMatch) {
+        context = italicMatch[1];
+      }
     }
   }
 
@@ -467,94 +492,141 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    try {
-      const isDefinitionsDeck = deckType === "definitions";
-      const isQcmDeck = deckType === "qcm";
-      const activeDefinitionSource =
-        definitionCategory === "set2"
-          ? flashcardsDefinitionsMarkdown2
-          : definitionCategory === "set3"
-            ? flashcardsDefinitionsMarkdown3
-            : flashcardsDefinitionsMarkdown;
-      const activeDefinitionFileName =
-        definitionCategory === "set2"
-          ? "public/def2.md"
-          : definitionCategory === "set3"
-            ? "public/def3.md"
-            : "md_exports/flashcards-def.md";
-      const activeDefinitionPrefix =
-        definitionCategory === "set2"
-          ? "def2"
-          : definitionCategory === "set3"
-            ? "def3"
-            : "def";
-      const activeQcmSource =
-        qcmCategory === "set2"
-          ? qcmMarkdown2
-          : qcmCategory === "set3"
-            ? qcmMarkdown3
-            : qcmCategory === "set4"
-              ? qcmMarkdown4
-            : qcmMarkdown;
-      const activeQcmFileName =
-        qcmCategory === "set2"
-          ? "qcm_50_cards_2.md"
-          : qcmCategory === "set3"
-            ? "qcm_50_cards_3.md"
-            : qcmCategory === "set4"
-              ? "qcm_50_cards_4.md"
-            : "qcm_50_cards_qcm_style.md";
-      const activeQcmPrefix =
-        qcmCategory === "set2"
-          ? "qcm2"
-          : qcmCategory === "set3"
-            ? "qcm3"
-            : qcmCategory === "set4"
-              ? "qcm4"
-              : "qcm1";
-      const source = isDefinitionsDeck
-        ? activeDefinitionSource
-        : isQcmDeck
-          ? activeQcmSource
-          : flashcardsMarkdown;
-      if (!source.trim()) {
-        throw new Error(
-          isDefinitionsDeck
-            ? `${activeDefinitionFileName} is empty.`
-            : isQcmDeck
-              ? `${activeQcmFileName} is empty.`
-            : "flashcards.md is empty.",
-        );
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const isDefinitionsDeck = deckType === "definitions";
+        const isQcmDeck = deckType === "qcm";
+
+        let activeDefinitionSource: string;
+        let activeDefinitionFileName: string;
+        let activeDefinitionPrefix: string;
+
+        if (isDefinitionsDeck && definitionCategory === "set2") {
+          activeDefinitionSource = flashcardsDefinitionsMarkdown2;
+          activeDefinitionFileName = "public/def2.md";
+          activeDefinitionPrefix = "def2";
+        } else if (isDefinitionsDeck && definitionCategory === "set3") {
+          activeDefinitionFileName = "public/def3.md";
+          activeDefinitionPrefix = "def3";
+          const res = await fetch("/def3.md", { cache: "no-store" });
+          if (!res.ok) {
+            throw new Error(
+              `Could not load ${activeDefinitionFileName} (${res.status}).`,
+            );
+          }
+          activeDefinitionSource = await res.text();
+        } else if (isDefinitionsDeck) {
+          activeDefinitionSource = flashcardsDefinitionsMarkdown;
+          activeDefinitionFileName = "md_exports/flashcards-def.md";
+          activeDefinitionPrefix = "def";
+        } else {
+          activeDefinitionSource = "";
+          activeDefinitionFileName = "";
+          activeDefinitionPrefix = "def";
+        }
+
+        const activeQcmSource =
+          qcmCategory === "set2"
+            ? qcmMarkdown2
+            : qcmCategory === "set3"
+              ? qcmMarkdown3
+              : qcmCategory === "set4"
+                ? qcmMarkdown4
+                : qcmCategory === "set5"
+                  ? qcmMarkdown5
+                  : qcmCategory === "set6"
+                    ? qcmMarkdown6
+                    : qcmCategory === "set7"
+                      ? qcmMarkdown7
+                      : qcmMarkdown;
+        const activeQcmFileName =
+          qcmCategory === "set2"
+            ? "qcm_50_cards_2.md"
+            : qcmCategory === "set3"
+              ? "qcm_50_cards_3.md"
+              : qcmCategory === "set4"
+                ? "qcm_50_cards_4.md"
+                : qcmCategory === "set5"
+                  ? "qcm_teacher.md"
+                  : qcmCategory === "set6"
+                    ? "qcm_teacher2.md"
+                    : qcmCategory === "set7"
+                      ? "qcm_teacher3.md"
+                      : "qcm_50_cards_qcm_style.md";
+        const activeQcmPrefix =
+          qcmCategory === "set2"
+            ? "qcm2"
+            : qcmCategory === "set3"
+              ? "qcm3"
+              : qcmCategory === "set4"
+                ? "qcm4"
+                : qcmCategory === "set5"
+                  ? "qcm5"
+                  : qcmCategory === "set6"
+                    ? "qcm6"
+                    : qcmCategory === "set7"
+                      ? "qcm7"
+                      : "qcm1";
+
+        const source = isDefinitionsDeck
+          ? activeDefinitionSource
+          : isQcmDeck
+            ? activeQcmSource
+            : flashcardsMarkdown;
+
+        if (!source.trim()) {
+          throw new Error(
+            isDefinitionsDeck && definitionCategory === "set3"
+              ? `${activeDefinitionFileName} is empty on disk. Save the file in your editor (or restore its contents) so the dev server can serve it at /def3.md.`
+              : isDefinitionsDeck
+                ? `${activeDefinitionFileName} is empty.`
+                : isQcmDeck
+                  ? `${activeQcmFileName} is empty.`
+                  : "flashcards.md is empty.",
+          );
+        }
+
+        const parsed = isDefinitionsDeck
+          ? parseDefinitionFlashcards(source, activeDefinitionPrefix)
+          : isQcmDeck
+            ? parseQcmFlashcards(source, activeQcmPrefix)
+            : parseFlashcards(source);
+
+        if (parsed.length === 0) {
+          throw new Error(
+            isDefinitionsDeck
+              ? `No cards parsed from ${activeDefinitionFileName}.`
+              : isQcmDeck
+                ? `No cards parsed from ${activeQcmFileName}.`
+                : "No cards parsed from flashcards.md.",
+          );
+        }
+
+        if (cancelled) return;
+
+        setDeck(shuffle(parsed));
+        setStatusByCard({});
+        setStatusError(null);
+        setLoadError(null);
+        setIndex(0);
+        setFlipped(false);
+        setDrag(0);
+        setExit(null);
+        setStudyMode("all");
+        setSelectedQcmAnswers({});
+        setAutoFlipLock(false);
+      } catch (err) {
+        if (cancelled) return;
+        setDeck([]);
+        setLoadError(err instanceof Error ? err.message : "Unknown error");
       }
-      const parsed = isDefinitionsDeck
-        ? parseDefinitionFlashcards(source, activeDefinitionPrefix)
-        : isQcmDeck
-          ? parseQcmFlashcards(source, activeQcmPrefix)
-          : parseFlashcards(source);
-      if (parsed.length === 0) {
-        throw new Error(
-          isDefinitionsDeck
-            ? `No cards parsed from ${activeDefinitionFileName}.`
-            : isQcmDeck
-              ? `No cards parsed from ${activeQcmFileName}.`
-            : "No cards parsed from flashcards.md.",
-        );
-      }
-      setDeck(shuffle(parsed));
-      setStatusByCard({});
-      setStatusError(null);
-      setLoadError(null);
-      setIndex(0);
-      setFlipped(false);
-      setDrag(0);
-      setExit(null);
-      setStudyMode("all");
-      setSelectedQcmAnswers({});
-      setAutoFlipLock(false);
-    } catch (err) {
-      setDeck([]);
-      setLoadError(err instanceof Error ? err.message : "Unknown error");
-    }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [deckType, definitionCategory, qcmCategory]);
 
   useEffect(() => {
@@ -915,6 +987,10 @@ export default function Page() {
     () => (card ? renderInlineMarkdown(card.question) : ""),
     [card],
   );
+  const contextHtml = useMemo(
+    () => (card?.qcmContext ? renderInlineMarkdown(card.qcmContext) : ""),
+    [card],
+  );
   const upcomingQuestionHtml = useMemo(
     () => (upcoming ? renderInlineMarkdown(upcoming.question) : ""),
     [upcoming],
@@ -1096,6 +1172,39 @@ export default function Page() {
               title="QCM set 4"
             >
               QCM 4
+            </button>
+            <button
+              type="button"
+              className={`deck-switch ${qcmCategory === "set5" ? "is-active" : ""}`}
+              onClick={() => setQcmCategory("set5")}
+              aria-label="Switch to QCM teacher set"
+              aria-selected={qcmCategory === "set5"}
+              role="tab"
+              title="QCM teacher set"
+            >
+              QCM Teacher
+            </button>
+            <button
+              type="button"
+              className={`deck-switch ${qcmCategory === "set6" ? "is-active" : ""}`}
+              onClick={() => setQcmCategory("set6")}
+              aria-label="Switch to QCM teacher set 2"
+              aria-selected={qcmCategory === "set6"}
+              role="tab"
+              title="QCM teacher set 2"
+            >
+              QCM Teacher 2
+            </button>
+            <button
+              type="button"
+              className={`deck-switch ${qcmCategory === "set7" ? "is-active" : ""}`}
+              onClick={() => setQcmCategory("set7")}
+              aria-label="Switch to QCM teacher set 3"
+              aria-selected={qcmCategory === "set7"}
+              role="tab"
+              title="QCM teacher set 3"
+            >
+              QCM Teacher 3
             </button>
           </div>
         )}
@@ -1319,6 +1428,12 @@ export default function Page() {
                 className="card-q"
                 dangerouslySetInnerHTML={{ __html: questionHtml }}
               />
+              {isQcmCard && card.qcmContext && (
+                <p
+                  className="qcm-context"
+                  dangerouslySetInnerHTML={{ __html: contextHtml }}
+                />
+              )}
               {isQcmCard && card.qcmOptions && card.qcmOptions.length > 0 && (
                 <div className="qcm-options">
                   {card.qcmOptions.map((option) => {
